@@ -2372,20 +2372,95 @@ HTML_CONTENT = r'''<!DOCTYPE html>
     <!-- JAVASCRIPT LOGIC -->
     <script>
         /* =========================================================
-           DATA MASTER KARYAWAN SMTI & TIM PROYEK
+           DATA MASTER KARYAWAN SMTI (PERSISTENSI LOCALSTORAGE & CLOUD)
            ========================================================= */
-        const SMTI_EMPLOYEES = [
-            { name: "Henisya Permata Sari", role: "VP SMTI", color: "#8b5cf6", initials: "HP" },
-            { name: "Mochamad Januardi", role: "Officer Inovasi", color: "#3b82f6", initials: "MJ" },
-            { name: "Septian", role: "Officer Digitalisasi", color: "#06b6d4", initials: "SP" },
-            { name: "Dion Ridwan Giartomi", role: "Officer Audit SMT", color: "#10b981", initials: "DR" },
-            { name: "Wahyu Sukmawati", role: "VP PMSMT", color: "#ec4899", initials: "WS" },
-            { name: "Nopiyanti", role: "Officer PMSMT", color: "#f59e0b", initials: "NP" },
-            { name: "Putri Yunikeu", role: "Officer Standardisasi", color: "#14b8a6", initials: "PY" },
-            { name: "Ari Citra Hermawan", role: "Officer Paten & HAKI", color: "#6366f1", initials: "AC" },
-            { name: "Yayan Sopyan", role: "Officer 5R & Mutu", color: "#84cc16", initials: "YS" },
-            { name: "Yunni Kusriwanti", role: "Officer Administrasi Inovasi", color: "#f97316", initials: "YK" }
+        const defaultSMTIEmployees = [
+            { id: 1, name: "Henisya Permata Sari", role: "VP SMTI", status: "TKO", color: "#8b5cf6", initials: "HP" },
+            { id: 2, name: "Mochamad Januardi", role: "Officer Inovasi", status: "TKO", color: "#3b82f6", initials: "MJ" },
+            { id: 3, name: "Septian", role: "Officer Digitalisasi", status: "TKNO", color: "#06b6d4", initials: "SP" },
+            { id: 4, name: "Dion Ridwan Giartomi", role: "Officer Audit SMT", status: "TKO", color: "#10b981", initials: "DR" },
+            { id: 5, name: "Wahyu Sukmawati", role: "VP PMSMT", status: "TKO", color: "#ec4899", initials: "WS" },
+            { id: 6, name: "Nopiyanti", role: "Officer PMSMT", status: "TKNO", color: "#f59e0b", initials: "NP" },
+            { id: 7, name: "Putri Yunikeu", role: "Officer Standardisasi", status: "TKNO", color: "#14b8a6", initials: "PY" },
+            { id: 8, name: "Ari Citra Hermawan", role: "Officer Paten & HAKI", status: "TKO", color: "#6366f1", initials: "AC" },
+            { id: 9, name: "Yayan Sopyan", role: "Officer 5R & Mutu", status: "TKO", color: "#84cc16", initials: "YS" },
+            { id: 10, name: "Yunni Kusriwanti", role: "Officer Administrasi Inovasi", status: "TKNO", color: "#f97316", initials: "YK" }
         ];
+
+        let SMTI_EMPLOYEES = [];
+
+        function loadEmployeesData() {
+            try {
+                const stored = localStorage.getItem('smti_employees_data_v2');
+                if (stored) {
+                    SMTI_EMPLOYEES = JSON.parse(stored);
+                } else {
+                    SMTI_EMPLOYEES = JSON.parse(JSON.stringify(defaultSMTIEmployees));
+                }
+            } catch (e) {
+                console.error("Gagal load employees dari localStorage:", e);
+                SMTI_EMPLOYEES = JSON.parse(JSON.stringify(defaultSMTIEmployees));
+            }
+            renderEmployeesTable();
+            updateTotalCount();
+        }
+
+        function saveEmployeesData() {
+            try {
+                localStorage.setItem('smti_employees_data_v2', JSON.stringify(SMTI_EMPLOYEES));
+            } catch (e) {
+                console.error("Gagal simpan employees ke localStorage:", e);
+            }
+
+            renderEmployeesTable();
+            updateTotalCount();
+            populateNewProjectMemberCheckboxes();
+
+            if (typeof currentActiveProjectId !== 'undefined' && currentActiveProjectId) {
+                const curProj = projectDataSMTI.find(p => p.id === currentActiveProjectId);
+                if (curProj) {
+                    renderTeamAvatars(curProj);
+                    renderCommentAuthorSelect(curProj);
+                }
+            }
+
+            // Sinkronisasi otomatis ke Vercel Edge Config Cloud
+            clearTimeout(window.syncEmployeesTimeout);
+            window.syncEmployeesTimeout = setTimeout(syncEmployeesToCloud, 700);
+        }
+
+        async function syncEmployeesToCloud() {
+            try {
+                const res = await fetch('/api/employees', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(SMTI_EMPLOYEES)
+                });
+                if (res.ok) {
+                    console.log("Data karyawan berhasil disinkronkan ke Vercel Cloud.");
+                }
+            } catch (e) {
+                console.warn("Gagal sinkron data karyawan ke cloud:", e);
+            }
+        }
+
+        async function fetchEmployeesFromCloud() {
+            try {
+                const res = await fetch('/api/employees');
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+                        SMTI_EMPLOYEES = json.data;
+                        localStorage.setItem('smti_employees_data_v2', JSON.stringify(SMTI_EMPLOYEES));
+                        renderEmployeesTable();
+                        updateTotalCount();
+                        populateNewProjectMemberCheckboxes();
+                    }
+                }
+            } catch (e) {
+                console.warn("Offline / tidak dapat fetch cloud employees:", e);
+            }
+        }
 
         /* =========================================================
            DATA MASTER PROYEK (Dengan Default & LocalStorage Persistence)
@@ -2683,9 +2758,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         function resetToDefaultData() {
-            if (confirm("Reset semua perubahan data checklist, progres, dan komentar ke kondisi awal?")) {
+            if (confirm("Reset semua perubahan data checklist, progres, komentar, dan daftar karyawan ke kondisi awal?")) {
                 localStorage.removeItem('smti_projects_data_v2');
+                localStorage.removeItem('smti_employees_data_v2');
                 projectDataSMTI = JSON.parse(JSON.stringify(defaultProjectDataSMTI));
+                SMTI_EMPLOYEES = JSON.parse(JSON.stringify(defaultSMTIEmployees));
+                saveEmployeesData();
                 renderProjectsList();
                 renderMonitorBoard();
                 if (document.getElementById('flowModal').classList.contains('active')) {
@@ -2702,6 +2780,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         let analyticsChartInstance = null;
 
         window.onload = function() {
+            loadEmployeesData();
+            fetchEmployeesFromCloud();
             loadProjectsData();
             updateTotalCount();
             startClock();
@@ -4499,54 +4579,105 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             document.getElementById('modalKaryawan').style.display = 'none';
         }
 
+        function renderEmployeesTable() {
+            const table = document.getElementById('employee-table-body');
+            if (!table) return;
+
+            table.innerHTML = SMTI_EMPLOYEES.map(emp => {
+                const isTKO = (emp.status || 'TKO') === 'TKO';
+                const color = isTKO ? '#d4edda' : '#f8d7da';
+                const textColor = isTKO ? '#155724' : '#721c24';
+                const empId = emp.id || `'${emp.name.replace(/'/g, "\'")}'`;
+
+                return `
+                    <tr onclick="viewDetail('${emp.name.replace(/'/g, "\'")}', '${(emp.role || '').replace(/'/g, "\'")}', '${emp.status || 'TKO'}', '${color}')">
+                        <td><strong>${emp.name}</strong></td>
+                        <td>${emp.role}</td>
+                        <td><span class="status" style="background: ${color}; color: ${textColor};">${emp.status || 'TKO'}</span></td>
+                        <td>
+                            <button class="action-btn btn-edit" title="Edit karyawan" onclick="event.stopPropagation(); editEmployeeById(${empId})"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn btn-delete" title="Hapus karyawan permanen" onclick="event.stopPropagation(); deleteEmployeeById(${empId})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         function saveKaryawan(e) {
             e.preventDefault();
-            const nama = document.getElementById('input-nama').value;
-            const jabatan = document.getElementById('input-jabatan').value;
+            const nama = document.getElementById('input-nama').value.trim();
+            const jabatan = document.getElementById('input-jabatan').value.trim();
             const status = document.getElementById('input-status').value;
-            const color = status === 'TKO' ? '#d4edda' : '#f8d7da';
-            const textColor = status === 'TKO' ? '#155724' : '#721c24';
 
-            const table = document.getElementById('employee-table-body');
-            const newRow = table.insertRow();
-            newRow.onclick = function() { viewDetail(nama, jabatan, status, color); };
-            newRow.innerHTML = `
-                <td><strong>${nama}</strong></td>
-                <td>${jabatan}</td>
-                <td><span class="status" style="background: ${color}; color: ${textColor};">${status}</span></td>
-                <td>
-                    <button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button>
-                    <button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button>
-                </td>
-            `;
+            if (!nama || !jabatan) return;
+
+            // Generate initials and avatar color
+            const words = nama.split(' ');
+            const initials = words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : nama.slice(0, 2).toUpperCase();
+            const palette = ["#8b5cf6", "#3b82f6", "#06b6d4", "#10b981", "#ec4899", "#f59e0b", "#14b8a6", "#6366f1", "#84cc16", "#f97316"];
+            const color = palette[Math.floor(Math.random() * palette.length)];
+
+            const newEmployee = {
+                id: Date.now(),
+                name: nama,
+                role: jabatan,
+                status: status,
+                color: color,
+                initials: initials
+            };
+
+            SMTI_EMPLOYEES.push(newEmployee);
+            saveEmployeesData();
 
             closeModal();
-            updateTotalCount();
             filterKaryawan();
+            alert(`Sukses! Karyawan "${nama}" (${jabatan}) berhasil ditambahkan dan tersimpan permanen di sistem.`);
+        }
+
+        function editEmployeeById(id) {
+            const emp = SMTI_EMPLOYEES.find(e => (e.id && e.id == id) || e.name === id);
+            if (!emp) return;
+
+            const newNama = prompt("Edit Nama Karyawan:", emp.name);
+            if (newNama === null || newNama.trim() === "") return;
+            const newJabatan = prompt("Edit Jabatan / Posisi:", emp.role);
+            if (newJabatan === null || newJabatan.trim() === "") return;
+
+            const words = newNama.trim().split(' ');
+            emp.name = newNama.trim();
+            emp.role = newJabatan.trim();
+            emp.initials = words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : emp.name.slice(0, 2).toUpperCase();
+
+            saveEmployeesData();
+            filterKaryawan();
+            alert(`Data karyawan "${emp.name}" berhasil diperbarui.`);
+        }
+
+        function deleteEmployeeById(id) {
+            const emp = SMTI_EMPLOYEES.find(e => (e.id && e.id == id) || e.name === id);
+            if (!emp) return;
+
+            if (confirm(`Apakah Anda yakin ingin menghapus karyawan "${emp.name}"? Data akan terhapus secara permanen dari sistem dan tidak akan muncul lagi.`)) {
+                SMTI_EMPLOYEES = SMTI_EMPLOYEES.filter(e => {
+                    if (e.id && emp.id) return e.id != emp.id;
+                    return e.name !== emp.name;
+                });
+                saveEmployeesData();
+                filterKaryawan();
+                alert(`Data karyawan "${emp.name}" telah berhasil dihapus secara permanen.`);
+            }
         }
 
         function editRow(btn) {
             const row = btn.closest('tr');
             const nama = row.cells[0].innerText.trim();
-            const jabatan = row.cells[1].innerText.trim();
-            const status = row.cells[2].innerText.trim();
-
-            const newNama = prompt("Edit Nama Karyawan:", nama);
-            if (newNama === null || newNama.trim() === "") return;
-            const newJabatan = prompt("Edit Jabatan:", jabatan);
-            if (newJabatan === null || newJabatan.trim() === "") return;
-
-            row.cells[0].innerHTML = `<strong>${newNama}</strong>`;
-            row.cells[1].innerText = newJabatan;
-            row.onclick = function() { viewDetail(newNama, newJabatan, status, status === 'TKO' ? '#d4edda' : '#f8d7da'); };
+            editEmployeeById(nama);
         }
 
         function deleteRow(btn) {
-            if (confirm("Apakah Anda yakin ingin menghapus data karyawan ini?")) {
-                const row = btn.closest('tr');
-                row.remove();
-                updateTotalCount();
-            }
+            const row = btn.closest('tr');
+            const nama = row.cells[0].innerText.trim();
+            deleteEmployeeById(nama);
         }
 
         function exportTableToCSV() {

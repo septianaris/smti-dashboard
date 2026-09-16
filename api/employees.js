@@ -1,0 +1,74 @@
+export default async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
+  }
+
+  const EDGE_CONFIG_ID = "ecfg_tswb1xrqrug1hh8ha4kvxsvcv81q";
+  const READ_TOKEN = "7efde2d8-d8ab-4a19-8b2f-0d8e1de105e3";
+  const WRITE_TOKEN = process.env.VERCEL_API_TOKEN;
+
+  if (req.method === "GET") {
+    try {
+      const response = await fetch(`https://edge-config.vercel.com/${EDGE_CONFIG_ID}/item/employees`, {
+        headers: { Authorization: `Bearer ${READ_TOKEN}` }
+      });
+      if (!response.ok) {
+        return res.status(200).json({ success: false, data: null });
+      }
+      const data = await response.json();
+      return res.status(200).json({ success: true, data: data });
+    } catch (e) {
+      return res.status(500).json({ success: false, error: e.message });
+    }
+  }
+
+  if (req.method === "POST") {
+    try {
+      let employeesData = req.body;
+      if (typeof employeesData === "string") {
+        employeesData = JSON.parse(employeesData);
+      }
+      if (employeesData && employeesData.employees) {
+        employeesData = employeesData.employees;
+      }
+
+      if (!Array.isArray(employeesData)) {
+        return res.status(400).json({ success: false, error: "Data harus berupa array karyawan" });
+      }
+
+      const patchRes = await fetch(`https://api.vercel.com/v1/edge-config/${EDGE_CONFIG_ID}/items`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${WRITE_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          items: [
+            {
+              operation: "upsert",
+              key: "employees",
+              value: employeesData
+            }
+          ]
+        })
+      });
+
+      if (!patchRes.ok) {
+        const errText = await patchRes.text();
+        return res.status(patchRes.status).json({ success: false, error: errText });
+      }
+
+      return res.status(200).json({ success: true, count: employeesData.length });
+    } catch (e) {
+      return res.status(500).json({ success: false, error: e.message });
+    }
+  }
+
+  res.status(405).json({ error: "Method not allowed" });
+}

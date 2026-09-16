@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Script deploy otomatis 1-klik ke Vercel Production
 """
@@ -24,6 +24,9 @@ with open(os.path.join(os.path.dirname(__file__), "index.html"), "r", encoding="
 with open(os.path.join(os.path.dirname(__file__), "api", "projects.js"), "r", encoding="utf-8") as f:
     api_content = f.read()
 
+with open(os.path.join(os.path.dirname(__file__), "api", "employees.js"), "r", encoding="utf-8") as f:
+    api_employees_content = f.read()
+
 payload = {
     "name": "smti-dashboard",
     "files": [
@@ -34,6 +37,10 @@ payload = {
         {
             "file": "api/projects.js",
             "data": api_content
+        },
+        {
+            "file": "api/employees.js",
+            "data": api_employees_content
         }
     ],
     "projectSettings": {
