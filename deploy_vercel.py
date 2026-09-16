@@ -27,6 +27,9 @@ with open(os.path.join(os.path.dirname(__file__), "api", "projects.js"), "r", en
 with open(os.path.join(os.path.dirname(__file__), "api", "employees.js"), "r", encoding="utf-8") as f:
     api_employees_content = f.read()
 
+with open(os.path.join(os.path.dirname(__file__), "api", "interns.js"), "r", encoding="utf-8") as f:
+    api_interns_content = f.read()
+
 payload = {
     "name": "smti-dashboard",
     "files": [
@@ -41,6 +44,10 @@ payload = {
         {
             "file": "api/employees.js",
             "data": api_employees_content
+        },
+        {
+            "file": "api/interns.js",
+            "data": api_interns_content
         }
     ],
     "projectSettings": {

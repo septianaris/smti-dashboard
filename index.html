@@ -1442,6 +1442,10 @@
                 <div class="menu-item-left"><i class="fas fa-users"></i> <span>Karyawan SMTI</span></div>
                 <span class="menu-badge" id="side-karyawan-count">10</span>
             </div>
+            <div class="menu-item" onclick="showPage('magang', this)">
+                <div class="menu-item-left"><i class="fas fa-user-graduate"></i> <span>Anak Magang / PKL</span></div>
+                <span class="menu-badge" id="side-magang-count" style="background: rgba(16, 185, 129, 0.25); color: #10b981; font-weight: 700;">4</span>
+            </div>
 
             <div class="menu-category">Sistem & Laporan</div>
             <div class="menu-item" onclick="showPage('laporan', this)">
@@ -1780,6 +1784,91 @@
                             <p><strong>PT Pupuk Kujang Cikampek</strong></p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE ANAK MAGANG / PKL ================= -->
+        <div id="magang" class="page-section">
+            <div class="header" style="margin-bottom: 16px;">
+                <div class="header-left">
+                    <div class="header-title">
+                        <h1><i class="fas fa-user-graduate" style="color: #10b981;"></i> Data Mahasiswa & Siswa Magang / PKL</h1>
+                        <small>Departemen Sistem Manajemen Terpadu & Inovasi (SMTI) - PT Pupuk Kujang</small>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="btn" style="background: #10b981;" onclick="openAddInternModal()">
+                        <i class="fas fa-user-plus"></i> + Tambah Anak Magang
+                    </button>
+                    <button class="btn" style="background: #0284c7;" onclick="openAddProjectModal()">
+                        <i class="fas fa-project-diagram"></i> Buat Proyek Baru
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards Magang -->
+            <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
+                <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #10b981;">
+                    <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Total Anak Magang</div>
+                    <div style="font-size: 26px; font-weight: 800; color: var(--text-color); margin-top: 4px;" id="dash-magang-total">4</div>
+                    <small style="color: #10b981; font-size: 11px;"><i class="fas fa-users"></i> Terdaftar di SMTI</small>
+                </div>
+                <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #0284c7;">
+                    <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Magang Aktif</div>
+                    <div style="font-size: 26px; font-weight: 800; color: #0284c7; margin-top: 4px;" id="dash-magang-aktif">3</div>
+                    <small style="color: #64748b; font-size: 11px;"><i class="fas fa-running"></i> Sedang Bertugas</small>
+                </div>
+                <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #64748b;">
+                    <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Magang Selesai (Alumni)</div>
+                    <div style="font-size: 26px; font-weight: 800; color: #64748b; margin-top: 4px;" id="dash-magang-selesai">1</div>
+                    <small style="color: #64748b; font-size: 11px;"><i class="fas fa-check-circle"></i> Selesai Periode</small>
+                </div>
+                <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #f59e0b;">
+                    <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Asal Kampus / Sekolah</div>
+                    <div style="font-size: 26px; font-weight: 800; color: #f59e0b; margin-top: 4px;" id="dash-magang-univ">4 Kampus</div>
+                    <small style="color: #64748b; font-size: 11px;"><i class="fas fa-university"></i> ITB, UI, UNPAD, POLBAN</small>
+                </div>
+            </div>
+
+            <!-- Table & Filter Magang -->
+            <div class="card">
+                <div class="filter-container" style="justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 10px; flex: 1; flex-wrap: wrap;">
+                        <input type="text" id="search-magang-input" class="filter-input" placeholder="🔍 Cari nama mahasiswa, kampus, jurusan, atau penugasan..." oninput="filterInterns()">
+                        <select id="status-magang-filter" class="filter-select" onchange="filterInterns()">
+                            <option value="">Semua Status</option>
+                            <option value="Aktif">Status: Aktif</option>
+                            <option value="Selesai">Status: Selesai</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm" style="background: #10b981;" onclick="openAddInternModal()">
+                            <i class="fas fa-plus"></i> Tambah Anak Magang
+                        </button>
+                        <button class="btn btn-sm" style="background: #64748b;" onclick="exportInternsToCSV()">
+                            <i class="fas fa-file-csv"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mahasiswa / Siswa Magang</th>
+                                <th>Perguruan Tinggi & Jurusan</th>
+                                <th>Penugasan / Minat SMTI</th>
+                                <th>Periode Magang</th>
+                                <th>Pembimbing SMTI</th>
+                                <th>Status</th>
+                                <th style="text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="intern-table-body">
+                            <!-- Rendered dynamically by JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -2225,6 +2314,7 @@
                                 <option value="MIKU">MIKU (Manajemen Inovasi & Kinerja Unggul)</option>
                                 <option value="PMSMT">PMSMT (Pengendalian Manajemen SMT)</option>
                                 <option value="Pengembangan Sistem dan Prosedur">Pengembangan Sistem dan Prosedur</option>
+                                <option value="Proyek Riset & Inovasi Magang">Proyek Riset & Inovasi Magang</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -2359,8 +2449,375 @@
         </div>
     </div>
 
+    <!-- Modal Form Tambah / Edit Anak Magang -->
+    <div id="modalMagang" class="modal">
+        <div class="modal-content" style="width: 520px; max-width: 95%;">
+            <div class="modal-header">
+                <h3 id="modal-magang-title"><i class="fas fa-user-graduate" style="color: #10b981;"></i> Tambah Data Anak Magang / PKL</h3>
+                <span class="close-modal" onclick="closeAddInternModal()">&times;</span>
+            </div>
+            <form id="form-magang" onsubmit="saveIntern(event)" style="padding: 16px 20px;">
+                <input type="hidden" id="magang-edit-id" value="">
+                <div class="form-group">
+                    <label>Nama Lengkap Mahasiswa / Siswa *</label>
+                    <input type="text" id="input-magang-nama" required placeholder="Contoh: Dimas Pratama">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>Asal Perguruan Tinggi / Sekolah *</label>
+                        <input type="text" id="input-magang-campus" required placeholder="Contoh: ITB / UI / Polban">
+                    </div>
+                    <div class="form-group">
+                        <label>Program Studi / Jurusan</label>
+                        <input type="text" id="input-magang-major" placeholder="Contoh: Teknik Kimia">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Penugasan / Bidang Magang SMTI *</label>
+                    <input type="text" id="input-magang-role" required placeholder="Contoh: Magang Riset Inovasi & Nilai Tambah">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>Periode Magang (Bulan/Tahun) *</label>
+                        <input type="text" id="input-magang-period" required placeholder="Contoh: Feb 2026 - Agu 2026">
+                    </div>
+                    <div class="form-group">
+                        <label>Status Magang *</label>
+                        <select id="input-magang-status" required>
+                            <option value="Aktif" selected>Aktif (Sedang Berjalan)</option>
+                            <option value="Selesai">Selesai (Alumni)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Pembimbing Karyawan SMTI *</label>
+                    <select id="input-magang-mentor" required>
+                        <!-- Populated dynamically from SMTI_EMPLOYEES -->
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                    <button type="button" class="btn" style="background: #64748b;" onclick="closeAddInternModal()">Batal</button>
+                    <button type="submit" class="btn" style="background: #10b981; font-weight: 700;">
+                        <i class="fas fa-save"></i> Simpan Data Magang
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT LOGIC -->
     <script>
+        /* =========================================================
+           DATA MASTER ANAK MAGANG / PKL SMTI (PERSISTENSI LOCALSTORAGE & CLOUD)
+           ========================================================= */
+        const defaultSMTIInterns = [
+            {
+                id: 101,
+                name: "Dimas Pratama",
+                campus: "Institut Teknologi Bandung (ITB)",
+                major: "Teknik Kimia",
+                role: "Magang Riset Formulasi & Inovasi",
+                period: "Feb 2026 - Agu 2026",
+                mentor: "Mochamad Januardi",
+                status: "Aktif",
+                color: "#059669",
+                initials: "DP"
+            },
+            {
+                id: 102,
+                name: "Adinda Putri Rahayu",
+                campus: "Universitas Indonesia (UI)",
+                major: "Sistem Informasi",
+                role: "Magang Digitalisasi & Web Dashboard",
+                period: "Mar 2026 - Jul 2026",
+                mentor: "Septian",
+                status: "Aktif",
+                color: "#7c3aed",
+                initials: "AP"
+            },
+            {
+                id: 103,
+                name: "Rizky Firmansyah",
+                campus: "Universitas Padjadjaran (UNPAD)",
+                major: "Manajemen Bisnis",
+                role: "Magang Audit Mutu & Standardisasi",
+                period: "Jan 2026 - Jun 2026",
+                mentor: "Dion Ridwan Giartomi",
+                status: "Aktif",
+                color: "#d97706",
+                initials: "RF"
+            },
+            {
+                id: 104,
+                name: "Siti Nurhaliza",
+                campus: "Politeknik Negeri Bandung (POLBAN)",
+                major: "Teknik Kimia Produksi",
+                role: "Magang Penerapan 5R & K3",
+                period: "Feb 2026 - Mei 2026",
+                mentor: "Yayan Sopyan",
+                status: "Selesai",
+                color: "#dc2626",
+                initials: "SN"
+            }
+        ];
+
+        let SMTI_INTERNS = [];
+
+        function loadInternsData() {
+            try {
+                const stored = localStorage.getItem('smti_interns_data_v1');
+                if (stored) {
+                    SMTI_INTERNS = JSON.parse(stored);
+                } else {
+                    SMTI_INTERNS = JSON.parse(JSON.stringify(defaultSMTIInterns));
+                }
+            } catch (e) {
+                console.error("Gagal load interns:", e);
+                SMTI_INTERNS = JSON.parse(JSON.stringify(defaultSMTIInterns));
+            }
+            renderInternsTable();
+            updateInternsCount();
+        }
+
+        function saveInternsData() {
+            try {
+                localStorage.setItem('smti_interns_data_v1', JSON.stringify(SMTI_INTERNS));
+            } catch (e) {
+                console.error("Gagal save interns:", e);
+            }
+
+            renderInternsTable();
+            updateInternsCount();
+            populateNewProjectMemberCheckboxes();
+
+            if (typeof currentActiveProjectId !== 'undefined' && currentActiveProjectId) {
+                const curProj = projectDataSMTI.find(p => p.id === currentActiveProjectId);
+                if (curProj) {
+                    renderProjectTeam(curProj);
+                    populateChatAuthorSelect(curProj);
+                }
+            }
+
+            clearTimeout(window.syncInternsTimeout);
+            window.syncInternsTimeout = setTimeout(syncInternsToCloud, 700);
+        }
+
+        async function syncInternsToCloud() {
+            try {
+                const res = await fetch('/api/interns', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(SMTI_INTERNS)
+                });
+                if (res.ok) {
+                    console.log("Data anak magang berhasil disinkronkan ke Vercel Cloud.");
+                }
+            } catch (e) {
+                console.warn("Gagal sinkron data magang ke cloud:", e);
+            }
+        }
+
+        async function fetchInternsFromCloud() {
+            try {
+                const res = await fetch('/api/interns');
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+                        SMTI_INTERNS = json.data;
+                        localStorage.setItem('smti_interns_data_v1', JSON.stringify(SMTI_INTERNS));
+                        renderInternsTable();
+                        updateInternsCount();
+                        populateNewProjectMemberCheckboxes();
+                    }
+                }
+            } catch (e) {
+                console.warn("Offline / tidak dapat fetch cloud interns:", e);
+            }
+        }
+
+        function updateInternsCount() {
+            const total = SMTI_INTERNS.length;
+            const aktif = SMTI_INTERNS.filter(i => (i.status || 'Aktif') === 'Aktif').length;
+            const selesai = SMTI_INTERNS.filter(i => i.status === 'Selesai').length;
+            const campuses = new Set(SMTI_INTERNS.map(i => i.campus.trim())).size;
+
+            if (document.getElementById('dash-magang-total')) document.getElementById('dash-magang-total').innerText = total;
+            if (document.getElementById('dash-magang-aktif')) document.getElementById('dash-magang-aktif').innerText = aktif;
+            if (document.getElementById('dash-magang-selesai')) document.getElementById('dash-magang-selesai').innerText = selesai;
+            if (document.getElementById('dash-magang-univ')) document.getElementById('dash-magang-univ').innerText = `${campuses} Kampus`;
+            if (document.getElementById('side-magang-count')) document.getElementById('side-magang-count').innerText = aktif;
+        }
+
+        function renderInternsTable() {
+            const table = document.getElementById('intern-table-body');
+            if (!table) return;
+
+            table.innerHTML = SMTI_INTERNS.map(intern => {
+                const isAktif = (intern.status || 'Aktif') === 'Aktif';
+                const statusColor = isAktif ? '#dcfce7' : '#f1f5f9';
+                const statusTextColor = isAktif ? '#15803d' : '#475569';
+
+                return `
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="background: ${intern.color || '#10b981'}; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; border: 2px solid #10b981;">
+                                    ${intern.initials || intern.name.slice(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <strong style="color: var(--text-color);">${intern.name}</strong>
+                                    <div style="font-size: 11px; color: #10b981; font-weight: 600;"><i class="fas fa-graduation-cap"></i> Mahasiswa Magang</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <strong>${intern.campus}</strong>
+                            <div style="font-size: 11.5px; color: #64748b;">${intern.major || '-'}</div>
+                        </td>
+                        <td>${intern.role}</td>
+                        <td><span style="font-size: 12px; color: var(--text-color);">${intern.period || '-'}</span></td>
+                        <td><span style="background: var(--hover-color); padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;"><i class="fas fa-user-tie" style="color: #0284c7;"></i> ${intern.mentor || 'Tim SMTI'}</span></td>
+                        <td><span class="status" style="background: ${statusColor}; color: ${statusTextColor}; font-weight: 700;">${intern.status || 'Aktif'}</span></td>
+                        <td style="text-align: center; white-space: nowrap;">
+                            <button class="action-btn btn-edit" title="Edit anak magang" onclick="editInternById(${intern.id})"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn btn-delete" title="Hapus anak magang" onclick="deleteInternById(${intern.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterInterns() {
+            const search = (document.getElementById('search-magang-input')?.value || '').toLowerCase();
+            const status = document.getElementById('status-magang-filter')?.value || '';
+            const rows = document.querySelectorAll('#intern-table-body tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                const matchSearch = search === '' || text.includes(search);
+                const matchStatus = status === '' || text.includes(status.toLowerCase());
+                row.style.display = (matchSearch && matchStatus) ? '' : 'none';
+            });
+        }
+
+        function openAddInternModal(editId = null) {
+            document.getElementById('form-magang').reset();
+            document.getElementById('magang-edit-id').value = editId || '';
+
+            // Populate Mentor Dropdown from SMTI_EMPLOYEES
+            const mentorSelect = document.getElementById('input-magang-mentor');
+            if (mentorSelect) {
+                mentorSelect.innerHTML = SMTI_EMPLOYEES.map(e => `
+                    <option value="${e.name}">${e.name} (${e.role})</option>
+                `).join('');
+            }
+
+            if (editId) {
+                const intern = SMTI_INTERNS.find(i => i.id == editId);
+                if (intern) {
+                    document.getElementById('modal-magang-title').innerHTML = `<i class="fas fa-edit" style="color: #10b981;"></i> Edit Data Anak Magang`;
+                    document.getElementById('input-magang-nama').value = intern.name;
+                    document.getElementById('input-magang-campus').value = intern.campus;
+                    document.getElementById('input-magang-major').value = intern.major || '';
+                    document.getElementById('input-magang-role').value = intern.role;
+                    document.getElementById('input-magang-period').value = intern.period;
+                    document.getElementById('input-magang-status').value = intern.status;
+                    if (mentorSelect) mentorSelect.value = intern.mentor;
+                }
+            } else {
+                document.getElementById('modal-magang-title').innerHTML = `<i class="fas fa-user-graduate" style="color: #10b981;"></i> Tambah Data Anak Magang / PKL`;
+            }
+
+            document.getElementById('modalMagang').style.display = 'flex';
+        }
+
+        function closeAddInternModal() {
+            document.getElementById('modalMagang').style.display = 'none';
+        }
+
+        function saveIntern(e) {
+            e.preventDefault();
+            const editId = document.getElementById('magang-edit-id').value;
+            const nama = document.getElementById('input-magang-nama').value.trim();
+            const campus = document.getElementById('input-magang-campus').value.trim();
+            const major = document.getElementById('input-magang-major').value.trim();
+            const role = document.getElementById('input-magang-role').value.trim();
+            const period = document.getElementById('input-magang-period').value.trim();
+            const status = document.getElementById('input-magang-status').value;
+            const mentor = document.getElementById('input-magang-mentor').value;
+
+            if (!nama || !campus || !role) return;
+
+            const words = nama.split(' ');
+            const initials = words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : nama.slice(0, 2).toUpperCase();
+            const palette = ["#059669", "#7c3aed", "#d97706", "#0284c7", "#db2777", "#4f46e5", "#16a34a", "#ca8a04"];
+            const color = palette[Math.floor(Math.random() * palette.length)];
+
+            if (editId) {
+                const intern = SMTI_INTERNS.find(i => i.id == editId);
+                if (intern) {
+                    intern.name = nama;
+                    intern.campus = campus;
+                    intern.major = major;
+                    intern.role = role;
+                    intern.period = period;
+                    intern.status = status;
+                    intern.mentor = mentor;
+                    intern.initials = initials;
+                }
+            } else {
+                const newIntern = {
+                    id: Date.now(),
+                    name: nama,
+                    campus: campus,
+                    major: major,
+                    role: role,
+                    period: period,
+                    mentor: mentor,
+                    status: status,
+                    color: color,
+                    initials: initials
+                };
+                SMTI_INTERNS.push(newIntern);
+            }
+
+            saveInternsData();
+            closeAddInternModal();
+            filterInterns();
+            alert(`Sukses! Data mahasiswa magang "${nama}" (${campus}) berhasil disimpan.`);
+        }
+
+        function editInternById(id) {
+            openAddInternModal(id);
+        }
+
+        function deleteInternById(id) {
+            const intern = SMTI_INTERNS.find(i => i.id == id);
+            if (!intern) return;
+
+            if (confirm(`Hapus data anak magang "${intern.name}" (${intern.campus})? Data akan terhapus secara permanen.`)) {
+                SMTI_INTERNS = SMTI_INTERNS.filter(i => i.id != id);
+                saveInternsData();
+                filterInterns();
+                alert(`Data anak magang "${intern.name}" berhasil dihapus.`);
+            }
+        }
+
+        function exportInternsToCSV() {
+            let csv = ['Nama,Kampus,Jurusan,Penugasan SMTI,Periode,Pembimbing,Status'];
+            SMTI_INTERNS.forEach(i => {
+                csv.push(`"${i.name}","${i.campus}","${i.major || '-'}","${i.role}","${i.period}","${i.mentor}","${i.status}"`);
+            });
+            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'daftar_anak_magang_SMTI.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
         /* =========================================================
            DATA MASTER KARYAWAN SMTI (PERSISTENSI LOCALSTORAGE & CLOUD)
            ========================================================= */
@@ -2772,6 +3229,8 @@
         window.onload = function() {
             loadEmployeesData();
             fetchEmployeesFromCloud();
+            loadInternsData();
+            fetchInternsFromCloud();
             loadProjectsData();
             updateTotalCount();
             startClock();
@@ -2870,6 +3329,7 @@
             const titles = { 
                 dasbor: "Ringkasan Performa SMTI", 
                 karyawan: "Manajemen Karyawan Dept SMTI", 
+                magang: "Data Mahasiswa & Siswa Magang / PKL",
                 proyek: "Status Proyek Berjalan & Alur Kerja",
                 laporan: "Laporan & Analytics Departemen",
                 pengaturan: "Pengaturan Sistem",
@@ -2878,6 +3338,7 @@
             document.getElementById('current-title').innerText = titles[pageId] || "Dashboard SMTI";
 
             if(pageId === 'karyawan') backToList();
+            if(pageId === 'magang') { renderInternsTable(); updateInternsCount(); }
             if(pageId === 'proyek') renderProjectsList();
             if(pageId === 'laporan') setTimeout(initAnalyticsChart, 150);
         }
@@ -3569,19 +4030,21 @@
             }
 
             container.innerHTML = project.teamMembers.map(name => {
-                const emp = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === name.toLowerCase()) || {
+                const isIntern = SMTI_INTERNS && SMTI_INTERNS.find(i => i.name.toLowerCase() === name.toLowerCase());
+                const person = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === name.toLowerCase()) || isIntern || {
                     name: name,
                     role: "Anggota Tim",
                     initials: name.substring(0, 2).toUpperCase(),
                     color: "#0284c7"
                 };
+                const internBadge = isIntern ? ' <small style="color: #10b981; font-weight: 700; font-size: 10px;">(Magang)</small>' : '';
                 return `
-                    <div class="team-member-pill" title="${emp.name} (${emp.role})">
-                        <div class="team-avatar-circle" style="background: ${emp.color};">
-                            ${emp.initials}
+                    <div class="team-member-pill" title="${person.name} (${person.role}${isIntern ? ' • ' + isIntern.campus : ''})">
+                        <div class="team-avatar-circle" style="background: ${person.color}; ${isIntern ? 'border: 2px solid #10b981;' : ''}">
+                            ${person.initials}
                         </div>
-                        <span>${emp.name}</span>
-                        <button type="button" class="team-member-remove" onclick="removeMemberFromProject('${emp.name.replace(/'/g, "\\'")}')" title="Keluarkan dari tim proyek">
+                        <span>${person.name}${internBadge}</span>
+                        <button type="button" class="team-member-remove" onclick="removeMemberFromProject('${person.name.replace(/'/g, "\\'")}')" title="Keluarkan dari tim proyek">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -3597,10 +4060,11 @@
             const list = document.getElementById('invite-employees-list');
             if (!list) return;
 
-            list.innerHTML = SMTI_EMPLOYEES.map(emp => {
+            let html = `<div style="font-size: 11.5px; font-weight: 700; color: #0284c7; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;"><i class="fas fa-user-tie"></i> Karyawan SMTI:</div>`;
+            html += SMTI_EMPLOYEES.map(emp => {
                 const isInvited = project.teamMembers.some(m => m.toLowerCase() === emp.name.toLowerCase());
                 return `
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-color); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-color); padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 6px;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div class="team-avatar-circle" style="background: ${emp.color}; width: 32px; height: 32px; font-size: 12px;">
                                 ${emp.initials}
@@ -3625,6 +4089,38 @@
                 `;
             }).join('');
 
+            if (SMTI_INTERNS && SMTI_INTERNS.length > 0) {
+                html += `<div style="font-size: 11.5px; font-weight: 700; color: #10b981; margin: 14px 0 6px 0; display: flex; align-items: center; gap: 6px;"><i class="fas fa-user-graduate"></i> Mahasiswa / Anak Magang SMTI:</div>`;
+                html += SMTI_INTERNS.map(intern => {
+                    const isInvited = project.teamMembers.some(m => m.toLowerCase() === intern.name.toLowerCase());
+                    return `
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.05); padding: 9px 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.25); margin-bottom: 6px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="team-avatar-circle" style="background: ${intern.color || '#10b981'}; width: 32px; height: 32px; font-size: 12px; border: 2px solid #10b981;">
+                                    ${intern.initials || intern.name.slice(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <strong style="font-size: 13px; color: var(--text-color);">🎓 ${intern.name}</strong>
+                                    <div style="font-size: 11px; color: #64748b;">${intern.role} • ${intern.campus}</div>
+                                </div>
+                            </div>
+                            <div>
+                                ${isInvited ? `
+                                    <button type="button" class="btn btn-sm" style="background: rgba(22, 163, 74, 0.15); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.3); font-weight: 700;" onclick="toggleInviteEmployee('${intern.name.replace(/'/g, "\\'")}')">
+                                        <i class="fas fa-check"></i> Ter-invite
+                                    </button>
+                                ` : `
+                                    <button type="button" class="btn btn-sm" style="background: #10b981; color: white; font-weight: 700;" onclick="toggleInviteEmployee('${intern.name.replace(/'/g, "\\'")}')">
+                                        <i class="fas fa-user-plus"></i> + Undang Magang
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            list.innerHTML = html;
             document.getElementById('modalInviteMember').style.display = 'flex';
         }
 
@@ -3674,19 +4170,32 @@
             if (invited.length > 0) {
                 optionsHtml += `<optgroup label="🌟 Anggota Ter-invite ke Proyek">`;
                 invited.forEach(mName => {
-                    const emp = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === mName.toLowerCase()) || { name: mName, role: "Anggota Tim" };
+                    const person = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === mName.toLowerCase())
+                        || (SMTI_INTERNS && SMTI_INTERNS.find(i => i.name.toLowerCase() === mName.toLowerCase()))
+                        || { name: mName, role: "Anggota Tim" };
+                    optionsHtml += `<option value="${person.name}">${person.name} (${person.role})</option>`;
+                });
+                optionsHtml += `</optgroup>`;
+            }
+
+            const otherEmployees = SMTI_EMPLOYEES.filter(e => !invited.some(m => m.toLowerCase() === e.name.toLowerCase()));
+            if (otherEmployees.length > 0) {
+                optionsHtml += `<optgroup label="Karyawan SMTI">`;
+                otherEmployees.forEach(emp => {
                     optionsHtml += `<option value="${emp.name}">${emp.name} (${emp.role})</option>`;
                 });
                 optionsHtml += `</optgroup>`;
             }
 
-            const others = SMTI_EMPLOYEES.filter(e => !invited.some(m => m.toLowerCase() === e.name.toLowerCase()));
-            if (others.length > 0) {
-                optionsHtml += `<optgroup label="Karyawan SMTI Lainnya">`;
-                others.forEach(emp => {
-                    optionsHtml += `<option value="${emp.name}">${emp.name} (${emp.role})</option>`;
-                });
-                optionsHtml += `</optgroup>`;
+            if (SMTI_INTERNS && SMTI_INTERNS.length > 0) {
+                const otherInterns = SMTI_INTERNS.filter(i => !invited.some(m => m.toLowerCase() === i.name.toLowerCase()));
+                if (otherInterns.length > 0) {
+                    optionsHtml += `<optgroup label="🎓 Mahasiswa / Siswa Magang SMTI">`;
+                    otherInterns.forEach(intern => {
+                        optionsHtml += `<option value="${intern.name}">🎓 ${intern.name} (${intern.role} • ${intern.campus.split(' ')[0]})</option>`;
+                    });
+                    optionsHtml += `</optgroup>`;
+                }
             }
 
             select.innerHTML = optionsHtml;
@@ -3696,12 +4205,26 @@
             const container = document.getElementById('new-proj-team-select');
             if (!container) return;
 
-            container.innerHTML = SMTI_EMPLOYEES.map(emp => `
+            let html = `<div style="width: 100%; font-size: 11px; font-weight: 700; color: #0284c7; margin-bottom: 4px;"><i class="fas fa-user-tie"></i> Karyawan SMTI:</div>`;
+            html += SMTI_EMPLOYEES.map(emp => `
                 <label style="display: flex; align-items: center; gap: 6px; background: var(--card-bg); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 16px; font-size: 11.5px; cursor: pointer;">
                     <input type="checkbox" value="${emp.name}" class="new-proj-member-check">
                     <span style="font-weight: 600;">${emp.name}</span>
                 </label>
             `).join('');
+
+            if (SMTI_INTERNS && SMTI_INTERNS.length > 0) {
+                html += `<div style="width: 100%; font-size: 11px; font-weight: 700; color: #10b981; margin: 8px 0 4px 0;"><i class="fas fa-user-graduate"></i> Mahasiswa / Anak Magang:</div>`;
+                html += SMTI_INTERNS.map(intern => `
+                    <label style="display: flex; align-items: center; gap: 6px; background: var(--card-bg); border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 16px; font-size: 11.5px; cursor: pointer;">
+                        <input type="checkbox" value="${intern.name}" class="new-proj-member-check">
+                        <span style="font-weight: 600; color: #10b981;">🎓 ${intern.name}</span>
+                        <small style="font-size: 10px; color: #64748b;">(${intern.campus.split(' ')[0]})</small>
+                    </label>
+                `).join('');
+            }
+
+            container.innerHTML = html;
         }
 
         function renderComments(project) {
