@@ -268,6 +268,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         .card-urgency-high { border-top: 4px solid #dc2626; }
         .card-urgency-med { border-top: 4px solid #d97706; }
         .card-urgency-low { border-top: 4px solid #16a34a; }
+        .card-status-completed { border-top: 4px solid #16a34a !important; }
+        .tab-btn.tab-completed { border-color: #16a34a; color: #16a34a; }
+        .tab-btn.tab-completed:hover { background: rgba(22, 163, 74, 0.1); }
+        .tab-btn.tab-completed.active { background: #16a34a !important; border-color: #16a34a !important; color: #ffffff !important; }
+        .tab-btn.tab-completed.active i { color: #ffffff !important; }
+        .tab-btn.tab-running { border-color: #0284c7; color: #0284c7; }
+        .tab-btn.tab-running:hover { background: rgba(2, 132, 199, 0.1); }
+        .tab-btn.tab-running.active { background: #0284c7 !important; border-color: #0284c7 !important; color: #ffffff !important; }
 
         .project-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
         .project-category-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; background: var(--hover-color); padding: 3px 8px; border-radius: 4px; }
@@ -1622,33 +1630,33 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         <div id="proyek" class="page-section">
             <!-- Project KPIs -->
             <div class="project-kpi-grid">
-                <div class="project-kpi-card kpi-total">
+                <div class="project-kpi-card kpi-total" onclick="filterProjects('semua', document.querySelector('.tab-btn[data-filter=\'semua\']'))" style="cursor: pointer;" title="Klik untuk menampilkan semua proyek">
                     <div class="project-kpi-info">
                         <small>Total Proyek</small>
-                        <h3 id="proyek-kpi-total">8</h3>
+                        <h3 id="proyek-kpi-total">10</h3>
                     </div>
                     <div class="project-kpi-icon"><i class="fas fa-folder-open"></i></div>
                 </div>
-                <div class="project-kpi-card kpi-high">
+                <div class="project-kpi-card" onclick="filterProjects('running', document.querySelector('.tab-btn[data-filter=\'running\']'))" style="border-left: 4px solid #0284c7; cursor: pointer;" title="Klik untuk memfilter proyek sedang berjalan">
+                    <div class="project-kpi-info">
+                        <small>Sedang Berjalan</small>
+                        <h3 id="proyek-kpi-running" style="color: #0284c7;">8</h3>
+                    </div>
+                    <div class="project-kpi-icon" style="background: rgba(2, 132, 199, 0.12); color: #0284c7;"><i class="fas fa-spinner"></i></div>
+                </div>
+                <div class="project-kpi-card kpi-completed" onclick="filterProjects('selesai', document.querySelector('.tab-btn[data-filter=\'selesai\']'))" style="border-left: 4px solid #16a34a; cursor: pointer;" title="Klik untuk memfilter proyek yang sudah selesai">
+                    <div class="project-kpi-info">
+                        <small>Sudah Selesai</small>
+                        <h3 id="proyek-kpi-completed" style="color: #16a34a;">2</h3>
+                    </div>
+                    <div class="project-kpi-icon" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;"><i class="fas fa-check-double"></i></div>
+                </div>
+                <div class="project-kpi-card kpi-high" onclick="filterProjects('Tinggi', document.querySelector('.tab-btn[data-filter=\'Tinggi\']'))" style="cursor: pointer;" title="Klik untuk memfilter proyek urgensi tinggi">
                     <div class="project-kpi-info">
                         <small>Urgensi Tinggi</small>
                         <h3 id="proyek-kpi-high" style="color: #dc2626;">3</h3>
                     </div>
                     <div class="project-kpi-icon"><i class="fas fa-fire"></i></div>
-                </div>
-                <div class="project-kpi-card kpi-med">
-                    <div class="project-kpi-info">
-                        <small>Urgensi Sedang</small>
-                        <h3 id="proyek-kpi-med" style="color: #d97706;">3</h3>
-                    </div>
-                    <div class="project-kpi-icon"><i class="fas fa-hourglass-half"></i></div>
-                </div>
-                <div class="project-kpi-card kpi-low">
-                    <div class="project-kpi-info">
-                        <small>Rutin / Rendah</small>
-                        <h3 id="proyek-kpi-low" style="color: #16a34a;">2</h3>
-                    </div>
-                    <div class="project-kpi-icon"><i class="fas fa-check-circle"></i></div>
                 </div>
             </div>
 
@@ -1656,16 +1664,22 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             <div class="project-toolbar">
                 <div class="project-tabs">
                     <button class="tab-btn active" data-filter="semua" onclick="filterProjects('semua', this)">
-                        <i class="fas fa-list"></i> Semua Proyek
+                        <i class="fas fa-layer-group"></i> Semua (<span id="count-proj-all">0</span>)
+                    </button>
+                    <button class="tab-btn tab-running" data-filter="running" onclick="filterProjects('running', this)">
+                        <i class="fas fa-spinner"></i> Sedang Berjalan (<span id="count-proj-running">0</span>)
+                    </button>
+                    <button class="tab-btn tab-completed" data-filter="selesai" onclick="filterProjects('selesai', this)">
+                        <i class="fas fa-check-circle" style="color: #16a34a;"></i> Sudah Selesai (<span id="count-proj-completed">0</span>)
                     </button>
                     <button class="tab-btn tab-urgent" data-filter="Tinggi" onclick="filterProjects('Tinggi', this)">
-                        <i class="fas fa-fire"></i> Urgensi Tinggi
+                        <i class="fas fa-fire"></i> Urgensi Tinggi (<span id="count-proj-high">0</span>)
                     </button>
                     <button class="tab-btn" data-filter="Sedang" onclick="filterProjects('Sedang', this)">
-                        <i class="fas fa-clock"></i> Urgensi Sedang
+                        <i class="fas fa-clock"></i> Urgensi Sedang (<span id="count-proj-med">0</span>)
                     </button>
                     <button class="tab-btn" data-filter="Rendah" onclick="filterProjects('Rendah', this)">
-                        <i class="fas fa-check"></i> Rutin / Rendah
+                        <i class="fas fa-tasks"></i> Rutin / Rendah (<span id="count-proj-low">0</span>)
                     </button>
                 </div>
 
@@ -2275,6 +2289,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
                 <div class="flow-modal-actions">
                     <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm" style="background: #16a34a; font-weight: 700;" onclick="markProjectCompletedQuick()" title="Langsung tandai seluruh tahapan dan proyek selesai 100%">
+                            <i class="fas fa-check-double"></i> Tandai Selesai (100%)
+                        </button>
                         <button class="btn btn-sm" style="background: #64748b;" onclick="copyProgressSummary()">
                             <i class="fas fa-copy"></i> Salin Ringkasan Progres
                         </button>
@@ -3110,6 +3127,56 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     { stepNumber: 4, title: "Audit Lapangan LSPro", date: "25-29 Ags 2026", status: "pending", desc: "Audit kepatuhan proses produksi oleh Lembaga Sertifikasi Produk.", tasks: [["Verifikasi sanitasi & higienitas", false], ["Tindakan perbaikan bila ada", false]] },
                     { stepNumber: 5, title: "Penerbitan Sertifikat SNI", date: "31 Ags 2026", status: "pending", desc: "Penyerahan sertifikat SNI resmi kepada mitra binaan.", tasks: [["Sertifikat SPPT-SNI terbit", false], ["Izin pencantuman tanda SNI", false]] }
                 ]
+            },
+            {
+                id: 9,
+                name: "Sertifikasi ISO 9001:2015 & ISO 14001 Audit Eksternal Surveilans 1 (TUV Rheinland)",
+                category: "PMSMT",
+                teamMembers: ["Dion Ridwan Giartomi", "Wahyu Sukmawati", "Henisya Permata Sari"],
+                urgency: "Rendah",
+                status: "Completed",
+                progress: 100,
+                deadline: "10 April 2026",
+                daysLeft: "Selesai",
+                pic: "Dion Ridwan Giartomi / Tim PMSMT",
+                description: "Pelaksanaan audit surveillance eksternal sistem manajemen mutu dan lingkungan bersama auditor independen TUV Rheinland Indonesia.",
+                alertNote: "Audit surveillance 1 selesai 100% tuntas dengan rekomendasi perpanjangan sertifikasi tanpa temuan Mayor!",
+                comments: [
+                    { id: 1, author: "Dion Ridwan Giartomi", role: "Officer Audit", time: "10 Apr 2026, 16:30 WIB", text: "Alhamdulillah audit surveillance 1 telah ditutup resmi (Closing Meeting) dengan hasil memuaskan dan tanpa temuan major." },
+                    { id: 2, author: "Henisya Permata Sari", role: "VP SMTI", time: "11 Apr 2026, 08:30 WIB", text: "Terima kasih kepada seluruh tim perwakilan unit kerja atas dedikasi dan kesiapan dokumen audit." }
+                ],
+                flow: [
+                    { stepNumber: 1, title: "Review Dokumen & Pre-Audit", date: "15-20 Mar 2026", status: "completed", desc: "Pemeriksaan kesiapan manual mutu, IK, dan prosedur operasional standar.", tasks: [["Verifikasi 42 manual dan IK operasional", true], ["Penyelarasan target KPI lingkungan", true]] },
+                    { stepNumber: 2, title: "Opening Meeting Auditor Eksternal", date: "25 Mar 2026", status: "completed", desc: "Pertemuan pembukaan audit bersama tim auditor TUV Rheinland dan jajaran manajemen.", tasks: [["Pemaparan ruang lingkup audit", true], ["Konfirmasi jadwal visit pabrik & utilitas", true]] },
+                    { stepNumber: 3, title: "Audit Lapangan Pabrik & Lab", date: "26-28 Mar 2026", status: "completed", desc: "Pemeriksaan kepatuhan proses produksi Pabrik 1A, 1B, NPK, dan laboratorium kendali mutu.", tasks: [["Sampling parameter limbah & emisi", true], ["Uji kepatuhan kalibrasi instrumen", true], ["Wawancara operator dan supervisor", true]] },
+                    { stepNumber: 4, title: "Closing Meeting & Klarifikasi", date: "30 Mar 2026", status: "completed", desc: "Penyampaian resume audit dan klarifikasi catatan minor pemenuhan standar.", tasks: [["Pemaparan hasil temuan minor", true], ["Penyusunan matriks tindak lanjut CAR", true]] },
+                    { stepNumber: 5, title: "Penerbitan Rekomendasi Sertifikat", date: "10 Apr 2026", status: "completed", desc: "Penyerahan laporan resmi audit surveillance dan rekomendasi kelanjutan sertifikasi.", tasks: [["Laporan resmi surveillance disetujui", true], ["Sertifikat surveilans 1 diserahkan", true]] }
+                ]
+            },
+            {
+                id: 10,
+                name: "Implementasi & Sosialisasi Budaya 5R Terpadu Gudang & Kantor SMTI",
+                category: "Pengembangan Sistem dan Prosedur",
+                teamMembers: ["Yayan Sopyan", "Nopiyanti", "Ari Citra Hermawan"],
+                urgency: "Rendah",
+                status: "Completed",
+                progress: 100,
+                deadline: "25 Maret 2026",
+                daysLeft: "Selesai",
+                pic: "Yayan Sopyan / Tim 5R",
+                description: "Program standardisasi penataan tempat kerja Ringkas, Rapi, Resik, Rawat, Rajin (5R), zonasi gudang suku cadang, dan sertifikasi kepatuhan 5R lingkungan SMTI.",
+                alertNote: "Penilaian 5R batch 1 selesai dengan predikat Kategori Emas (Skor 94.2) dari Tim Penilai Pusat!",
+                comments: [
+                    { id: 1, author: "Yayan Sopyan", role: "Tim 5R SMTI", time: "25 Mar 2026, 14:15 WIB", text: "Seluruh zonasi penempatan dokumen dan suku cadang telah distandarisasi dengan visual management warna standar." },
+                    { id: 2, author: "Nopiyanti", role: "Officer PMSMT", time: "25 Mar 2026, 15:45 WIB", text: "Sertifikat penghargaan 5R predikat Emas telah diterima dari Tim Manajemen Mutu." }
+                ],
+                flow: [
+                    { stepNumber: 1, title: "Pemetaan Area & Zonasi Label", date: "1-5 Mar 2026", status: "completed", desc: "Penentuan batas area kerja, penomoran rak arsip, dan layout visual gudang.", tasks: [["Layout denah 5R disahkan", true], ["Pemasangan line pembatas lantai", true]] },
+                    { stepNumber: 2, title: "Aksi Ringkas (Red Tag Campaign)", date: "6-10 Mar 2026", status: "completed", desc: "Penyortiran barang yang tidak diperlukan dan pemindahan ke area transit sortir.", tasks: [["Pemberian label merah barang afkir", true], ["Pemusnahan berkas kadaluarsa sesuai izin", true]] },
+                    { stepNumber: 3, title: "Aksi Rapi & Resik Terpadu", date: "11-18 Mar 2026", status: "completed", desc: "Penataan alat kerja sesuai frekuensi penggunaan dan pembersihan menyeluruh.", tasks: [["Labeling identitas ordner & laci", true], ["Jadwal piket harian pembersihan", true]] },
+                    { stepNumber: 4, title: "Audit Penilaian Mandiri (Rawat)", date: "19-22 Mar 2026", status: "completed", desc: "Pelaksanaan audit internal 5R berkala untuk memastikan standar tetap terpelihara.", tasks: [["Scoring checklist 5R mandiri", true], ["Dokumentasi foto before & after", true]] },
+                    { stepNumber: 5, title: "Awarding & Sertifikasi 5R (Rajin)", date: "25 Mar 2026", status: "completed", desc: "Evaluasi dewan penilai dan penganugerahan predikat kepatuhan budaya 5R Emas.", tasks: [["Penilaian juri independen SMTI", true], ["Penganugerahan predikat Emas", true]] }
+                ]
             }
         ];
 
@@ -3146,6 +3213,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     const json = await res.json();
                     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
                         projectDataSMTI = json.data;
+                        // Pastikan proyek selesai default ada jika belum pernah tersimpan di cloud
+                        defaultProjectDataSMTI.forEach(defProj => {
+                            if (!projectDataSMTI.some(p => p.id === defProj.id || p.name === defProj.name)) {
+                                projectDataSMTI.push(JSON.parse(JSON.stringify(defProj)));
+                            }
+                        });
                         localStorage.setItem('smti_projects_data_v2', JSON.stringify(projectDataSMTI));
                         renderProjectsList();
                         renderMonitorBoard();
@@ -3201,6 +3274,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 console.error("Gagal membaca localStorage, menggunakan default:", e);
                 projectDataSMTI = JSON.parse(JSON.stringify(defaultProjectDataSMTI));
             }
+
+            // Pastikan proyek default (termasuk proyek selesai 9 & 10) terintegrasi jika belum ada
+            defaultProjectDataSMTI.forEach(defProj => {
+                if (!projectDataSMTI.some(p => p.id === defProj.id || p.name === defProj.name)) {
+                    projectDataSMTI.push(JSON.parse(JSON.stringify(defProj)));
+                }
+            });
         }
 
         function saveProjectsData() {
@@ -3355,46 +3435,80 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         /* =========================================================
-           RENDER LIST PROYEK DI PAGE PROYEK
+           RENDER LIST PROYEK DI PAGE PROYEK (BERJALAN & SELESAI)
            ========================================================= */
+        function isProjectCompleted(p) {
+            return (p.status === 'Completed' || p.status === 'Finished' || p.progress >= 100);
+        }
+
         function renderProjectsList() {
             const container = document.getElementById('project-card-container');
             if (!container) return;
 
             const filtered = projectDataSMTI.filter(p => {
-                const matchUrgency = currentProjectFilter === "semua" || p.urgency.toLowerCase() === currentProjectFilter.toLowerCase();
+                const done = isProjectCompleted(p);
+                let matchFilter = true;
+                if (currentProjectFilter === "semua") {
+                    matchFilter = true;
+                } else if (currentProjectFilter === "running" || currentProjectFilter === "berjalan") {
+                    matchFilter = !done;
+                } else if (currentProjectFilter === "selesai" || currentProjectFilter === "completed" || currentProjectFilter === "Finished") {
+                    matchFilter = done;
+                } else {
+                    // Filter by urgency ("Tinggi", "Sedang", "Rendah")
+                    matchFilter = p.urgency.toLowerCase() === currentProjectFilter.toLowerCase();
+                }
+
                 const matchCategory = currentCategoryFilter === "semua" || p.category === currentCategoryFilter;
-                return matchUrgency && matchCategory;
+                return matchFilter && matchCategory;
             });
 
             // Update KPI counts
+            const totalCount = projectDataSMTI.length;
+            const completedCount = projectDataSMTI.filter(p => isProjectCompleted(p)).length;
+            const runningCount = totalCount - completedCount;
             const highCount = projectDataSMTI.filter(p => p.urgency === 'Tinggi').length;
             const medCount = projectDataSMTI.filter(p => p.urgency === 'Sedang').length;
             const lowCount = projectDataSMTI.filter(p => p.urgency === 'Rendah').length;
 
-            document.getElementById('proyek-kpi-total').innerText = projectDataSMTI.length;
-            document.getElementById('proyek-kpi-high').innerText = highCount;
-            document.getElementById('proyek-kpi-med').innerText = medCount;
-            document.getElementById('proyek-kpi-low').innerText = lowCount;
+            if (document.getElementById('proyek-kpi-total')) document.getElementById('proyek-kpi-total').innerText = totalCount;
+            if (document.getElementById('proyek-kpi-running')) document.getElementById('proyek-kpi-running').innerText = runningCount;
+            if (document.getElementById('proyek-kpi-completed')) document.getElementById('proyek-kpi-completed').innerText = completedCount;
+            if (document.getElementById('proyek-kpi-high')) document.getElementById('proyek-kpi-high').innerText = highCount;
+            if (document.getElementById('proyek-kpi-med')) document.getElementById('proyek-kpi-med').innerText = medCount;
+            if (document.getElementById('proyek-kpi-low')) document.getElementById('proyek-kpi-low').innerText = lowCount;
 
-            document.getElementById('dash-total-proyek').innerText = projectDataSMTI.length;
-            document.getElementById('dash-urgent-proyek').innerText = highCount;
-            document.getElementById('dash-med-proyek').innerText = medCount;
-            document.getElementById('side-urgent-count').innerText = highCount + " Urgent";
+            // Update tab badge counters
+            if (document.getElementById('count-proj-all')) document.getElementById('count-proj-all').innerText = totalCount;
+            if (document.getElementById('count-proj-running')) document.getElementById('count-proj-running').innerText = runningCount;
+            if (document.getElementById('count-proj-completed')) document.getElementById('count-proj-completed').innerText = completedCount;
+            if (document.getElementById('count-proj-high')) document.getElementById('count-proj-high').innerText = highCount;
+            if (document.getElementById('count-proj-med')) document.getElementById('count-proj-med').innerText = medCount;
+            if (document.getElementById('count-proj-low')) document.getElementById('count-proj-low').innerText = lowCount;
+
+            // Main Dashboard overview counts
+            if (document.getElementById('dash-total-proyek')) document.getElementById('dash-total-proyek').innerText = totalCount;
+            if (document.getElementById('dash-urgent-proyek')) document.getElementById('dash-urgent-proyek').innerText = highCount;
+            if (document.getElementById('dash-med-proyek')) document.getElementById('dash-med-proyek').innerText = medCount;
+            if (document.getElementById('side-urgent-count')) document.getElementById('side-urgent-count').innerText = highCount + " Urgent";
 
             if (filtered.length === 0) {
                 container.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; opacity: 0.6;">
-                        <i class="fas fa-search" style="font-size: 32px; margin-bottom: 10px;"></i>
-                        <p style="font-weight: 600;">Tidak ada proyek pada filter ini.</p>
+                        <i class="fas fa-search" style="font-size: 32px; margin-bottom: 10px; color: #94a3b8;"></i>
+                        <p style="font-weight: 600; font-size: 14px;">Tidak ada proyek pada filter ini.</p>
+                        <button class="btn btn-sm" style="margin-top: 8px; background: #0284c7;" onclick="filterProjects('semua', document.querySelector('.tab-btn[data-filter=\'semua\']'))">
+                            Tampilkan Semua Proyek
+                        </button>
                     </div>
                 `;
                 return;
             }
 
             container.innerHTML = filtered.map(p => {
+                const done = isProjectCompleted(p);
                 const urgencyClass = p.urgency === 'Tinggi' ? 'high' : (p.urgency === 'Sedang' ? 'med' : 'low');
-                const cardClass = p.urgency === 'Tinggi' ? 'card-urgency-high' : (p.urgency === 'Sedang' ? 'card-urgency-med' : 'card-urgency-low');
+                const cardClass = done ? 'card-status-completed' : (p.urgency === 'Tinggi' ? 'card-urgency-high' : (p.urgency === 'Sedang' ? 'card-urgency-med' : 'card-urgency-low'));
                 const urgencyIcon = p.urgency === 'Tinggi' ? 'fa-fire' : (p.urgency === 'Sedang' ? 'fa-clock' : 'fa-check-circle');
 
                 // Generate mini stepper nodes
@@ -3404,16 +3518,24 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     </div>
                 `).join('');
 
-                const activeStep = p.flow.find(st => st.status === 'active') || p.flow[p.flow.length - 1];
+                const activeStep = done
+                    ? { title: "Tuntas Selesai (100%)" }
+                    : (p.flow.find(st => st.status === 'active') || p.flow[p.flow.length - 1]);
 
                 return `
                     <div class="project-card-item ${cardClass}" onclick="openFlowModal(${p.id})">
                         <div>
                             <div class="project-card-top">
                                 <span class="project-category-tag">${p.category}</span>
-                                <span class="urgency-badge ${urgencyClass}">
-                                    <i class="fas ${urgencyIcon}"></i> Urgensi ${p.urgency}
-                                </span>
+                                ${done ? `
+                                    <span class="urgency-badge" style="background: rgba(22, 163, 74, 0.12); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.3);">
+                                        <i class="fas fa-check-circle"></i> Selesai (100%)
+                                    </span>
+                                ` : `
+                                    <span class="urgency-badge ${urgencyClass}">
+                                        <i class="fas ${urgencyIcon}"></i> Urgensi ${p.urgency}
+                                    </span>
+                                `}
                             </div>
 
                             <h3 class="project-card-title">${p.name}</h3>
@@ -3422,11 +3544,11 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             <!-- Mini Workflow Stepper -->
                             <div class="card-flow-preview">
                                 <div class="card-flow-header">
-                                    <span>Tahap Saat Ini: <strong style="color: #0284c7;">${activeStep.title}</strong></span>
-                                    <span><strong>${p.progress}%</strong></span>
+                                    <span>Tahap: <strong style="color: ${done ? '#16a34a' : '#0284c7'};">${activeStep.title}</strong></span>
+                                    <span><strong style="color: ${done ? '#16a34a' : 'inherit'};">${p.progress}%</strong></span>
                                 </div>
                                 <div class="mini-stepper">
-                                    <div class="mini-stepper-line"></div>
+                                    <div class="mini-stepper-line" style="${done ? 'background: #16a34a;' : ''}"></div>
                                     ${miniStepsHtml}
                                 </div>
                             </div>
@@ -3436,8 +3558,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                 <div style="display: flex; align-items: center; gap: 5px; margin-top: 10px; margin-bottom: 4px;">
                                     <span style="font-size: 11px; color: #64748b; font-weight: 700; margin-right: 4px;"><i class="fas fa-users"></i> Tim:</span>
                                     ${p.teamMembers.slice(0, 4).map(mName => {
-                                        const emp = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === mName.toLowerCase()) || { name: mName, initials: mName.substring(0,2).toUpperCase(), color: '#0284c7' };
-                                        return `<div class="team-avatar-circle" style="background: ${emp.color}; width: 22px; height: 22px; font-size: 9.5px;" title="${mName}">${emp.initials}</div>`;
+                                        const emp = (window.SMTI_EMPLOYEES || []).find(e => e.name.toLowerCase() === mName.toLowerCase()) || 
+                                                    (window.SMTI_INTERNS || []).find(i => i.name.toLowerCase() === mName.toLowerCase()) || 
+                                                    { name: mName, initials: mName.substring(0,2).toUpperCase(), color: '#0284c7' };
+                                        return `<div class="team-avatar-circle" style="background: ${emp.color || '#0284c7'}; width: 22px; height: 22px; font-size: 9.5px;" title="${mName}">${emp.initials || mName.substring(0,2).toUpperCase()}</div>`;
                                     }).join('')}
                                     ${p.teamMembers.length > 4 ? `<span style="font-size: 10.5px; color: #64748b; font-weight: 700; margin-left: 2px;">+${p.teamMembers.length - 4}</span>` : ''}
                                 </div>
@@ -3447,11 +3571,17 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <div>
                             <div class="project-card-meta">
                                 <span><i class="fas fa-user-circle"></i> ${p.pic}</span>
-                                <span class="project-deadline-pill"><i class="fas fa-calendar-alt"></i> ${p.deadline} (${p.daysLeft})</span>
+                                ${done ? `
+                                    <span class="project-deadline-pill" style="background: rgba(22, 163, 74, 0.12); color: #16a34a; font-weight: 700;">
+                                        <i class="fas fa-flag-checkered"></i> Selesai (${p.deadline})
+                                    </span>
+                                ` : `
+                                    <span class="project-deadline-pill"><i class="fas fa-calendar-alt"></i> ${p.deadline} (${p.daysLeft})</span>
+                                `}
                             </div>
 
-                            <button class="btn-view-flow" onclick="event.stopPropagation(); openFlowModal(${p.id})">
-                                <i class="fas fa-sitemap"></i> Buka Flow & Detail Progres
+                            <button class="btn-view-flow" style="${done ? 'border-color: #16a34a; color: #16a34a; background: rgba(22, 163, 74, 0.05);' : ''}" onclick="event.stopPropagation(); openFlowModal(${p.id})">
+                                <i class="fas ${done ? 'fa-check-circle' : 'fa-sitemap'}"></i> ${done ? 'Buka Arsip & Hasil Akhir' : 'Buka Flow & Detail Progres'}
                             </button>
                         </div>
                     </div>
@@ -3459,10 +3589,15 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             }).join('');
         }
 
-        function filterProjects(urgency, btn) {
-            currentProjectFilter = urgency;
+        function filterProjects(filterVal, btn) {
+            currentProjectFilter = filterVal;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
+            if (btn) {
+                btn.classList.add('active');
+            } else {
+                const targetBtn = document.querySelector(`.tab-btn[data-filter='${filterVal}']`);
+                if (targetBtn) targetBtn.classList.add('active');
+            }
             renderProjectsList();
         }
 
@@ -3679,10 +3814,11 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             urgencyBadge.innerText = 'Urgensi ' + project.urgency;
             urgencyBadge.className = 'urgency-badge ' + (project.urgency === 'Tinggi' ? 'high' : (project.urgency === 'Sedang' ? 'med' : 'low'));
 
+            const isFinished = isProjectCompleted(project);
             const statusBadge = document.getElementById('modal-project-status');
-            statusBadge.innerText = project.status;
-            statusBadge.style.background = project.status === 'Finished' ? '#dcfce7' : 'rgba(2, 132, 199, 0.12)';
-            statusBadge.style.color = project.status === 'Finished' ? '#166534' : '#0284c7';
+            statusBadge.innerText = isFinished ? 'Sudah Selesai (100%)' : (project.status || 'In Progress');
+            statusBadge.style.background = isFinished ? '#dcfce7' : 'rgba(2, 132, 199, 0.12)';
+            statusBadge.style.color = isFinished ? '#166534' : '#0284c7';
 
             document.getElementById('modal-meta-deadline').innerText = `${project.deadline} (${project.daysLeft})`;
             document.getElementById('modal-meta-pic').innerText = project.pic;
@@ -3979,6 +4115,43 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 selectModalStep(Math.min(currentIndex + 1, project.flow.length - 1));
                 renderProjectsList();
                 renderMonitorBoard();
+            }
+        }
+
+        function markProjectCompletedQuick() {
+            const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
+            if (!project) return;
+            
+            if (confirm(`Tandai proyek "${project.name}" sebagai SELESAI (100%)?\nSeluruh tahapan dan checklist kegiatan akan ditandai tuntas.`)) {
+                project.status = 'Completed';
+                project.progress = 100;
+                project.daysLeft = 'Selesai';
+                project.flow.forEach(st => {
+                    st.status = 'completed';
+                    if (st.tasks) st.tasks.forEach(t => t[1] = true);
+                });
+                
+                if (!project.comments) project.comments = [];
+                const author = (document.getElementById('comment-author-select') && document.getElementById('comment-author-select').value) || 'Admin SMTI';
+                const now = new Date();
+                const timeStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' + 
+                                now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                project.comments.push({
+                    id: Date.now(),
+                    author: author,
+                    role: "PIC / Admin SMTI",
+                    time: timeStr,
+                    tag: "done",
+                    text: `✅ Proyek telah resmi ditandai selesai 100%. Seluruh tahapan kegiatan dan checklist verifikasi telah tuntas dilaksanakan.`
+                });
+
+                saveProjectsData();
+                renderModalStepper(project);
+                selectModalStep(project.flow.length - 1);
+                renderCommentsList(project);
+                renderProjectsList();
+                renderMonitorBoard();
+                alert(`Selamat! Proyek "${project.name}" berhasil ditandai selesai 100%!`);
             }
         }
 
