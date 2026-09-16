@@ -1162,6 +1162,120 @@
         /* =========================================================
            KOMENTAR & CATATAN PENGGUNA / TIM (DISCUSSION FEED)
            ========================================================= */
+        /* Tim Proyek & Member Invite */
+        .project-team-section {
+            background: var(--hover-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .team-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .team-bar-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .team-avatars-list {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .team-member-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 3px 10px 3px 4px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .team-avatar-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .team-member-remove {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 11px;
+            padding: 2px 4px;
+            margin-left: 2px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .team-member-remove:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .btn-invite-team {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .btn-invite-team:hover {
+            background: #0284c7;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+
+        /* Progress Chat Tags */
+        .progress-chat-tag {
+            font-size: 10.5px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        .tag-progress { background: rgba(2, 132, 199, 0.12); color: #0284c7; border: 1px solid rgba(2, 132, 199, 0.3); }
+        .tag-done { background: rgba(22, 163, 74, 0.12); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.3); }
+        .tag-issue { background: rgba(220, 38, 38, 0.12); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.3); }
+        .tag-note { background: rgba(217, 119, 6, 0.12); color: #d97706; border: 1px solid rgba(217, 119, 6, 0.3); }
+
         .comments-section {
             background: var(--hover-color);
             border: 1px solid var(--border-color);
@@ -1913,6 +2027,19 @@
                     </div>
                 </div>
 
+                <!-- Tim & Karyawan Ter-invite ke Proyek -->
+                <div class="project-team-section">
+                    <div class="team-bar-left">
+                        <span class="team-bar-label"><i class="fas fa-users"></i> Tim Proyek & Karyawan Ter-invite (<span id="modal-team-count">0</span>):</span>
+                        <div class="team-avatars-list" id="modal-team-avatars-list">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-invite-team" onclick="openInviteTeamModal()">
+                        <i class="fas fa-user-plus"></i> + Undang Karyawan SMTI
+                    </button>
+                </div>
+
                 <!-- Stepper Diagram Alur Kerja -->
                 <div class="flow-stepper-container">
                     <div class="flow-stepper-title">
@@ -1969,25 +2096,51 @@
                 </div>
 
                 <!-- =========================================================
-                     KOMENTAR / PESAN TIM & USER
+                     FORUM CHAT & KETERANGAN PROGRES TIM PROYEK SMTI
                      ========================================================= -->
                 <div class="comments-section">
                     <div class="comments-header">
-                        <h4><i class="fas fa-comments" style="color: #0284c7;"></i> Catatan & Komentar Pengguna / Tim SMTI</h4>
-                        <small style="color: #64748b;" id="comments-count-badge">0 Komentar</small>
+                        <div>
+                            <h4><i class="fas fa-comments" style="color: #0284c7;"></i> Chat & Keterangan Progres Tim Proyek</h4>
+                            <small style="color: #64748b;">Karyawan ter-invite dapat mengirim laporan progres, kendala, atau diskusi tahapan di bawah.</small>
+                        </div>
+                        <span class="comments-count-badge" id="comments-count-badge" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 11px;">0 Pesan</span>
                     </div>
 
-                    <!-- Feed Komentar -->
+                    <!-- Feed Komentar / Chat Progres -->
                     <div class="comments-list" id="modal-comments-list">
                         <!-- Rendered by JS -->
                     </div>
 
-                    <!-- Form Tambah Komentar -->
-                    <form class="comment-form" onsubmit="event.preventDefault(); addNewComment();">
-                        <input type="text" id="new-comment-input" class="comment-input" placeholder="Tulis catatan, instruksi, atau update progres untuk user lain...">
-                        <button type="submit" class="btn" style="background: #0284c7;">
-                            <i class="fas fa-paper-plane"></i> Kirim
-                        </button>
+                    <!-- Form Tambah Chat / Keterangan Progres -->
+                    <form class="progress-chat-form" onsubmit="event.preventDefault(); addNewComment();">
+                        <div style="display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 180px;">
+                                <label style="font-size: 11px; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">
+                                    <i class="fas fa-user-check"></i> Kirim Sebagai (Karyawan SMTI):
+                                </label>
+                                <select id="comment-author-select" class="chat-select" style="width: 100%; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); color: var(--text-color); font-size: 12px; font-weight: 600; outline: none;">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 180px;">
+                                <label style="font-size: 11px; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">
+                                    <i class="fas fa-tag"></i> Jenis Keterangan:
+                                </label>
+                                <select id="comment-tag-select" class="chat-select" style="width: 100%; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); color: var(--text-color); font-size: 12px; font-weight: 600; outline: none;">
+                                    <option value="progress">🚀 Update Progres Kerja</option>
+                                    <option value="done">✅ Tahap / Checklist Selesai</option>
+                                    <option value="issue">⚠️ Kendala / Hambatan</option>
+                                    <option value="note">📌 Catatan / Koordinasi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: flex-end;">
+                            <textarea id="new-comment-input" rows="2" class="comment-textarea" placeholder="Tulis rincian progres sudah sampai mana, pencapaian tugas, atau kendala..." style="flex: 1; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-color); font-size: 12.5px; outline: none; resize: none;"></textarea>
+                            <button type="submit" class="btn" style="background: #0284c7; height: 50px; padding: 0 18px; font-weight: 700; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+                                <i class="fas fa-paper-plane"></i> Kirim Chat
+                            </button>
+                        </div>
                     </form>
                 </div>
 
@@ -2070,6 +2223,13 @@
                 </div>
 
                 <div class="form-group">
+                    <label><i class="fas fa-user-plus"></i> Undang Anggota Tim Karyawan SMTI:</label>
+                    <div id="new-proj-team-select" style="display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 8px; max-height: 120px; overflow-y: auto;">
+                        <!-- Checkboxes for all SMTI employees -->
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label><i class="fas fa-sitemap"></i> Template Alur Kerja</label>
                     <select id="new-proj-template" onchange="onTemplateChange(this.value)">
                         <option value="MIKU">Template MIKU (5 Tahap: Sosialisasi, Seleksi Ide, Prototyping, Coaching, Final Pitching)</option>
@@ -2136,6 +2296,22 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
         /* =========================================================
+           DATA MASTER KARYAWAN SMTI & TIM PROYEK
+           ========================================================= */
+        const SMTI_EMPLOYEES = [
+            { name: "Henisya Permata Sari", role: "VP SMTI", color: "#8b5cf6", initials: "HP" },
+            { name: "Mochamad Januardi", role: "Officer Inovasi", color: "#3b82f6", initials: "MJ" },
+            { name: "Septian", role: "Officer Digitalisasi", color: "#06b6d4", initials: "SP" },
+            { name: "Dion Ridwan Giartomi", role: "Officer Audit SMT", color: "#10b981", initials: "DR" },
+            { name: "Wahyu Sukmawati", role: "VP PMSMT", color: "#ec4899", initials: "WS" },
+            { name: "Nopiyanti", role: "Officer PMSMT", color: "#f59e0b", initials: "NP" },
+            { name: "Putri Yunikeu", role: "Officer Standardisasi", color: "#14b8a6", initials: "PY" },
+            { name: "Ari Citra Hermawan", role: "Officer Paten & HAKI", color: "#6366f1", initials: "AC" },
+            { name: "Yayan Sopyan", role: "Officer 5R & Mutu", color: "#84cc16", initials: "YS" },
+            { name: "Yunni Kusriwanti", role: "Officer Administrasi Inovasi", color: "#f97316", initials: "YK" }
+        ];
+
+        /* =========================================================
            DATA MASTER PROYEK (Dengan Default & LocalStorage Persistence)
            ========================================================= */
         const defaultProjectDataSMTI = [
@@ -2143,6 +2319,7 @@
                 id: 1,
                 name: "KIX - Prototyping and Pitch Preparation",
                 category: "MIKU",
+                teamMembers: ["Mochamad Januardi", "Henisya Permata Sari", "Yunni Kusriwanti"],
                 urgency: "Tinggi",
                 status: "In Progress",
                 progress: 27,
@@ -2167,6 +2344,7 @@
                 id: 2,
                 name: "Digitalisasi & Value Creation Pabrik (HUT PKC)",
                 category: "MIKU",
+                teamMembers: ["Septian", "Henisya Permata Sari"],
                 urgency: "Tinggi",
                 status: "In Progress",
                 progress: 65,
@@ -2190,6 +2368,7 @@
                 id: 3,
                 name: "Audit Eksternal ISO 27001 & SMT (Sistem Manajemen Terintegrasi)",
                 category: "PMSMT",
+                teamMembers: ["Dion Ridwan Giartomi", "Wahyu Sukmawati"],
                 urgency: "Tinggi",
                 status: "In Progress",
                 progress: 80,
@@ -2213,6 +2392,7 @@
                 id: 4,
                 name: "ICCOSH (Indonesian Conference & Competition OSH) Yogyakarta",
                 category: "PMSMT",
+                teamMembers: ["Nopiyanti", "Yayan Sopyan", "Wahyu Sukmawati"],
                 urgency: "Sedang",
                 status: "In Progress",
                 progress: 45,
@@ -2236,6 +2416,7 @@
                 id: 5,
                 name: "Pengelolaan & Pendaftaran Paten Inovasi (Plantastic & TJSL)",
                 category: "MIKU",
+                teamMembers: ["Ari Citra Hermawan", "Putri Yunikeu"],
                 urgency: "Sedang",
                 status: "In Progress",
                 progress: 70,
@@ -2259,6 +2440,7 @@
                 id: 6,
                 name: "CIAS (Corporate Innovation Asia) - Training EBITDA Inovator",
                 category: "MIKU",
+                teamMembers: ["Mochamad Januardi", "Septian", "Yunni Kusriwanti"],
                 urgency: "Sedang",
                 status: "Planning",
                 progress: 35,
@@ -2280,6 +2462,7 @@
                 id: 7,
                 name: "Sosialisasi & Penilaian 5R Seluruh Unit Kerja",
                 category: "PMSMT",
+                teamMembers: ["Yayan Sopyan", "Nopiyanti"],
                 urgency: "Rendah",
                 status: "In Progress",
                 progress: 50,
@@ -2301,6 +2484,7 @@
                 id: 8,
                 name: "Pengurusan SNI Mitra Binaan & Rapat Single Branding PI",
                 category: "Pengembangan Sistem dan Prosedur",
+                teamMembers: ["Putri Yunikeu", "Wahyu Sukmawati"],
                 urgency: "Rendah",
                 status: "In Progress",
                 progress: 40,
@@ -2628,6 +2812,18 @@
                                     ${miniStepsHtml}
                                 </div>
                             </div>
+
+                            <!-- Team Avatars Stack Preview -->
+                            ${(p.teamMembers && p.teamMembers.length > 0) ? `
+                                <div style="display: flex; align-items: center; gap: 5px; margin-top: 10px; margin-bottom: 4px;">
+                                    <span style="font-size: 11px; color: #64748b; font-weight: 700; margin-right: 4px;"><i class="fas fa-users"></i> Tim:</span>
+                                    ${p.teamMembers.slice(0, 4).map(mName => {
+                                        const emp = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === mName.toLowerCase()) || { name: mName, initials: mName.substring(0,2).toUpperCase(), color: '#0284c7' };
+                                        return `<div class="team-avatar-circle" style="background: ${emp.color}; width: 22px; height: 22px; font-size: 9.5px;" title="${mName}">${emp.initials}</div>`;
+                                    }).join('')}
+                                    ${p.teamMembers.length > 4 ? `<span style="font-size: 10.5px; color: #64748b; font-weight: 700; margin-left: 2px;">+${p.teamMembers.length - 4}</span>` : ''}
+                                </div>
+                            ` : ''}
                         </div>
 
                         <div>
@@ -2882,7 +3078,11 @@
             const activeIndex = project.flow.findIndex(st => st.status === 'active');
             selectModalStep(activeIndex !== -1 ? activeIndex : 0);
 
-            // Render Comments
+            // Render Tim Proyek & Author Select
+            renderProjectTeam(project);
+            populateChatAuthorSelect(project);
+
+            // Render Comments / Progress Chat
             renderComments(project);
 
             document.getElementById('flowModal').classList.add('active');
@@ -3200,48 +3400,226 @@
         }
 
         /* =========================================================
-           KOMENTAR & CATATAN TIM SMTI / USER
+           MANAJEMEN TIM PROYEK, INVITE KARYAWAN & CHAT PROGRES
            ========================================================= */
+        function renderProjectTeam(project) {
+            const container = document.getElementById('modal-team-avatars-list');
+            const countBadge = document.getElementById('modal-team-count');
+            if (!container) return;
+
+            if (!project.teamMembers) {
+                project.teamMembers = [];
+            }
+
+            if (countBadge) countBadge.innerText = project.teamMembers.length;
+
+            if (project.teamMembers.length === 0) {
+                container.innerHTML = `
+                    <span style="font-size: 12px; color: #94a3b8; font-style: italic;">
+                        Belum ada karyawan ter-invite. Klik "+ Undang Karyawan SMTI" di samping.
+                    </span>
+                `;
+                return;
+            }
+
+            container.innerHTML = project.teamMembers.map(name => {
+                const emp = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === name.toLowerCase()) || {
+                    name: name,
+                    role: "Anggota Tim",
+                    initials: name.substring(0, 2).toUpperCase(),
+                    color: "#0284c7"
+                };
+                return `
+                    <div class="team-member-pill" title="${emp.name} (${emp.role})">
+                        <div class="team-avatar-circle" style="background: ${emp.color};">
+                            ${emp.initials}
+                        </div>
+                        <span>${emp.name}</span>
+                        <button type="button" class="team-member-remove" onclick="removeMemberFromProject('${emp.name.replace(/'/g, "\\'")}')" title="Keluarkan dari tim proyek">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openInviteTeamModal() {
+            const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
+            if (!project) return;
+            if (!project.teamMembers) project.teamMembers = [];
+
+            const list = document.getElementById('invite-employees-list');
+            if (!list) return;
+
+            list.innerHTML = SMTI_EMPLOYEES.map(emp => {
+                const isInvited = project.teamMembers.some(m => m.toLowerCase() === emp.name.toLowerCase());
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-color); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="team-avatar-circle" style="background: ${emp.color}; width: 32px; height: 32px; font-size: 12px;">
+                                ${emp.initials}
+                            </div>
+                            <div>
+                                <strong style="font-size: 13px; color: var(--text-color);">${emp.name}</strong>
+                                <div style="font-size: 11px; color: #64748b;">${emp.role}</div>
+                            </div>
+                        </div>
+                        <div>
+                            ${isInvited ? `
+                                <button type="button" class="btn btn-sm" style="background: rgba(22, 163, 74, 0.15); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.3); font-weight: 700;" onclick="toggleInviteEmployee('${emp.name.replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-check"></i> Ter-invite
+                                </button>
+                            ` : `
+                                <button type="button" class="btn btn-sm" style="background: #0284c7; font-weight: 700;" onclick="toggleInviteEmployee('${emp.name.replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-user-plus"></i> + Undang
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('modalInviteMember').style.display = 'flex';
+        }
+
+        function closeInviteMemberModal() {
+            document.getElementById('modalInviteMember').style.display = 'none';
+        }
+
+        function toggleInviteEmployee(empName) {
+            const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
+            if (!project) return;
+            if (!project.teamMembers) project.teamMembers = [];
+
+            const idx = project.teamMembers.findIndex(m => m.toLowerCase() === empName.toLowerCase());
+            if (idx !== -1) {
+                project.teamMembers.splice(idx, 1);
+            } else {
+                project.teamMembers.push(empName);
+            }
+
+            saveProjectsData();
+            renderProjectTeam(project);
+            populateChatAuthorSelect(project);
+            renderProjectsList();
+            renderMonitorBoard();
+            openInviteTeamModal(); // Refresh list view
+        }
+
+        function removeMemberFromProject(empName) {
+            const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
+            if (!project || !project.teamMembers) return;
+
+            project.teamMembers = project.teamMembers.filter(m => m.toLowerCase() !== empName.toLowerCase());
+            saveProjectsData();
+            renderProjectTeam(project);
+            populateChatAuthorSelect(project);
+            renderProjectsList();
+            renderMonitorBoard();
+        }
+
+        function populateChatAuthorSelect(project) {
+            const select = document.getElementById('comment-author-select');
+            if (!select) return;
+
+            const invited = project.teamMembers || [];
+            let optionsHtml = '';
+
+            if (invited.length > 0) {
+                optionsHtml += `<optgroup label="🌟 Anggota Ter-invite ke Proyek">`;
+                invited.forEach(mName => {
+                    const emp = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === mName.toLowerCase()) || { name: mName, role: "Anggota Tim" };
+                    optionsHtml += `<option value="${emp.name}">${emp.name} (${emp.role})</option>`;
+                });
+                optionsHtml += `</optgroup>`;
+            }
+
+            const others = SMTI_EMPLOYEES.filter(e => !invited.some(m => m.toLowerCase() === e.name.toLowerCase()));
+            if (others.length > 0) {
+                optionsHtml += `<optgroup label="Karyawan SMTI Lainnya">`;
+                others.forEach(emp => {
+                    optionsHtml += `<option value="${emp.name}">${emp.name} (${emp.role})</option>`;
+                });
+                optionsHtml += `</optgroup>`;
+            }
+
+            select.innerHTML = optionsHtml;
+        }
+
+        function populateNewProjectMemberCheckboxes() {
+            const container = document.getElementById('new-proj-team-select');
+            if (!container) return;
+
+            container.innerHTML = SMTI_EMPLOYEES.map(emp => `
+                <label style="display: flex; align-items: center; gap: 6px; background: var(--card-bg); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 16px; font-size: 11.5px; cursor: pointer;">
+                    <input type="checkbox" value="${emp.name}" class="new-proj-member-check">
+                    <span style="font-weight: 600;">${emp.name}</span>
+                </label>
+            `).join('');
+        }
+
         function renderComments(project) {
             const list = document.getElementById('modal-comments-list');
             const countBadge = document.getElementById('comments-count-badge');
             if (!list) return;
 
             if (!project.comments) project.comments = [];
-            countBadge.innerText = `${project.comments.length} Catatan`;
+            if (countBadge) countBadge.innerText = `${project.comments.length} Keterangan / Chat`;
 
             if (project.comments.length === 0) {
                 list.innerHTML = `
-                    <div style="padding: 16px; text-align: center; color: #94a3b8; font-size: 12px;">
-                        <i class="fas fa-comment-dots" style="font-size: 20px; margin-bottom: 6px; display: block;"></i>
-                        Belum ada pesan/komentar dari tim. Tulis pesan pertama Anda di bawah.
+                    <div style="padding: 24px; text-align: center; color: #94a3b8; font-size: 12.5px;">
+                        <i class="fas fa-comments" style="font-size: 26px; margin-bottom: 8px; display: block; opacity: 0.4;"></i>
+                        Belum ada riwayat pesan atau laporan progres tim. Kirim keterangan progres pertama Anda di bawah!
                     </div>
                 `;
                 return;
             }
 
-            list.innerHTML = project.comments.map(c => `
-                <div class="comment-item">
-                    <div class="comment-top">
-                        <span class="comment-author-badge">
-                            <i class="fas fa-user-circle"></i> ${c.author} <small style="color: #64748b;">(${c.role})</small>
-                        </span>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="comment-time"><i class="fas fa-clock"></i> ${c.time}</span>
-                            <button class="task-delete-btn" onclick="deleteComment(${c.id})" title="Hapus catatan ini">
-                                <i class="fas fa-times"></i>
-                            </button>
+            list.innerHTML = project.comments.map(c => {
+                const emp = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === (c.author || '').toLowerCase()) || {
+                    name: c.author || 'User SMTI',
+                    role: c.role || "Anggota Tim",
+                    initials: (c.author || 'US').substring(0, 2).toUpperCase(),
+                    color: c.color || "#0284c7"
+                };
+
+                const tagClass = c.tag || 'progress';
+                const tagLabel = c.tagLabel || (tagClass === 'done' ? '✅ Tahap Selesai' : (tagClass === 'issue' ? '⚠️ Kendala' : (tagClass === 'note' ? '📌 Catatan' : '🚀 Update Progres')));
+
+                return `
+                    <div class="comment-item">
+                        <div class="comment-top">
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <div class="team-avatar-circle" style="background: ${emp.color}; width: 26px; height: 26px; font-size: 10px;">
+                                    ${emp.initials}
+                                </div>
+                                <div>
+                                    <strong style="font-size: 12.5px; color: var(--text-color);">${c.author}</strong>
+                                    <span style="font-size: 11px; color: #64748b; margin-left: 4px;">• ${c.role || emp.role}</span>
+                                </div>
+                                <span class="progress-chat-tag tag-${tagClass}">${tagLabel}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="comment-time"><i class="fas fa-clock"></i> ${c.time}</span>
+                                <button class="task-delete-btn" onclick="deleteComment(${c.id})" title="Hapus pesan ini">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
                         </div>
+                        <div class="comment-text" style="padding-left: 34px; margin-top: 5px; white-space: pre-wrap;">${c.text}</div>
                     </div>
-                    <div class="comment-text">${c.text}</div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             list.scrollTop = list.scrollHeight;
         }
 
         function addNewComment() {
             const input = document.getElementById('new-comment-input');
+            const authorSelect = document.getElementById('comment-author-select');
+            const tagSelect = document.getElementById('comment-tag-select');
+
             const text = input.value.trim();
             if (!text) {
                 input.focus();
@@ -3253,13 +3631,28 @@
 
             if (!project.comments) project.comments = [];
 
+            const authorName = authorSelect ? authorSelect.value : "Karyawan SMTI";
+            const emp = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === authorName.toLowerCase()) || { name: authorName, role: "Officer SMTI", color: "#0284c7", initials: "SM" };
+            const tag = tagSelect ? tagSelect.value : "progress";
+
+            const tagLabels = {
+                progress: "🚀 Update Progres",
+                done: "✅ Tahap Selesai",
+                issue: "⚠️ Kendala",
+                note: "📌 Catatan"
+            };
+
             const now = new Date();
             const timeStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ", " + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
 
             project.comments.push({
                 id: Date.now(),
-                author: "Admin SMTI",
-                role: "Administrator",
+                author: emp.name,
+                role: emp.role,
+                color: emp.color,
+                initials: emp.initials,
+                tag: tag,
+                tagLabel: tagLabels[tag] || "Update Progres",
                 time: timeStr,
                 text: text
             });
@@ -3398,6 +3791,7 @@
             d.setDate(d.getDate() + 30);
             document.getElementById('new-proj-deadline').value = d.toISOString().split('T')[0];
             onTemplateChange('MIKU');
+            populateNewProjectMemberCheckboxes();
             document.getElementById('modalTambahProyek').style.display = 'flex';
         }
 
@@ -3444,6 +3838,12 @@
                 };
             });
 
+            // Collect invited team members
+            const checkedMembers = Array.from(document.querySelectorAll('.new-proj-member-check:checked')).map(cb => cb.value);
+            if (checkedMembers.length === 0 && pic) {
+                checkedMembers.push(pic.split('/')[0].trim());
+            }
+
             const newProject = {
                 id: Date.now(),
                 name: name,
@@ -3454,6 +3854,7 @@
                 deadline: deadlineStr,
                 daysLeft: daysLeft,
                 pic: pic,
+                teamMembers: checkedMembers,
                 description: desc,
                 alertNote: alertNote,
                 comments: [
@@ -3661,5 +4062,27 @@
             }
         }
     </script>
+    <!-- =========================================================
+         MODAL UNDANG ANGGOTA TIM KARYAWAN SMTI KE PROYEK
+         ========================================================= -->
+    <div id="modalInviteMember" class="modal" style="display: none; z-index: 100005;">
+        <div class="modal-content" style="width: 520px; max-width: 95%;">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus" style="color: #0284c7;"></i> Undang Karyawan SMTI ke Proyek</h3>
+                <span class="close-modal" onclick="closeInviteMemberModal()">&times;</span>
+            </div>
+            <div style="padding: 16px 20px;">
+                <p style="font-size: 12.5px; color: #64748b; margin-bottom: 14px;">
+                    Pilih personil SMTI untuk diundang dan dilibatkan dalam tim proyek ini. Karyawan yang ter-invite dapat mengisi laporan progres, mencentang checklist, dan berdiskusi di chat proyek.
+                </p>
+                <div id="invite-employees-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 340px; overflow-y: auto; padding-right: 4px;">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+            <div style="padding: 12px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end;">
+                <button type="button" class="btn" style="background: #0284c7;" onclick="closeInviteMemberModal()">Selesai</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
