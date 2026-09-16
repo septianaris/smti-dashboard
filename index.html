@@ -212,7 +212,8 @@
         .close-modal { cursor: pointer; font-size: 20px; color: #888; }
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; font-size: 12px; font-weight: 600; opacity: 0.8; margin-bottom: 5px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; background: var(--card-bg); color: var(--text-color); outline: none; }
+        .form-group input:not([type="checkbox"]):not([type="radio"]), .form-group select, .form-group textarea { width: 100%; padding: 9px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; background: var(--card-bg); color: var(--text-color); outline: none; }
+        input[type="checkbox"], input[type="radio"] { width: auto !important; min-width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
 
         /* Settings & FAQ */
         .setting-group { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-color); }
@@ -4700,11 +4701,13 @@
                 step.tasks = normalizedTasks;
 
                 const tasksHtml = normalizedTasks.map((task, tIdx) => `
-                    <div style="display: flex; align-items: center; gap: 8px; background: var(--hover-color); padding: 5px 8px; border-radius: 5px; border: 1px solid var(--border-color);">
-                        <input type="checkbox" ${task.selected ? 'checked' : ''} onchange="toggleCustomTaskSelection(${idx}, ${tIdx}, this.checked)" title="Pilih kegiatan ini untuk disertakan dalam alur proyek" style="cursor: pointer;">
-                        <input type="text" value="${(task.text || '').replace(/"/g, '&quot;')}" oninput="customStepsState[${idx}].tasks[${tIdx}].text = this.value" placeholder="Nama kegiatan / dokumen syarat..." style="flex: 1; border: none; background: transparent; font-size: 12px; color: var(--text-color); outline: none;">
-                        <button type="button" onclick="removeCustomTaskFromStep(${idx}, ${tIdx})" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 3px; font-size: 12px;" title="Hapus kegiatan ini">
-                            <i class="fas fa-times"></i>
+                    <div style="display: flex; align-items: center; gap: 8px; background: var(--card-bg); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 5px;">
+                        <span style="font-size: 11px; font-weight: 700; color: #16a34a; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+                            <i class="fas fa-clipboard-check"></i> Tugas ${tIdx + 1}:
+                        </span>
+                        <input type="text" value="${(task.text || '').replace(/"/g, '&quot;')}" oninput="customStepsState[${idx}].tasks[${tIdx}].text = this.value" placeholder="Ketik judul kegiatan / checklist tugas..." style="flex: 1; min-width: 180px; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: var(--bg-color); color: var(--text-color); outline: none; width: auto;">
+                        <button type="button" onclick="removeCustomTaskFromStep(${idx}, ${tIdx})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 4px 6px; font-size: 12px;" title="Hapus kegiatan ini">
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
                 `).join('');
@@ -4910,8 +4913,9 @@
             // Construct flow from the user's customized steps WITH connected checklist tasks
             const flow = customStepsState.map((st, i) => {
                 const stageTasks = (st.tasks || [])
-                    .filter(t => t.selected !== false && t.text && t.text.trim())
-                    .map(t => [t.text.trim(), false]);
+                    .map(t => typeof t === 'string' ? t.trim() : (t.text || '').trim())
+                    .filter(txt => txt.length > 0)
+                    .map(txt => [txt, false]);
                 
                 if (stageTasks.length === 0) {
                     stageTasks.push([`Persiapan dan verifikasi dokumen tahap ${i + 1}`, false]);
