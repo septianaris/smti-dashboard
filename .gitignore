@@ -1,4 +1,5 @@
 ﻿.vercel
+.vercel_token
 __pycache__/
 *.pyc
 *.log
