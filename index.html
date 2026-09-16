@@ -3772,11 +3772,216 @@
 
 
         /* =========================================================
-           FITUR TAMBAH PROYEK (ALUR KERJA MANUAL & TEMPLATE REUSABLE)
+           FITUR TAMBAH PROYEK (ALUR KERJA & CHECKLIST KEGIATAN TERKONEKSI)
            ========================================================= */
         let currentCategoryFilter = "semua";
         let customStepsState = [];
         let userSavedWorkflowTemplates = [];
+
+        // Master Template Bawaan SMTI dengan Checklist Kegiatan Lengkap
+        const standardWorkflowTemplates = {
+            MIKU: {
+                id: "MIKU",
+                name: "Template MIKU (Manajemen Inovasi - 5 Tahap & Checklist Lengkap)",
+                steps: [
+                    {
+                        title: "Sosialisasi & Penjaringan Ide Inovasi",
+                        date: "Bulan 1",
+                        desc: "Sosialisasi panduan dan penjaringan ide dari gugus inovasi.",
+                        tasks: [
+                            { text: "Sosialisasi pedoman & format formulir inovasi", selected: true },
+                            { text: "Pendaftaran akun gugus inovasi di portal", selected: true },
+                            { text: "Pengumpulan berkas pendaftaran ide gagasan", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Seleksi & Verifikasi Ide Inovasi",
+                        date: "Bulan 2",
+                        desc: "Verifikasi orisinalitas ide dan kelayakan bisnis/teknis.",
+                        tasks: [
+                            { text: "Pengecekan orisinalitas & bebas plagiarisme", selected: true },
+                            { text: "Scoring kelayakan implementasi & value creation", selected: true },
+                            { text: "Pengumuman gugus lolos seleksi awal", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Pembuatan Prototype & Mockup",
+                        date: "Bulan 3",
+                        desc: "Pendampingan pembuatan prototipe fisik / sistem.",
+                        tasks: [
+                            { text: "Asistensi teknis pembuatan mock-up / prototype", selected: true },
+                            { text: "Uji fungsi & pengumpulan data performa awal", selected: true },
+                            { text: "Penyusunan laporan kemajuan inovasi", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Coaching & Pitch Preparation",
+                        date: "Bulan 4",
+                        desc: "Pelatihan pitching presentasi sebelum dewan juri.",
+                        tasks: [
+                            { text: "Review slide deck presentasi (maks 5 menit)", selected: true },
+                            { text: "Simulasi presentasi & gladi resik pitching", selected: true },
+                            { text: "Evaluasi catatan pembimbing teknis", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Final Pitching & Awarding",
+                        date: "Bulan 5",
+                        desc: "Presentasi akhir di hadapan dewan juri dan direksi.",
+                        tasks: [
+                            { text: "Pelaksanaan sesi pitch day resmi", selected: true },
+                            { text: "Penetapan ranking pemenang oleh dewan juri", selected: true },
+                            { text: "Serah terima rekomendasi komersialisasi / paten", selected: true }
+                        ]
+                    }
+                ]
+            },
+            PMSMT: {
+                id: "PMSMT",
+                name: "Template PMSMT (Audit & Sertifikasi ISO/SNI - 5 Tahap & Checklist Lengkap)",
+                steps: [
+                    {
+                        title: "Gap Analysis & Dokumen Standar",
+                        date: "Tahap 1",
+                        desc: "Pemetaan kesenjangan klausul standar dan pembaruan prosedur.",
+                        tasks: [
+                            { text: "Pemetaan klausul standar terhadap proses bisnis", selected: true },
+                            { text: "Revisi manual mutu, SOP, dan instruksi kerja", selected: true },
+                            { text: "Sosialisasi persyaratan standar ke unit kerja", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Pra-Audit & Penyisiran Internal",
+                        date: "Tahap 2",
+                        desc: "Pemeriksaan kesiapan di seluruh unit kerja pabrik.",
+                        tasks: [
+                            { text: "Pelaksanaan audit internal komprehensif", selected: true },
+                            { text: "Pencatatan daftar temuan ketidaksesuaian", selected: true },
+                            { text: "Rapat koordinasi pra-audit bersama pimpinan", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Audit Eksternal Lembaga Akreditasi",
+                        date: "Tahap 3",
+                        desc: "Audit resmi oleh badan sertifikasi independen.",
+                        tasks: [
+                            { text: "Opening meeting audit eksternal", selected: true },
+                            { text: "Penyediaan bukti dukung dokumen lapangan", selected: true },
+                            { text: "Closing meeting & penerimaan laporan temuan", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Tindak Lanjut Temuan (CAR)",
+                        date: "Tahap 4",
+                        desc: "Penyelesaian tindakan perbaikan terhadap temuan.",
+                        tasks: [
+                            { text: "Analisis akar masalah (Root Cause Analysis)", selected: true },
+                            { text: "Pelaksanaan tindakan koreksi & preventif", selected: true },
+                            { text: "Verifikasi internal closing temuan CAR", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Penerbitan Sertifikat & Evaluasi",
+                        date: "Tahap 5",
+                        desc: "Penerbitan sertifikat akreditasi resmi KAN.",
+                        tasks: [
+                            { text: "Submit laporan verifikasi closing ke auditor", selected: true },
+                            { text: "Penerbitan sertifikat akreditasi resmi", selected: true },
+                            { text: "Evaluasi efektivitas sistem manajemen mutu", selected: true }
+                        ]
+                    }
+                ]
+            },
+            PSP: {
+                id: "PSP",
+                name: "Template PSP (Pengembangan Sistem & SOP - 5 Tahap & Checklist Lengkap)",
+                steps: [
+                    {
+                        title: "Identifikasi Kebutuhan Prosedur",
+                        date: "Tahap 1",
+                        desc: "Inventarisasi proses bisnis dan usulan SOP/IK.",
+                        tasks: [
+                            { text: "Pemetaan alur proses bisnis lintas unit", selected: true },
+                            { text: "Inventarisasi usulan dokumen prosedur baru", selected: true },
+                            { text: "Penetapan penanggung jawab penyusun draft", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Drafting & Konsultasi Stakeholder",
+                        date: "Tahap 2",
+                        desc: "Penyusunan draft prosedur bersama pengguna terkait.",
+                        tasks: [
+                            { text: "Penyusunan draft SOP & form pendukung", selected: true },
+                            { text: "Focus Group Discussion (FGD) penyelarasan", selected: true },
+                            { text: "Verifikasi keselarasan regulasi & aspek K3", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Simulasi & Uji Coba Lapangan",
+                        date: "Tahap 3",
+                        desc: "Uji coba penerapan prosedur di pabrik/kantor.",
+                        tasks: [
+                            { text: "Simulasi penerapan prosedur di area kerja", selected: true },
+                            { text: "Pencatatan kendala dan feedback lapangan", selected: true },
+                            { text: "Penyempurnaan draft akhir SOP", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Review & Pengesahan Manajemen",
+                        date: "Tahap 4",
+                        desc: "Pemeriksaan format dan penandatanganan pimpinan.",
+                        tasks: [
+                            { text: "Review legalitas & tata naskah dinas SMTI", selected: true },
+                            { text: "Sirkulasi lembar persetujuan VP & Direksi", selected: true },
+                            { text: "Penandatanganan resmi dokumen SOP", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Penerbitan & Sosialisasi Resmi",
+                        date: "Tahap 5",
+                        desc: "Upload ke portal SMTI dan sosialisasi pengguna.",
+                        tasks: [
+                            { text: "Pemberian kode dokumen & upload portal SMTI", selected: true },
+                            { text: "Sosialisasi dan edukasi ke seluruh staf unit", selected: true },
+                            { text: "Monitoring berkala kepatuhan implementasi", selected: true }
+                        ]
+                    }
+                ]
+            },
+            manual: {
+                id: "__manual__",
+                name: "➕ Alur Kerja Manual Baru (Tentukan Bebas)",
+                steps: [
+                    {
+                        title: "Tahap 1: Inisiasi & Persiapan Lapangan",
+                        date: "Bulan 1",
+                        desc: "Pelaksanaan tahapan awal.",
+                        tasks: [
+                            { text: "Penyusunan rencana kerja & jadwal kegiatan", selected: true },
+                            { text: "Koordinasi awal dengan tim lapangan", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Tahap 2: Eksekusi & Penerapan",
+                        date: "Bulan 2",
+                        desc: "Pelaksanaan tugas utama.",
+                        tasks: [
+                            { text: "Pelaksanaan tugas utama di lapangan", selected: true },
+                            { text: "Dokumentasi bukti kegiatan & verifikasi data", selected: true }
+                        ]
+                    },
+                    {
+                        title: "Tahap 3: Evaluasi & Serah Terima",
+                        date: "Bulan 3",
+                        desc: "Penyelesaian dan pelaporan.",
+                        tasks: [
+                            { text: "Evaluasi pencapaian hasil terhadap target", selected: true },
+                            { text: "Penyusunan laporan akhir & serah terima", selected: true }
+                        ]
+                    }
+                ]
+            }
+        };
 
         function loadUserSavedWorkflowTemplates() {
             try {
@@ -3800,14 +4005,21 @@
             }
         }
 
-        function populateWorkflowTemplateDropdown(selectedVal = '__manual__') {
+        function populateWorkflowTemplateDropdown(selectedVal = 'MIKU') {
             const select = document.getElementById('new-proj-template');
             if (!select) return;
 
-            let html = `<option value="__manual__">➕ Alur Kerja Manual Baru (Tentukan Bebas Sesuai Lapangan)</option>`;
+            let html = `
+                <optgroup label="📋 Template Standar Departemen SMTI">
+                    <option value="MIKU">Template MIKU (Manajemen Inovasi - 5 Tahap & Checklist)</option>
+                    <option value="PMSMT">Template PMSMT (Audit & Sertifikasi - 5 Tahap & Checklist)</option>
+                    <option value="PSP">Template PSP (Pengembangan SOP - 5 Tahap & Checklist)</option>
+                </optgroup>
+                <option value="__manual__">➕ Alur Kerja Manual Baru (Kustom Bebas)</option>
+            `;
 
             if (userSavedWorkflowTemplates && userSavedWorkflowTemplates.length > 0) {
-                html += `<optgroup label="⭐ Template Alur Tersimpan (${userSavedWorkflowTemplates.length} Template)">`;
+                html += `<optgroup label="⭐ Template Kustom Tersimpan (${userSavedWorkflowTemplates.length} Template)">`;
                 userSavedWorkflowTemplates.forEach(tpl => {
                     html += `<option value="${tpl.id}">${tpl.name} (${tpl.steps.length} Tahap)</option>`;
                 });
@@ -3824,39 +4036,39 @@
             const btnDel = document.getElementById('btn-del-custom-tpl');
             const hint = document.getElementById('tpl-desc-hint');
 
-            if (selectedVal !== '__manual__') {
+            if (selectedVal !== '__manual__' && !standardWorkflowTemplates[selectedVal]) {
                 const tpl = userSavedWorkflowTemplates.find(t => t.id == selectedVal);
                 if (tpl) {
                     if (btnDel) btnDel.style.display = 'inline-flex';
-                    if (hint) hint.innerHTML = `<span style="color: #10b981; font-weight: 600;"><i class="fas fa-check-circle"></i> Memuat template: "${tpl.name}".</span> Anda tetap bisa memodifikasi tahapan khusus untuk proyek ini.`;
+                    if (hint) hint.innerHTML = `<span style="color: #10b981; font-weight: 600;"><i class="fas fa-check-circle"></i> Memuat template tersimpan: "${tpl.name}".</span> Checklist kegiatan di bawah terhubung langsung ke proyek.`;
                     return;
                 }
             }
 
             if (btnDel) btnDel.style.display = 'none';
-            if (hint) hint.innerText = "Alur kerja bebas disusun manual sesuai fakta lapangan. Anda bisa menyimpannya sebagai template baru kapan saja.";
+
+            if (standardWorkflowTemplates[selectedVal]) {
+                if (hint) hint.innerHTML = `<span style="color: #0284c7; font-weight: 600;"><i class="fas fa-info-circle"></i> Memuat ${standardWorkflowTemplates[selectedVal].name}.</span> Anda dapat memilih, menambah, atau mengubah checklist kegiatan di setiap tahap.`;
+            } else {
+                if (hint) hint.innerText = "Alur kerja bebas disusun manual sesuai fakta lapangan. Checklist kegiatan dapat ditambah dan akan terkoneksi langsung ke proyek.";
+            }
         }
 
         function onTemplateSelectChange(val) {
-            if (val === '__manual__') {
-                // If switching to manual and steps are empty, initialize with 3 clean editable steps
-                if (!customStepsState || customStepsState.length === 0) {
-                    customStepsState = [
-                        { title: "Tahap 1: Inisiasi & Identifikasi Lapangan", date: "Bulan 1", desc: "Pelaksanaan tahapan awal." },
-                        { title: "Tahap 2: Eksekusi & Penerapan", date: "Bulan 2", desc: "Pelaksanaan tugas utama." },
-                        { title: "Tahap 3: Evaluasi & Serah Terima", date: "Bulan 3", desc: "Penyelesaian dan pelaporan." }
-                    ];
-                }
-                updateTemplateUiState('__manual__');
-                renderCustomStepsRows();
+            if (standardWorkflowTemplates[val]) {
+                customStepsState = JSON.parse(JSON.stringify(standardWorkflowTemplates[val].steps));
+            } else if (val === '__manual__') {
+                customStepsState = JSON.parse(JSON.stringify(standardWorkflowTemplates.manual.steps));
             } else {
                 const tpl = userSavedWorkflowTemplates.find(t => t.id == val);
                 if (tpl && tpl.steps) {
                     customStepsState = JSON.parse(JSON.stringify(tpl.steps));
-                    updateTemplateUiState(val);
-                    renderCustomStepsRows();
+                } else {
+                    customStepsState = JSON.parse(JSON.stringify(standardWorkflowTemplates.manual.steps));
                 }
             }
+            updateTemplateUiState(val);
+            renderCustomStepsRows();
         }
 
         function renderCustomStepsRows() {
@@ -3866,37 +4078,116 @@
             if (!customStepsState || customStepsState.length === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 12px; border: 1px dashed var(--border-color); border-radius: 6px;">
-                        Belum ada tahapan alur kerja. Klik tombol <strong>+ Tambah Tahap</strong> di atas untuk membuat tahapan sesuai fakta lapangan.
+                        Belum ada tahapan alur kerja. Klik tombol <strong>+ Tambah Tahap</strong> di atas untuk membuat tahapan.
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = customStepsState.map((step, idx) => `
-                <div style="display: flex; gap: 8px; align-items: center; background: var(--bg-color); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
-                    <div style="display: flex; flex-direction: column; gap: 2px;">
-                        <button type="button" onclick="moveCustomStepRow(${idx}, -1)" ${idx === 0 ? 'disabled style="opacity: 0.2; cursor: default;"' : 'style="cursor: pointer;"'} title="Pindahkan ke atas" style="background: none; border: none; font-size: 10px; color: var(--text-color); padding: 0 3px;">
-                            <i class="fas fa-chevron-up"></i>
-                        </button>
-                        <button type="button" onclick="moveCustomStepRow(${idx}, 1)" ${idx === customStepsState.length - 1 ? 'disabled style="opacity: 0.2; cursor: default;"' : 'style="cursor: pointer;"'} title="Pindahkan ke bawah" style="background: none; border: none; font-size: 10px; color: var(--text-color); padding: 0 3px;">
-                            <i class="fas fa-chevron-down"></i>
+            container.innerHTML = customStepsState.map((step, idx) => {
+                // Ensure tasks array exists and has proper objects
+                if (!step.tasks) {
+                    step.tasks = [];
+                }
+                const normalizedTasks = step.tasks.map(t => {
+                    if (typeof t === 'string') return { text: t, selected: true };
+                    if (Array.isArray(t)) return { text: t[0], selected: t[1] !== false };
+                    return { text: t.text || '', selected: t.selected !== false };
+                });
+                step.tasks = normalizedTasks;
+
+                const tasksHtml = normalizedTasks.map((task, tIdx) => `
+                    <div style="display: flex; align-items: center; gap: 8px; background: var(--hover-color); padding: 5px 8px; border-radius: 5px; border: 1px solid var(--border-color);">
+                        <input type="checkbox" ${task.selected ? 'checked' : ''} onchange="toggleCustomTaskSelection(${idx}, ${tIdx}, this.checked)" title="Pilih kegiatan ini untuk disertakan dalam alur proyek" style="cursor: pointer;">
+                        <input type="text" value="${(task.text || '').replace(/"/g, '&quot;')}" oninput="customStepsState[${idx}].tasks[${tIdx}].text = this.value" placeholder="Nama kegiatan / dokumen syarat..." style="flex: 1; border: none; background: transparent; font-size: 12px; color: var(--text-color); outline: none;">
+                        <button type="button" onclick="removeCustomTaskFromStep(${idx}, ${tIdx})" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 3px; font-size: 12px;" title="Hapus kegiatan ini">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <span style="font-size: 11px; font-weight: 700; width: 50px; color: var(--secondary-color); white-space: nowrap;">Tahap ${idx + 1}</span>
-                    <input type="text" value="${(step.title || '').replace(/"/g, '&quot;')}" oninput="customStepsState[${idx}].title = this.value" placeholder="Nama Tahap..." style="flex: 2; min-width: 140px; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: var(--card-bg); color: var(--text-color); outline: none;">
-                    <input type="text" value="${(step.date || '').replace(/"/g, '&quot;')}" oninput="customStepsState[${idx}].date = this.value" placeholder="Target waktu (misal: Bulan 1)..." style="flex: 1; min-width: 90px; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: var(--card-bg); color: var(--text-color); outline: none;">
-                    <button type="button" onclick="removeCustomStepRow(${idx})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 5px; font-size: 13px;" title="Hapus tahap ini">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
+                `).join('');
+
+                return `
+                <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 8px;">
+                    <!-- Step Header -->
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <button type="button" onclick="moveCustomStepRow(${idx}, -1)" ${idx === 0 ? 'disabled style="opacity: 0.2; cursor: default;"' : 'style="cursor: pointer;"'} title="Pindahkan ke atas" style="background: none; border: none; font-size: 10px; color: var(--text-color); padding: 0 3px;">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                            <button type="button" onclick="moveCustomStepRow(${idx}, 1)" ${idx === customStepsState.length - 1 ? 'disabled style="opacity: 0.2; cursor: default;"' : 'style="cursor: pointer;"'} title="Pindahkan ke bawah" style="background: none; border: none; font-size: 10px; color: var(--text-color); padding: 0 3px;">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <span style="font-size: 11px; font-weight: 700; width: 52px; color: var(--secondary-color); white-space: nowrap;">Tahap ${idx + 1}</span>
+                        <input type="text" value="${(step.title || '').replace(/"/g, '&quot;')}" oninput="customStepsState[${idx}].title = this.value" placeholder="Nama Tahap..." style="flex: 2; min-width: 140px; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: var(--card-bg); color: var(--text-color); outline: none;">
+                        <input type="text" value="${(step.date || '').replace(/"/g, '&quot;')}" oninput="customStepsState[${idx}].date = this.value" placeholder="Target waktu (misal: Bulan 1)..." style="flex: 1; min-width: 90px; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: var(--card-bg); color: var(--text-color); outline: none;">
+                        <button type="button" onclick="removeCustomStepRow(${idx})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 5px; font-size: 13px;" title="Hapus tahap ini">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+
+                    <!-- Checklist Kegiatan / Dokumen Syarat Section for this Stage -->
+                    <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; margin-top: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="font-size: 11.5px; font-weight: 700; color: #16a34a; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-clipboard-check"></i> Checklist Kegiatan / Dokumen Syarat (Terkoneksi ke Alur):
+                            </span>
+                            <span style="font-size: 11px; color: #64748b;">${normalizedTasks.filter(t => t.selected).length}/${normalizedTasks.length} dipilih</span>
+                        </div>
+
+                        <!-- Task Items List -->
+                        <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px;">
+                            ${tasksHtml || '<small style="color: #94a3b8; font-size: 11px; display: block; padding: 4px 0;">Belum ada kegiatan. Ketik di bawah untuk menambahkan kegiatan baru.</small>'}
+                        </div>
+
+                        <!-- Quick Add Task Input -->
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <input type="text" id="quick-task-input-${idx}" placeholder="+ Ketik kegiatan / dokumen syarat baru lalu tekan Enter / Tambah..." style="flex: 1; padding: 5px 8px; font-size: 11.5px; border: 1px dashed var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color); outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); addQuickTaskToStep(${idx});}">
+                            <button type="button" class="btn btn-sm" style="background: #16a34a; padding: 4px 10px; font-size: 11px;" onclick="addQuickTaskToStep(${idx})">
+                                <i class="fas fa-plus"></i> Tambah Kegiatan
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
+        }
+
+        function addQuickTaskToStep(stepIdx) {
+            const input = document.getElementById(`quick-task-input-${stepIdx}`);
+            if (!input) return;
+            const text = input.value.trim();
+            if (!text) return;
+
+            if (!customStepsState[stepIdx].tasks) customStepsState[stepIdx].tasks = [];
+            customStepsState[stepIdx].tasks.push({ text: text, selected: true });
+            input.value = "";
+            renderCustomStepsRows();
+        }
+
+        function toggleCustomTaskSelection(stepIdx, taskIdx, isChecked) {
+            if (customStepsState[stepIdx] && customStepsState[stepIdx].tasks && customStepsState[stepIdx].tasks[taskIdx]) {
+                customStepsState[stepIdx].tasks[taskIdx].selected = isChecked;
+                renderCustomStepsRows();
+            }
+        }
+
+        function removeCustomTaskFromStep(stepIdx, taskIdx) {
+            if (customStepsState[stepIdx] && customStepsState[stepIdx].tasks) {
+                customStepsState[stepIdx].tasks.splice(taskIdx, 1);
+                renderCustomStepsRows();
+            }
         }
 
         function addCustomStepRow() {
             customStepsState.push({
-                title: `Tahap ${customStepsState.length + 1}: Kegiatan Lapangan`,
+                title: `Tahap ${customStepsState.length + 1}: Kegiatan Lapangan Baru`,
                 date: `Tahap ${customStepsState.length + 1}`,
-                desc: "Pelaksanaan tahapan kerja."
+                desc: "Pelaksanaan tahapan kerja.",
+                tasks: [
+                    { text: "Persiapan pelaksanaan kegiatan", selected: true },
+                    { text: "Verifikasi dokumen hasil kegiatan", selected: true }
+                ]
             });
             renderCustomStepsRows();
         }
@@ -3924,7 +4215,7 @@
                 return;
             }
 
-            const templateName = prompt("Masukkan Nama Template Baru untuk Alur Kerja Ini:\n(Contoh: Alur Kalibrasi Tangki, Template Audit Lapangan SMTI)");
+            const templateName = prompt("Masukkan Nama Template Baru untuk Alur Kerja & Checklist Ini:\n(Contoh: Alur Kalibrasi Tangki, Template Audit Lapangan SMTI)");
             if (!templateName || !templateName.trim()) return;
 
             const trimmedName = templateName.trim();
@@ -3939,14 +4230,14 @@
             saveUserSavedWorkflowTemplates();
             populateWorkflowTemplateDropdown(newTemplate.id);
 
-            alert(`Sukses! Template "${trimmedName}" berhasil disimpan dengan ${newTemplate.steps.length} tahapan.\nTemplate ini sekarang bisa dipilih langsung untuk proyek lainnya!`);
+            alert(`Sukses! Template "${trimmedName}" berhasil disimpan lengkap dengan tahapan & checklist kegiatannya.\nTemplate ini sekarang bisa dipilih langsung untuk proyek lainnya!`);
         }
 
         function deleteCurrentCustomTemplate() {
             const select = document.getElementById('new-proj-template');
             if (!select) return;
             const curVal = select.value;
-            if (curVal === '__manual__') return;
+            if (standardWorkflowTemplates[curVal] || curVal === '__manual__') return;
 
             const tpl = userSavedWorkflowTemplates.find(t => t.id == curVal);
             if (!tpl) return;
@@ -3954,7 +4245,8 @@
             if (confirm(`Apakah Anda yakin ingin menghapus template "${tpl.name}" dari daftar template tersimpan?`)) {
                 userSavedWorkflowTemplates = userSavedWorkflowTemplates.filter(t => t.id != curVal);
                 saveUserSavedWorkflowTemplates();
-                populateWorkflowTemplateDropdown('__manual__');
+                populateWorkflowTemplateDropdown('MIKU');
+                onTemplateSelectChange('MIKU');
                 alert(`Template "${tpl.name}" berhasil dihapus.`);
             }
         }
@@ -3970,16 +4262,9 @@
             d.setDate(d.getDate() + 30);
             document.getElementById('new-proj-deadline').value = d.toISOString().split('T')[0];
 
-            // Inisialisasi tahapan manual yang bersih & fleksibel
-            customStepsState = [
-                { title: "Tahap 1: Inisiasi & Identifikasi Lapangan", date: "Bulan 1", desc: "Pelaksanaan tahap awal." },
-                { title: "Tahap 2: Eksekusi & Penerapan", date: "Bulan 2", desc: "Pelaksanaan tugas utama." },
-                { title: "Tahap 3: Evaluasi & Serah Terima", date: "Bulan 3", desc: "Penyelesaian dan pelaporan." }
-            ];
-
             loadUserSavedWorkflowTemplates();
-            populateWorkflowTemplateDropdown('__manual__');
-            renderCustomStepsRows();
+            populateWorkflowTemplateDropdown('MIKU');
+            onTemplateSelectChange('MIKU');
             populateNewProjectMemberCheckboxes();
 
             const checkSaveTpl = document.getElementById('check-save-template-on-create');
@@ -4019,17 +4304,23 @@
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             let daysLeft = diffDays > 0 ? `H-${diffDays} Hari` : (diffDays === 0 ? 'Hari Ini' : 'Terlewat');
 
-            // Construct flow from the user's customized steps
+            // Construct flow from the user's customized steps WITH connected checklist tasks
             const flow = customStepsState.map((st, i) => {
+                const stageTasks = (st.tasks || [])
+                    .filter(t => t.selected !== false && t.text && t.text.trim())
+                    .map(t => [t.text.trim(), false]);
+                
+                if (stageTasks.length === 0) {
+                    stageTasks.push([`Persiapan dan verifikasi dokumen tahap ${i + 1}`, false]);
+                }
+
                 return {
                     stepNumber: i + 1,
                     title: st.title.trim() || `Tahap ${i + 1}`,
                     date: st.date.trim() || `Tahap ${i + 1}`,
                     status: i === 0 ? "active" : "pending",
                     desc: st.desc || `Pelaksanaan kegiatan pada tahap ${i + 1}.`,
-                    tasks: [
-                        [`Persiapan dan verifikasi dokumen tahap ${i + 1}`, false]
-                    ]
+                    tasks: stageTasks
                 };
             });
 
