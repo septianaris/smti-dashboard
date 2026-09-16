@@ -98,6 +98,39 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         .time-display { font-size: 13px; font-weight: 600; color: var(--text-color); background: var(--hover-color); padding: 6px 12px; border-radius: 6px; }
 
+        .cloud-sync-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 700;
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .cloud-sync-badge:hover {
+            background: rgba(16, 185, 129, 0.22);
+            transform: translateY(-1px);
+        }
+
+        .cloud-sync-badge.syncing {
+            background: rgba(245, 158, 11, 0.12);
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.35);
+        }
+
+        .cloud-sync-badge.error {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.35);
+        }
+
         .header-actions { display: flex; align-items: center; gap: 12px; }
         
         /* Tombol Mode Monitor TV di Header */
@@ -1328,6 +1361,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     <input type="text" placeholder="Cari proyek / karyawan..." onkeyup="handleGlobalSearch(event)">
                 </div>
 
+                <div class="cloud-sync-badge" id="cloud-sync-badge" onclick="syncFromCloud(true)" title="Data tersimpan di Vercel Cloud Storage. Klik untuk menyegarkan data.">
+                    <i class="fas fa-cloud"></i> <span id="cloud-sync-text">Vercel Terhubung</span>
+                </div>
+
                 <div class="time-display" id="live-clock">--:--:-- WIB</div>
 
                 <div class="icon-btn" onclick="toggleDarkMode()" title="Ubah Mode Gelap/Terang">
@@ -2293,8 +2330,81 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             }
         ];
 
-        // Load persisted data or default
+        // Load persisted data or default with Vercel Cloud Storage Sync
         let projectDataSMTI = [];
+        const VERCEL_API_ENDPOINT = (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1'))
+            ? 'https://smti-pupuk-kujang.vercel.app/api/projects'
+            : '/api/projects';
+
+        let isSyncingToCloud = false;
+
+        function updateCloudSyncBadge(status) {
+            const badge = document.getElementById('cloud-sync-badge');
+            if (!badge) return;
+
+            if (status === 'syncing') {
+                badge.className = 'cloud-sync-badge syncing';
+                badge.innerHTML = '<i class="fas fa-sync fa-spin"></i> <span id="cloud-sync-text">Menyimpan ke Vercel...</span>';
+            } else if (status === 'error') {
+                badge.className = 'cloud-sync-badge error';
+                badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span id="cloud-sync-text">Offline / Gagal Sync</span>';
+                badge.title = 'Gagal terhubung ke Vercel Storage. Klik untuk mencoba lagi.';
+            } else {
+                badge.className = 'cloud-sync-badge';
+                badge.innerHTML = '<i class="fas fa-cloud"></i> <span id="cloud-sync-text">Vercel Terhubung</span>';
+                badge.title = 'Data tersimpan aman di Vercel Cloud Storage. Klik untuk menyegarkan data.';
+            }
+        }
+
+        async function syncFromCloud(showNotification = false) {
+            try {
+                const res = await fetch(VERCEL_API_ENDPOINT);
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+                        projectDataSMTI = json.data;
+                        localStorage.setItem('smti_projects_data_v2', JSON.stringify(projectDataSMTI));
+                        renderProjectsList();
+                        renderMonitorBoard();
+                        if (document.getElementById('flowModal') && document.getElementById('flowModal').classList.contains('active')) {
+                            openFlowModal(currentActiveProjectId);
+                        }
+                        updateCloudSyncBadge('synced');
+                        if (showNotification) {
+                            alert("Data berhasil disinkronisasi langsung dari Vercel Cloud Storage!");
+                        }
+                        return;
+                    }
+                }
+                updateCloudSyncBadge('synced');
+            } catch (e) {
+                console.log('Sync from cloud error:', e);
+                updateCloudSyncBadge('error');
+            }
+        }
+
+        async function syncToCloud() {
+            if (isSyncingToCloud) return;
+            isSyncingToCloud = true;
+            updateCloudSyncBadge('syncing');
+            try {
+                const res = await fetch(VERCEL_API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(projectDataSMTI)
+                });
+                if (res.ok) {
+                    updateCloudSyncBadge('synced');
+                } else {
+                    updateCloudSyncBadge('error');
+                }
+            } catch (e) {
+                console.log('Sync to cloud error:', e);
+                updateCloudSyncBadge('error');
+            } finally {
+                isSyncingToCloud = false;
+            }
+        }
 
         function loadProjectsData() {
             try {
@@ -2316,6 +2426,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             } catch (e) {
                 console.error("Gagal menyimpan ke localStorage:", e);
             }
+
+            // Otomatis sinkronisasi ke Vercel Cloud Storage (debounced 700ms)
+            clearTimeout(window.syncCloudTimeout);
+            window.syncCloudTimeout = setTimeout(syncToCloud, 700);
         }
 
         function resetToDefaultData() {
@@ -2327,7 +2441,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 if (document.getElementById('flowModal').classList.contains('active')) {
                     openFlowModal(currentActiveProjectId);
                 }
-                alert("Data berhasil di-reset ke bawaan sistem.");
+                saveProjectsData();
+                alert("Data berhasil di-reset ke bawaan sistem dan disinkronkan ke Vercel Cloud.");
             }
         }
 
@@ -2343,6 +2458,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             renderProjectsList();
             renderMonitorBoard();
             initMainDashboardChart();
+
+            // Background fetch from Vercel Cloud Storage
+            syncFromCloud();
+
+            // Auto-polling data dari cloud setiap 20 detik (agar layar monitor TV & HP rekan ter-update otomatis)
+            setInterval(syncFromCloud, 20000);
         };
 
         function startClock() {

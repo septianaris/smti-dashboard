@@ -17,9 +17,12 @@ if not TOKEN:
     print("[ERROR] Token Vercel tidak ditemukan di .vercel_token atau VERCEL_TOKEN!")
     exit(1)
 
-print("[INFO] Membaca file index.html terbaru...")
+print("[INFO] Membaca file index.html dan api/projects.js...")
 with open(os.path.join(os.path.dirname(__file__), "index.html"), "r", encoding="utf-8") as f:
     html_content = f.read()
+
+with open(os.path.join(os.path.dirname(__file__), "api", "projects.js"), "r", encoding="utf-8") as f:
+    api_content = f.read()
 
 payload = {
     "name": "smti-dashboard",
@@ -27,6 +30,10 @@ payload = {
         {
             "file": "index.html",
             "data": html_content
+        },
+        {
+            "file": "api/projects.js",
+            "data": api_content
         }
     ],
     "projectSettings": {
