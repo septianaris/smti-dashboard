@@ -1860,7 +1860,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             <div class="card">
                 <div class="filter-container" style="justify-content: space-between; align-items: center;">
                     <div style="display: flex; gap: 10px; flex: 1; flex-wrap: wrap;">
-                        <input type="text" id="search-magang-input" class="filter-input" placeholder="🔍 Cari nama mahasiswa, kampus, jurusan, atau penugasan..." oninput="filterInterns()">
+                        <input type="text" id="search-magang-input" class="filter-input" placeholder="🔍 Cari nama mahasiswa, jenis magang, kampus, atau penugasan..." oninput="filterInterns()">
+                        <select id="type-magang-filter" class="filter-select" onchange="filterInterns()" style="font-weight: 600;">
+                            <option value="">Semua Jenis Program Magang</option>
+                            <option value="Magang Hub">🌐 Magang Hub</option>
+                            <option value="MAGENTA">⚡ MAGENTA (BUMN)</option>
+                            <option value="Magang Mandiri">🎓 Magang Mandiri</option>
+                            <option value="PKL">🔧 PKL (Praktik Kerja Lapangan)</option>
+                        </select>
                         <select id="status-magang-filter" class="filter-select" onchange="filterInterns()">
                             <option value="">Semua Status</option>
                             <option value="Aktif">Status: Aktif</option>
@@ -2492,12 +2499,27 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div class="form-group">
-                        <label>Asal Perguruan Tinggi / Sekolah *</label>
-                        <input type="text" id="input-magang-campus" required placeholder="Contoh: ITB / UI / Polban">
+                        <label>Jenis Program Magang *</label>
+                        <select id="input-magang-type" required style="font-weight: 600;">
+                            <option value="Magang Hub">🌐 Magang Hub</option>
+                            <option value="MAGENTA">⚡ MAGENTA (BUMN)</option>
+                            <option value="Magang Mandiri" selected>🎓 Magang Mandiri</option>
+                            <option value="PKL">🔧 PKL (Praktik Kerja Lapangan)</option>
+                        </select>
                     </div>
                     <div class="form-group">
+                        <label>Asal Perguruan Tinggi / Sekolah *</label>
+                        <input type="text" id="input-magang-campus" required placeholder="Contoh: ITB / UI / SMKN 1">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
                         <label>Program Studi / Jurusan</label>
-                        <input type="text" id="input-magang-major" placeholder="Contoh: Teknik Kimia">
+                        <input type="text" id="input-magang-major" placeholder="Contoh: Teknik Kimia / Rekayasa Perangkat Lunak">
+                    </div>
+                    <div class="form-group">
+                        <label>Periode Magang (Bulan/Tahun) *</label>
+                        <input type="text" id="input-magang-period" required placeholder="Contoh: Feb 2026 - Agu 2026">
                     </div>
                 </div>
                 <div class="form-group">
@@ -2506,23 +2528,20 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div class="form-group">
-                        <label>Periode Magang (Bulan/Tahun) *</label>
-                        <input type="text" id="input-magang-period" required placeholder="Contoh: Feb 2026 - Agu 2026">
-                    </div>
-                    <div class="form-group">
                         <label>Status Magang *</label>
                         <select id="input-magang-status" required>
                             <option value="Aktif" selected>Aktif (Sedang Berjalan)</option>
                             <option value="Selesai">Selesai (Alumni)</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>Pembimbing Karyawan SMTI *</label>
+                        <select id="input-magang-mentor" required>
+                            <!-- Populated dynamically from SMTI_EMPLOYEES -->
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Pembimbing Karyawan SMTI *</label>
-                    <select id="input-magang-mentor" required>
-                        <!-- Populated dynamically from SMTI_EMPLOYEES -->
-                    </select>
-                </div>
+
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid var(--border-color); padding-top: 12px;">
                     <button type="button" class="btn" style="background: #64748b;" onclick="closeAddInternModal()">Batal</button>
                     <button type="submit" class="btn" style="background: #10b981; font-weight: 700;">
@@ -2542,49 +2561,53 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             {
                 id: 101,
                 name: "Dimas Pratama",
+                type: "MAGENTA",
                 campus: "Institut Teknologi Bandung (ITB)",
                 major: "Teknik Kimia",
                 role: "Magang Riset Formulasi & Inovasi",
                 period: "Feb 2026 - Agu 2026",
                 mentor: "Mochamad Januardi",
                 status: "Aktif",
-                color: "#059669",
+                color: "#7c3aed",
                 initials: "DP"
             },
             {
                 id: 102,
                 name: "Adinda Putri Rahayu",
+                type: "Magang Hub",
                 campus: "Universitas Indonesia (UI)",
                 major: "Sistem Informasi",
                 role: "Magang Digitalisasi & Web Dashboard",
                 period: "Mar 2026 - Jul 2026",
                 mentor: "Septian",
                 status: "Aktif",
-                color: "#7c3aed",
+                color: "#0284c7",
                 initials: "AP"
             },
             {
                 id: 103,
                 name: "Rizky Firmansyah",
+                type: "Magang Mandiri",
                 campus: "Universitas Padjadjaran (UNPAD)",
                 major: "Manajemen Bisnis",
                 role: "Magang Audit Mutu & Standardisasi",
                 period: "Jan 2026 - Jun 2026",
                 mentor: "Dion Ridwan Giartomi",
                 status: "Aktif",
-                color: "#d97706",
+                color: "#059669",
                 initials: "RF"
             },
             {
                 id: 104,
                 name: "Siti Nurhaliza",
-                campus: "Politeknik Negeri Bandung (POLBAN)",
-                major: "Teknik Kimia Produksi",
-                role: "Magang Penerapan 5R & K3",
+                type: "PKL",
+                campus: "SMKN 1 Karawang",
+                major: "Teknik Kimia Industri",
+                role: "PKL Operasional Pabrik & 5R",
                 period: "Feb 2026 - Mei 2026",
                 mentor: "Yayan Sopyan",
                 status: "Selesai",
-                color: "#dc2626",
+                color: "#d97706",
                 initials: "SN"
             }
         ];
@@ -2603,6 +2626,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 console.error("Gagal load interns:", e);
                 SMTI_INTERNS = JSON.parse(JSON.stringify(defaultSMTIInterns));
             }
+            // Pastikan setiap record memiliki jenis program magang (migrasi data lama)
+            SMTI_INTERNS.forEach(intern => {
+                if (!intern.type) {
+                    const def = defaultSMTIInterns.find(d => d.name.toLowerCase() === intern.name.toLowerCase());
+                    intern.type = def ? def.type : "Magang Mandiri";
+                }
+            });
+
             renderInternsTable();
             updateInternsCount();
         }
@@ -2652,6 +2683,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     const json = await res.json();
                     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
                         SMTI_INTERNS = json.data;
+                        // Pastikan tipe terisi jika belum ada di data cloud lama
+                        SMTI_INTERNS.forEach(intern => {
+                            if (!intern.type) {
+                                const def = defaultSMTIInterns.find(d => d.name.toLowerCase() === intern.name.toLowerCase());
+                                intern.type = def ? def.type : "Magang Mandiri";
+                            }
+                        });
                         localStorage.setItem('smti_interns_data_v1', JSON.stringify(SMTI_INTERNS));
                         renderInternsTable();
                         updateInternsCount();
@@ -2676,6 +2714,15 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             if (document.getElementById('side-magang-count')) document.getElementById('side-magang-count').innerText = aktif;
         }
 
+        function getInternTypeBadgeInfo(type) {
+            const map = {
+                'Magang Hub': { bg: 'rgba(2, 132, 199, 0.12)', color: '#0284c7', border: 'rgba(2, 132, 199, 0.35)', icon: 'fa-network-wired', label: 'Magang Hub' },
+                'MAGENTA': { bg: 'rgba(124, 58, 237, 0.12)', color: '#7c3aed', border: 'rgba(124, 58, 237, 0.35)', icon: 'fa-bolt', label: 'MAGENTA' },
+                'Magang Mandiri': { bg: 'rgba(16, 185, 129, 0.12)', color: '#059669', border: 'rgba(16, 185, 129, 0.35)', icon: 'fa-user-graduate', label: 'Magang Mandiri' },
+                'PKL': { bg: 'rgba(217, 119, 6, 0.12)', color: '#d97706', border: 'rgba(217, 119, 6, 0.35)', icon: 'fa-tools', label: 'PKL' }
+            };
+            return map[type] || { bg: 'rgba(16, 185, 129, 0.12)', color: '#059669', border: 'rgba(16, 185, 129, 0.35)', icon: 'fa-graduation-cap', label: type || 'Magang' };
+        }
         function renderInternsTable() {
             const table = document.getElementById('intern-table-body');
             if (!table) return;
@@ -2684,17 +2731,22 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 const isAktif = (intern.status || 'Aktif') === 'Aktif';
                 const statusColor = isAktif ? '#dcfce7' : '#f1f5f9';
                 const statusTextColor = isAktif ? '#15803d' : '#475569';
+                const typeInfo = getInternTypeBadgeInfo(intern.type);
 
                 return `
                     <tr>
                         <td>
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="background: ${intern.color || '#10b981'}; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; border: 2px solid #10b981;">
+                                <div style="background: ${intern.color || '#10b981'}; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; border: 2px solid ${typeInfo.color}; flex-shrink: 0;">
                                     ${intern.initials || intern.name.slice(0, 2).toUpperCase()}
                                 </div>
                                 <div>
-                                    <strong style="color: var(--text-color);">${intern.name}</strong>
-                                    <div style="font-size: 11px; color: #10b981; font-weight: 600;"><i class="fas fa-graduation-cap"></i> Mahasiswa Magang</div>
+                                    <strong style="color: var(--text-color); font-size: 13.5px;">${intern.name}</strong>
+                                    <div style="margin-top: 3px;">
+                                        <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 12px; background: ${typeInfo.bg}; color: ${typeInfo.color}; border: 1px solid ${typeInfo.border};">
+                                            <i class="fas ${typeInfo.icon}"></i> ${typeInfo.label}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -2717,14 +2769,16 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         function filterInterns() {
             const search = (document.getElementById('search-magang-input')?.value || '').toLowerCase();
-            const status = document.getElementById('status-magang-filter')?.value || '';
+            const typeFilter = (document.getElementById('type-magang-filter')?.value || '').toLowerCase();
+            const status = (document.getElementById('status-magang-filter')?.value || '').toLowerCase();
             const rows = document.querySelectorAll('#intern-table-body tr');
 
             rows.forEach(row => {
                 const text = row.innerText.toLowerCase();
                 const matchSearch = search === '' || text.includes(search);
-                const matchStatus = status === '' || text.includes(status.toLowerCase());
-                row.style.display = (matchSearch && matchStatus) ? '' : 'none';
+                const matchType = typeFilter === '' || text.includes(typeFilter);
+                const matchStatus = status === '' || text.includes(status);
+                row.style.display = (matchSearch && matchType && matchStatus) ? '' : 'none';
             });
         }
 
@@ -2743,8 +2797,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             if (editId) {
                 const intern = SMTI_INTERNS.find(i => i.id == editId);
                 if (intern) {
-                    document.getElementById('modal-magang-title').innerHTML = `<i class="fas fa-edit" style="color: #10b981;"></i> Edit Data Anak Magang`;
+                    document.getElementById('modal-magang-title').innerHTML = `<i class="fas fa-edit" style="color: #10b981;"></i> Edit Data Anak Magang / PKL`;
                     document.getElementById('input-magang-nama').value = intern.name;
+                    document.getElementById('input-magang-type').value = intern.type || 'Magang Mandiri';
                     document.getElementById('input-magang-campus').value = intern.campus;
                     document.getElementById('input-magang-major').value = intern.major || '';
                     document.getElementById('input-magang-role').value = intern.role;
@@ -2754,6 +2809,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 }
             } else {
                 document.getElementById('modal-magang-title').innerHTML = `<i class="fas fa-user-graduate" style="color: #10b981;"></i> Tambah Data Anak Magang / PKL`;
+                document.getElementById('input-magang-type').value = 'Magang Mandiri';
             }
 
             document.getElementById('modalMagang').style.display = 'flex';
@@ -2767,6 +2823,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             e.preventDefault();
             const editId = document.getElementById('magang-edit-id').value;
             const nama = document.getElementById('input-magang-nama').value.trim();
+            const type = document.getElementById('input-magang-type').value;
             const campus = document.getElementById('input-magang-campus').value.trim();
             const major = document.getElementById('input-magang-major').value.trim();
             const role = document.getElementById('input-magang-role').value.trim();
@@ -2778,13 +2835,21 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
             const words = nama.split(' ');
             const initials = words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : nama.slice(0, 2).toUpperCase();
-            const palette = ["#059669", "#7c3aed", "#d97706", "#0284c7", "#db2777", "#4f46e5", "#16a34a", "#ca8a04"];
-            const color = palette[Math.floor(Math.random() * palette.length)];
+            
+            // Pilih warna avatar selaras dengan jenis program
+            const colorByType = {
+                'MAGENTA': '#7c3aed',
+                'Magang Hub': '#0284c7',
+                'Magang Mandiri': '#059669',
+                'PKL': '#d97706'
+            };
+            const color = colorByType[type] || '#10b981';
 
             if (editId) {
                 const intern = SMTI_INTERNS.find(i => i.id == editId);
                 if (intern) {
                     intern.name = nama;
+                    intern.type = type;
                     intern.campus = campus;
                     intern.major = major;
                     intern.role = role;
@@ -2792,11 +2857,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     intern.status = status;
                     intern.mentor = mentor;
                     intern.initials = initials;
+                    intern.color = color;
                 }
             } else {
                 const newIntern = {
                     id: Date.now(),
                     name: nama,
+                    type: type,
                     campus: campus,
                     major: major,
                     role: role,
@@ -2812,7 +2879,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             saveInternsData();
             closeAddInternModal();
             filterInterns();
-            alert(`Sukses! Data mahasiswa magang "${nama}" (${campus}) berhasil disimpan.`);
+            alert(`Sukses! Data peserta magang "${nama}" (${type} - ${campus}) berhasil disimpan.`);
         }
 
         function editInternById(id) {
@@ -2832,9 +2899,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         function exportInternsToCSV() {
-            let csv = ['Nama,Kampus,Jurusan,Penugasan SMTI,Periode,Pembimbing,Status'];
+            let csv = ['Nama,Jenis Program,Kampus,Jurusan,Penugasan SMTI,Periode,Pembimbing,Status'];
             SMTI_INTERNS.forEach(i => {
-                csv.push(`"${i.name}","${i.campus}","${i.major || '-'}","${i.role}","${i.period}","${i.mentor}","${i.status}"`);
+                csv.push(`"${i.name}","${i.type || 'Magang Mandiri'}","${i.campus}","${i.major || '-'}","${i.role}","${i.period}","${i.mentor}","${i.status}"`);
             });
             const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
@@ -4284,8 +4351,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                     ${intern.initials || intern.name.slice(0, 2).toUpperCase()}
                                 </div>
                                 <div>
-                                    <strong style="font-size: 13px; color: var(--text-color);">🎓 ${intern.name}</strong>
-                                    <div style="font-size: 11px; color: #64748b;">${intern.role} • ${intern.campus}</div>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <strong style="font-size: 13px; color: var(--text-color);">${intern.name}</strong>
+                                        <span style="font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px; background: ${getInternTypeBadgeInfo(intern.type).bg}; color: ${getInternTypeBadgeInfo(intern.type).color}; border: 1px solid ${getInternTypeBadgeInfo(intern.type).border};">
+                                            <i class="fas ${getInternTypeBadgeInfo(intern.type).icon}"></i> ${getInternTypeBadgeInfo(intern.type).label}
+                                        </span>
+                                    </div>
+                                    <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${intern.role} • ${intern.campus}</div>
                                 </div>
                             </div>
                             <div>
@@ -4399,13 +4471,17 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
             if (SMTI_INTERNS && SMTI_INTERNS.length > 0) {
                 html += `<div style="width: 100%; font-size: 11px; font-weight: 700; color: #10b981; margin: 8px 0 4px 0;"><i class="fas fa-user-graduate"></i> Mahasiswa / Anak Magang:</div>`;
-                html += SMTI_INTERNS.map(intern => `
-                    <label style="display: flex; align-items: center; gap: 6px; background: var(--card-bg); border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 16px; font-size: 11.5px; cursor: pointer;">
-                        <input type="checkbox" value="${intern.name}" class="new-proj-member-check">
-                        <span style="font-weight: 600; color: #10b981;">🎓 ${intern.name}</span>
-                        <small style="font-size: 10px; color: #64748b;">(${intern.campus.split(' ')[0]})</small>
-                    </label>
-                `).join('');
+                html += SMTI_INTERNS.map(intern => {
+                    const tInfo = getInternTypeBadgeInfo(intern.type);
+                    return `
+                        <label style="display: flex; align-items: center; gap: 6px; background: var(--card-bg); border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 16px; font-size: 11.5px; cursor: pointer;">
+                            <input type="checkbox" value="${intern.name}" class="new-proj-member-check">
+                            <span style="font-weight: 600; color: #10b981;">🎓 ${intern.name}</span>
+                            <span style="font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 8px; background: ${tInfo.bg}; color: ${tInfo.color}; border: 1px solid ${tInfo.border};">${tInfo.label}</span>
+                            <small style="font-size: 10px; color: #64748b;">(${intern.campus.split(' ')[0]})</small>
+                        </label>
+                    `;
+                }).join('');
             }
 
             container.innerHTML = html;
