@@ -177,8 +177,37 @@
         .btn-edit { background: #d97706; color: white; }
         .btn-delete { background: #dc2626; color: white; }
 
-        .modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
-        .modal-content { background-color: var(--card-bg); color: var(--text-color); padding: 24px; border-radius: 14px; width: 440px; max-width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.25); border: 1px solid var(--border-color); }
+        /* Modal System - Smooth Scroll & Fit Viewport */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            padding: 20px 10px;
+            box-sizing: border-box;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            padding: 24px;
+            border-radius: 14px;
+            width: 480px;
+            max-width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+            border: 1px solid var(--border-color);
+            margin: auto;
+            position: relative;
+        }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .close-modal { cursor: pointer; font-size: 20px; color: #888; }
         .form-group { margin-bottom: 14px; }
@@ -2168,98 +2197,135 @@
     </div>
 
     <!-- =========================================================
-         MODAL FORM TAMBAH PROYEK BARU
+         MODAL FORM TAMBAH PROYEK BARU (SCROLL HALUS & ALUR MANUAL)
          ========================================================= -->
     <div id="modalTambahProyek" class="modal">
-        <div class="modal-content" style="width: 580px; max-width: 95%;">
-            <div class="modal-header">
-                <h3><i class="fas fa-project-diagram" style="color: #0284c7;"></i> Buat Proyek Baru SMTI</h3>
-                <span class="close-modal" onclick="closeAddProjectModal()">&times;</span>
+        <div class="modal-content" style="width: 620px; max-width: 96%; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; padding: 0;">
+            <!-- Pinned Header -->
+            <div class="modal-header" style="padding: 16px 22px; margin: 0; border-bottom: 1px solid var(--border-color); background: var(--hover-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                <h3 style="margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-project-diagram" style="color: #0284c7;"></i> Buat Proyek Baru SMTI
+                </h3>
+                <span class="close-modal" onclick="closeAddProjectModal()" style="font-size: 22px; cursor: pointer; color: #888;">&times;</span>
             </div>
-            <form id="form-tambah-proyek" onsubmit="saveNewProject(event)">
-                <div class="form-group">
-                    <label>Nama Proyek *</label>
-                    <input type="text" id="new-proj-name" required placeholder="Contoh: Implementasi ISO 50001 Sistem Manajemen Energi">
-                </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <!-- Form Container with Scrollable Body and Pinned Footer -->
+            <form id="form-tambah-proyek" onsubmit="saveNewProject(event)" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; margin: 0;">
+                <!-- Scrollable Body (Guarantees no elements cut off on laptop screen) -->
+                <div style="overflow-y: auto; padding: 18px 22px; flex: 1; max-height: calc(90vh - 125px);">
                     <div class="form-group">
-                        <label>Kategori Bagian / Bidang *</label>
-                        <select id="new-proj-category" required>
-                            <option value="MIKU">MIKU (Manajemen Inovasi & Kinerja Unggul)</option>
-                            <option value="PMSMT">PMSMT (Pengendalian Manajemen SMT)</option>
-                            <option value="Pengembangan Sistem dan Prosedur">Pengembangan Sistem dan Prosedur</option>
+                        <label>Nama Proyek *</label>
+                        <input type="text" id="new-proj-name" required placeholder="Contoh: Implementasi ISO 50001 Sistem Manajemen Energi">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label>Kategori Bagian / Bidang *</label>
+                            <select id="new-proj-category" required>
+                                <option value="MIKU">MIKU (Manajemen Inovasi & Kinerja Unggul)</option>
+                                <option value="PMSMT">PMSMT (Pengendalian Manajemen SMT)</option>
+                                <option value="Pengembangan Sistem dan Prosedur">Pengembangan Sistem dan Prosedur</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tingkat Urgensi *</label>
+                            <select id="new-proj-urgency" required>
+                                <option value="Tinggi">🔥 Urgensi Tinggi (Prioritas Utama)</option>
+                                <option value="Sedang" selected>⏳ Urgensi Sedang (Pengawalan)</option>
+                                <option value="Rendah">✅ Urgensi Rendah (Rutin)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label>Target Deadline *</label>
+                            <input type="date" id="new-proj-deadline" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Penanggung Jawab (PIC) *</label>
+                            <input type="text" id="new-proj-pic" required placeholder="Contoh: Dion / Tim SMTI">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Deskripsi / Tujuan Proyek</label>
+                        <textarea id="new-proj-desc" rows="2" placeholder="Jelaskan ringkasan tujuan atau latar belakang proyek..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Catatan Peringatan / Status Terkini (Opsional)</label>
+                        <input type="text" id="new-proj-alert" placeholder="Contoh: Menunggu disposisi persetujuan memo direksi">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-user-plus"></i> Undang Anggota Tim Karyawan SMTI:</label>
+                        <div id="new-proj-team-select" style="display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 8px; max-height: 120px; overflow-y: auto;">
+                            <!-- Checkboxes for all SMTI employees -->
+                        </div>
+                    </div>
+
+                    <!-- Workflow Template Selector (Manual Default + User Saved Templates) -->
+                    <div class="form-group" style="background: var(--hover-color); padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                            <label style="margin: 0; font-weight: 700; font-size: 12.5px;">
+                                <i class="fas fa-sitemap" style="color: #0284c7;"></i> Template Alur Kerja:
+                            </label>
+                            <button type="button" id="btn-del-custom-tpl" class="btn btn-sm" style="display: none; background: #dc2626; padding: 3px 8px; font-size: 11px;" onclick="deleteCurrentCustomTemplate()" title="Hapus template tersimpan yang sedang dipilih">
+                                <i class="fas fa-trash-alt"></i> Hapus Template Ini
+                            </button>
+                        </div>
+                        <select id="new-proj-template" onchange="onTemplateSelectChange(this.value)" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 12.5px; background: var(--card-bg); color: var(--text-color); font-weight: 600;">
+                            <!-- Populated dynamically by JS -->
                         </select>
+                        <small id="tpl-desc-hint" style="color: #64748b; font-size: 11px; display: block; margin-top: 5px;">
+                            Alur kerja bebas disusun manual sesuai fakta lapangan. Anda bisa menyimpannya sebagai template baru kapan saja.
+                        </small>
                     </div>
-                    <div class="form-group">
-                        <label>Tingkat Urgensi *</label>
-                        <select id="new-proj-urgency" required>
-                            <option value="Tinggi">🔥 Urgensi Tinggi (Prioritas Utama)</option>
-                            <option value="Sedang" selected>⏳ Urgensi Sedang (Pengawalan)</option>
-                            <option value="Rendah">✅ Urgensi Rendah (Rutin)</option>
-                        </select>
+
+                    <!-- Interactive Dynamic Steps Builder -->
+                    <div class="form-group" style="background: var(--card-bg); padding: 14px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
+                            <label style="margin: 0; font-weight: 700; font-size: 12.5px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-list-check" style="color: #16a34a;"></i> Susunan Tahapan Alur Kerja:
+                            </label>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <button type="button" class="btn btn-sm" style="background: #10b981; padding: 4px 10px; font-size: 11.5px;" onclick="promptSaveCurrentStepsAsTemplate()" title="Simpan susunan alur ini sebagai template baru yang dapat dipilih kembali di masa mendatang">
+                                    <i class="fas fa-bookmark"></i> Simpan Jadi Template
+                                </button>
+                                <button type="button" class="btn btn-sm" style="background: #0284c7; padding: 4px 10px; font-size: 11.5px;" onclick="addCustomStepRow()">
+                                    <i class="fas fa-plus"></i> Tambah Tahap
+                                </button>
+                            </div>
+                        </div>
+                        <div id="custom-steps-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto; padding-right: 4px;">
+                            <!-- Dynamic Step Rows with Move Up/Down and Delete -->
+                        </div>
+                        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <small style="color: #64748b; font-size: 11px;">
+                                * Sesuaikan nama tahap & target waktu. Gunakan tombol ▲ ▼ untuk mengatur urutan tahapan.
+                            </small>
+                        </div>
                     </div>
-                </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="form-group">
-                        <label>Target Deadline *</label>
-                        <input type="date" id="new-proj-deadline" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Penanggung Jawab (PIC) *</label>
-                        <input type="text" id="new-proj-pic" required placeholder="Contoh: Dion / Tim SMTI">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Deskripsi / Tujuan Proyek</label>
-                    <textarea id="new-proj-desc" rows="2" placeholder="Jelaskan ringkasan tujuan atau latar belakang proyek..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Catatan Peringatan / Status Terkini (Opsional)</label>
-                    <input type="text" id="new-proj-alert" placeholder="Contoh: Menunggu disposisi persetujuan memo direksi">
-                </div>
-
-                <div class="form-group">
-                    <label><i class="fas fa-user-plus"></i> Undang Anggota Tim Karyawan SMTI:</label>
-                    <div id="new-proj-team-select" style="display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 8px; max-height: 120px; overflow-y: auto;">
-                        <!-- Checkboxes for all SMTI employees -->
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label><i class="fas fa-sitemap"></i> Template Alur Kerja</label>
-                    <select id="new-proj-template" onchange="onTemplateChange(this.value)">
-                        <option value="MIKU">Template MIKU (5 Tahap: Sosialisasi, Seleksi Ide, Prototyping, Coaching, Final Pitching)</option>
-                        <option value="PMSMT">Template PMSMT (5 Tahap: Gap Analysis, Pra-Audit, Audit Eksternal, Tindak Lanjut CAR, Sertifikasi)</option>
-                        <option value="PSP">Template Pengembangan Sistem & Prosedur (5 Tahap: Identifikasi, Drafting, Uji Coba, Pengesahan, Distribusi)</option>
-                        <option value="manual">Manual / Kustom Sendiri (Input & Tentukan Tahap Bebas)</option>
-                    </select>
-                </div>
-
-                <!-- Interactive Custom Steps Builder -->
-                <div class="form-group" style="background: var(--hover-color); padding: 14px; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <label style="margin: 0; font-weight: 700; font-size: 12.5px;">
-                            <i class="fas fa-list-ol"></i> Rincian Tahapan Alur Kerja (Dapat Diedit Manual):
+                    <!-- Optional Checkbox: Auto-Save as Template when creating project -->
+                    <div style="margin-top: 10px; padding: 10px 12px; background: var(--hover-color); border: 1px dashed var(--border-color); border-radius: 6px;">
+                        <label style="font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
+                            <input type="checkbox" id="check-save-template-on-create" onchange="document.getElementById('save-tpl-name-box').style.display = this.checked ? 'block' : 'none';">
+                            <span><i class="fas fa-save" style="color: #10b981;"></i> Simpan juga alur ini sebagai Template Baru saat proyek dibuat</span>
                         </label>
-                        <button type="button" class="btn btn-sm" style="background: #0284c7; padding: 4px 10px; font-size: 11.5px;" onclick="addCustomStepRow()">
-                            <i class="fas fa-plus"></i> Tambah Tahap
-                        </button>
+                        <div id="save-tpl-name-box" style="display: none; margin-top: 8px;">
+                            <input type="text" id="input-save-template-name" placeholder="Beri nama template (misal: Alur Uji Stabilitas Pabrik)..." style="width: 100%; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: 5px; font-size: 12px; background: var(--card-bg); color: var(--text-color); outline: none;">
+                        </div>
                     </div>
-                    <div id="custom-steps-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; padding-right: 4px;">
-                        <!-- Dynamic Step Rows -->
-                    </div>
-                    <small style="color: #64748b; font-size: 11px; display: block; margin-top: 8px;">
-                        * Pilih template di atas atau ketik nama tahap manual. Anda dapat menambah/menghapus tahap semau Anda.
-                    </small>
                 </div>
 
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+                <!-- Pinned Footer Buttons (Always in view without zooming out) -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end; padding: 14px 22px; border-top: 1px solid var(--border-color); background: var(--card-bg); flex-shrink: 0;">
                     <button type="button" class="btn" style="background: #64748b;" onclick="closeAddProjectModal()">Batal</button>
-                    <button type="submit" class="btn" style="background: #0284c7;"><i class="fas fa-save"></i> Buat & Daftarkan Proyek</button>
+                    <button type="submit" class="btn" style="background: #0284c7; font-weight: 700; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);">
+                        <i class="fas fa-save"></i> Buat & Daftarkan Proyek
+                    </button>
                 </div>
             </form>
         </div>
@@ -3706,56 +3772,120 @@
 
 
         /* =========================================================
-           FITUR TAMBAH PROYEK (3 KATEGORI & BUILDER ALUR MANUAL)
+           FITUR TAMBAH PROYEK (ALUR KERJA MANUAL & TEMPLATE REUSABLE)
            ========================================================= */
         let currentCategoryFilter = "semua";
         let customStepsState = [];
+        let userSavedWorkflowTemplates = [];
 
-        const templatePresets = {
-            MIKU: [
-                { title: "Sosialisasi & Penjaringan Ide", date: "Tahap 1", desc: "Penyebaran pedoman dan pengumpulan ide awal dari peserta." },
-                { title: "Seleksi & Verifikasi Ide", date: "Tahap 2", desc: "Verifikasi orisinalitas ide dan kelayakan bisnis/teknis." },
-                { title: "Pembuatan Prototype & Mockup", date: "Tahap 3", desc: "Pendampingan penyusunan bentuk prototipe fisik / sistem." },
-                { title: "Coaching Presentasi Pitch", date: "Tahap 4", desc: "Latihan dan gladi resik pitching sebelum dewan juri." },
-                { title: "Final Pitching & Awarding", date: "Tahap 5", desc: "Presentasi akhir dan pengumuman penetapan pemenang." }
-            ],
-            PMSMT: [
-                { title: "Gap Analysis & Dokumen Standar", date: "Tahap 1", desc: "Pemetaan kesenjangan klausul standar dan pembaruan prosedur/IK." },
-                { title: "Pra-Audit & Penyisiran Internal", date: "Tahap 2", desc: "Pemeriksaan kesiapan di seluruh unit kerja terkait." },
-                { title: "Audit Eksternal Lembaga Akreditasi", date: "Tahap 3", desc: "Audit resmi oleh lembaga sertifikasi independen." },
-                { title: "Tindak Lanjut Temuan (CAR)", date: "Tahap 4", desc: "Penyelesaian dan verifikasi tindakan perbaikan." },
-                { title: "Penerbitan Sertifikat & Evaluasi", date: "Tahap 5", desc: "Penerbitan sertifikat akreditasi resmi KAN." }
-            ],
-            PSP: [
-                { title: "Identifikasi Kebutuhan Prosedur", date: "Tahap 1", desc: "Pemetaan proses bisnis dan inventarisasi SOP/IK yang dibutuhkan." },
-                { title: "Drafting & Konsultasi Stakeholder", date: "Tahap 2", desc: "Penyusunan draft prosedur bersama unit kerja terkait." },
-                { title: "Simulasi & Uji Coba Prosedur", date: "Tahap 3", desc: "Uji coba penerapan prosedur di lapangan/kantor." },
-                { title: "Review & Pengesahan Manajemen", date: "Tahap 4", desc: "Pemeriksaan format dan penandatanganan resmi pimpinan." },
-                { title: "Penerbitan & Sosialisasi Resmi", date: "Tahap 5", desc: "Pemberian kode dokumen resmi dan upload portal SMTI." }
-            ],
-            manual: [
-                { title: "Tahap 1: Inisiasi & Perencanaan", date: "Bulan 1", desc: "Perencanaan dan kick-off kegiatan." },
-                { title: "Tahap 2: Eksekusi & Implementasi", date: "Bulan 2", desc: "Pelaksanaan tugas utama." },
-                { title: "Tahap 3: Evaluasi & Pelaporan Akhir", date: "Bulan 3", desc: "Review hasil dan serah terima." }
-            ]
-        };
+        function loadUserSavedWorkflowTemplates() {
+            try {
+                const stored = localStorage.getItem('smti_user_workflow_templates_v1');
+                if (stored) {
+                    userSavedWorkflowTemplates = JSON.parse(stored);
+                } else {
+                    userSavedWorkflowTemplates = [];
+                }
+            } catch (e) {
+                console.error("Gagal membaca template tersimpan:", e);
+                userSavedWorkflowTemplates = [];
+            }
+        }
 
-        function onTemplateChange(tplKey) {
-            const preset = templatePresets[tplKey] || templatePresets.manual;
-            customStepsState = JSON.parse(JSON.stringify(preset));
-            renderCustomStepsRows();
+        function saveUserSavedWorkflowTemplates() {
+            try {
+                localStorage.setItem('smti_user_workflow_templates_v1', JSON.stringify(userSavedWorkflowTemplates));
+            } catch (e) {
+                console.error("Gagal menyimpan template tersimpan:", e);
+            }
+        }
+
+        function populateWorkflowTemplateDropdown(selectedVal = '__manual__') {
+            const select = document.getElementById('new-proj-template');
+            if (!select) return;
+
+            let html = `<option value="__manual__">➕ Alur Kerja Manual Baru (Tentukan Bebas Sesuai Lapangan)</option>`;
+
+            if (userSavedWorkflowTemplates && userSavedWorkflowTemplates.length > 0) {
+                html += `<optgroup label="⭐ Template Alur Tersimpan (${userSavedWorkflowTemplates.length} Template)">`;
+                userSavedWorkflowTemplates.forEach(tpl => {
+                    html += `<option value="${tpl.id}">${tpl.name} (${tpl.steps.length} Tahap)</option>`;
+                });
+                html += `</optgroup>`;
+            }
+
+            select.innerHTML = html;
+            select.value = selectedVal;
+
+            updateTemplateUiState(selectedVal);
+        }
+
+        function updateTemplateUiState(selectedVal) {
+            const btnDel = document.getElementById('btn-del-custom-tpl');
+            const hint = document.getElementById('tpl-desc-hint');
+
+            if (selectedVal !== '__manual__') {
+                const tpl = userSavedWorkflowTemplates.find(t => t.id == selectedVal);
+                if (tpl) {
+                    if (btnDel) btnDel.style.display = 'inline-flex';
+                    if (hint) hint.innerHTML = `<span style="color: #10b981; font-weight: 600;"><i class="fas fa-check-circle"></i> Memuat template: "${tpl.name}".</span> Anda tetap bisa memodifikasi tahapan khusus untuk proyek ini.`;
+                    return;
+                }
+            }
+
+            if (btnDel) btnDel.style.display = 'none';
+            if (hint) hint.innerText = "Alur kerja bebas disusun manual sesuai fakta lapangan. Anda bisa menyimpannya sebagai template baru kapan saja.";
+        }
+
+        function onTemplateSelectChange(val) {
+            if (val === '__manual__') {
+                // If switching to manual and steps are empty, initialize with 3 clean editable steps
+                if (!customStepsState || customStepsState.length === 0) {
+                    customStepsState = [
+                        { title: "Tahap 1: Inisiasi & Identifikasi Lapangan", date: "Bulan 1", desc: "Pelaksanaan tahapan awal." },
+                        { title: "Tahap 2: Eksekusi & Penerapan", date: "Bulan 2", desc: "Pelaksanaan tugas utama." },
+                        { title: "Tahap 3: Evaluasi & Serah Terima", date: "Bulan 3", desc: "Penyelesaian dan pelaporan." }
+                    ];
+                }
+                updateTemplateUiState('__manual__');
+                renderCustomStepsRows();
+            } else {
+                const tpl = userSavedWorkflowTemplates.find(t => t.id == val);
+                if (tpl && tpl.steps) {
+                    customStepsState = JSON.parse(JSON.stringify(tpl.steps));
+                    updateTemplateUiState(val);
+                    renderCustomStepsRows();
+                }
+            }
         }
 
         function renderCustomStepsRows() {
             const container = document.getElementById('custom-steps-list');
             if (!container) return;
 
+            if (!customStepsState || customStepsState.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 12px; border: 1px dashed var(--border-color); border-radius: 6px;">
+                        Belum ada tahapan alur kerja. Klik tombol <strong>+ Tambah Tahap</strong> di atas untuk membuat tahapan sesuai fakta lapangan.
+                    </div>
+                `;
+                return;
+            }
+
             container.innerHTML = customStepsState.map((step, idx) => `
-                <div style="display: flex; gap: 8px; align-items: center; background: var(--card-bg); padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
-                    <span style="font-size: 11px; font-weight: 700; width: 55px; color: var(--secondary-color); white-space: nowrap;">Tahap ${idx + 1}</span>
-                    <input type="text" value="${step.title.replace(/"/g, '&quot;')}" oninput="customStepsState[${idx}].title = this.value" placeholder="Nama Tahap..." style="flex: 2; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: var(--bg-color); color: var(--text-color); outline: none;">
-                    <input type="text" value="${step.date.replace(/"/g, '&quot;')}" oninput="customStepsState[${idx}].date = this.value" placeholder="Target waktu..." style="flex: 1; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: var(--bg-color); color: var(--text-color); outline: none;">
-                    <button type="button" onclick="removeCustomStepRow(${idx})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 4px;" title="Hapus tahap ini">
+                <div style="display: flex; gap: 8px; align-items: center; background: var(--bg-color); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <button type="button" onclick="moveCustomStepRow(${idx}, -1)" ${idx === 0 ? 'disabled style="opacity: 0.2; cursor: default;"' : 'style="cursor: pointer;"'} title="Pindahkan ke atas" style="background: none; border: none; font-size: 10px; color: var(--text-color); padding: 0 3px;">
+                            <i class="fas fa-chevron-up"></i>
+                        </button>
+                        <button type="button" onclick="moveCustomStepRow(${idx}, 1)" ${idx === customStepsState.length - 1 ? 'disabled style="opacity: 0.2; cursor: default;"' : 'style="cursor: pointer;"'} title="Pindahkan ke bawah" style="background: none; border: none; font-size: 10px; color: var(--text-color); padding: 0 3px;">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; width: 50px; color: var(--secondary-color); white-space: nowrap;">Tahap ${idx + 1}</span>
+                    <input type="text" value="${(step.title || '').replace(/"/g, '&quot;')}" oninput="customStepsState[${idx}].title = this.value" placeholder="Nama Tahap..." style="flex: 2; min-width: 140px; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: var(--card-bg); color: var(--text-color); outline: none;">
+                    <input type="text" value="${(step.date || '').replace(/"/g, '&quot;')}" oninput="customStepsState[${idx}].date = this.value" placeholder="Target waktu (misal: Bulan 1)..." style="flex: 1; min-width: 90px; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: var(--card-bg); color: var(--text-color); outline: none;">
+                    <button type="button" onclick="removeCustomStepRow(${idx})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 5px; font-size: 13px;" title="Hapus tahap ini">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
@@ -3764,7 +3894,7 @@
 
         function addCustomStepRow() {
             customStepsState.push({
-                title: `Tahap ${customStepsState.length + 1}: Kegiatan Baru`,
+                title: `Tahap ${customStepsState.length + 1}: Kegiatan Lapangan`,
                 date: `Tahap ${customStepsState.length + 1}`,
                 desc: "Pelaksanaan tahapan kerja."
             });
@@ -3780,6 +3910,55 @@
             renderCustomStepsRows();
         }
 
+        function moveCustomStepRow(idx, direction) {
+            const newIndex = idx + direction;
+            if (newIndex < 0 || newIndex >= customStepsState.length) return;
+            const item = customStepsState.splice(idx, 1)[0];
+            customStepsState.splice(newIndex, 0, item);
+            renderCustomStepsRows();
+        }
+
+        function promptSaveCurrentStepsAsTemplate() {
+            if (!customStepsState || customStepsState.length === 0) {
+                alert("Buat minimal 1 tahapan terlebih dahulu sebelum menyimpan template!");
+                return;
+            }
+
+            const templateName = prompt("Masukkan Nama Template Baru untuk Alur Kerja Ini:\n(Contoh: Alur Kalibrasi Tangki, Template Audit Lapangan SMTI)");
+            if (!templateName || !templateName.trim()) return;
+
+            const trimmedName = templateName.trim();
+            const newTemplate = {
+                id: "tpl_" + Date.now(),
+                name: trimmedName,
+                createdAt: new Date().toISOString(),
+                steps: JSON.parse(JSON.stringify(customStepsState))
+            };
+
+            userSavedWorkflowTemplates.push(newTemplate);
+            saveUserSavedWorkflowTemplates();
+            populateWorkflowTemplateDropdown(newTemplate.id);
+
+            alert(`Sukses! Template "${trimmedName}" berhasil disimpan dengan ${newTemplate.steps.length} tahapan.\nTemplate ini sekarang bisa dipilih langsung untuk proyek lainnya!`);
+        }
+
+        function deleteCurrentCustomTemplate() {
+            const select = document.getElementById('new-proj-template');
+            if (!select) return;
+            const curVal = select.value;
+            if (curVal === '__manual__') return;
+
+            const tpl = userSavedWorkflowTemplates.find(t => t.id == curVal);
+            if (!tpl) return;
+
+            if (confirm(`Apakah Anda yakin ingin menghapus template "${tpl.name}" dari daftar template tersimpan?`)) {
+                userSavedWorkflowTemplates = userSavedWorkflowTemplates.filter(t => t.id != curVal);
+                saveUserSavedWorkflowTemplates();
+                populateWorkflowTemplateDropdown('__manual__');
+                alert(`Template "${tpl.name}" berhasil dihapus.`);
+            }
+        }
+
         function filterByCategory(cat) {
             currentCategoryFilter = cat;
             renderProjectsList();
@@ -3790,8 +3969,24 @@
             const d = new Date();
             d.setDate(d.getDate() + 30);
             document.getElementById('new-proj-deadline').value = d.toISOString().split('T')[0];
-            onTemplateChange('MIKU');
+
+            // Inisialisasi tahapan manual yang bersih & fleksibel
+            customStepsState = [
+                { title: "Tahap 1: Inisiasi & Identifikasi Lapangan", date: "Bulan 1", desc: "Pelaksanaan tahap awal." },
+                { title: "Tahap 2: Eksekusi & Penerapan", date: "Bulan 2", desc: "Pelaksanaan tugas utama." },
+                { title: "Tahap 3: Evaluasi & Serah Terima", date: "Bulan 3", desc: "Penyelesaian dan pelaporan." }
+            ];
+
+            loadUserSavedWorkflowTemplates();
+            populateWorkflowTemplateDropdown('__manual__');
+            renderCustomStepsRows();
             populateNewProjectMemberCheckboxes();
+
+            const checkSaveTpl = document.getElementById('check-save-template-on-create');
+            if (checkSaveTpl) checkSaveTpl.checked = false;
+            const nameBox = document.getElementById('save-tpl-name-box');
+            if (nameBox) nameBox.style.display = 'none';
+
             document.getElementById('modalTambahProyek').style.display = 'flex';
         }
 
@@ -3868,6 +4063,21 @@
                 ],
                 flow: flow
             };
+
+            // Check if user also checked "Simpan sebagai template baru"
+            const checkSaveTpl = document.getElementById('check-save-template-on-create');
+            if (checkSaveTpl && checkSaveTpl.checked) {
+                const tplNameInput = document.getElementById('input-save-template-name');
+                const tplName = (tplNameInput && tplNameInput.value.trim()) ? tplNameInput.value.trim() : `Template ${name}`;
+                const newTpl = {
+                    id: "tpl_" + Date.now(),
+                    name: tplName,
+                    createdAt: new Date().toISOString(),
+                    steps: JSON.parse(JSON.stringify(customStepsState))
+                };
+                userSavedWorkflowTemplates.push(newTpl);
+                saveUserSavedWorkflowTemplates();
+            }
 
             projectDataSMTI.unshift(newProject);
             saveProjectsData();
