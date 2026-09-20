@@ -1766,23 +1766,23 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 <div class="menu-item-left"><i class="fas fa-desktop"></i> <span>Layar Monitor</span></div>
                 <span class="menu-badge badge-live">LIVE</span>
             </div>
-            <div class="menu-item" onclick="showPage('karyawan', this)">
+            <div class="menu-item" id="menu-item-karyawan" onclick="showPage('karyawan', this)">
                 <div class="menu-item-left"><i class="fas fa-users"></i> <span>Karyawan SMTI</span></div>
                 <span class="menu-badge" id="side-karyawan-count">10</span>
             </div>
-            <div class="menu-item" onclick="showPage('magang', this)">
+            <div class="menu-item" id="menu-item-magang" onclick="showPage('magang', this)">
                 <div class="menu-item-left"><i class="fas fa-user-graduate"></i> <span>Anak Magang / PKL</span></div>
                 <span class="menu-badge" id="side-magang-count" style="background: rgba(16, 185, 129, 0.25); color: #10b981; font-weight: 700;">4</span>
             </div>
 
-            <div class="menu-category">Sistem & Laporan</div>
+            <div class="menu-category" id="menu-cat-system">Sistem & Laporan</div>
             <div class="menu-item" onclick="showPage('laporan', this)">
                 <div class="menu-item-left"><i class="fas fa-file-alt"></i> <span>Laporan Analytics</span></div>
             </div>
-            <div class="menu-item" onclick="showPage('pengaturan', this)">
+            <div class="menu-item" id="menu-item-pengaturan" onclick="showPage('pengaturan', this)">
                 <div class="menu-item-left"><i class="fas fa-cog"></i> <span>Pengaturan</span></div>
             </div>
-            <div class="menu-item" onclick="showPage('bantuan', this)">
+            <div class="menu-item" id="menu-item-bantuan" onclick="showPage('bantuan', this)">
                 <div class="menu-item-left"><i class="fas fa-question-circle"></i> <span>Bantuan</span></div>
             </div>
         </div>
@@ -1887,7 +1887,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     <div id="drop-user-role" style="font-size: 11px; color: #64748b;">Super Admin & Officer Digitalisasi</div>
                 </div>
                 <div class="dropdown-item" onclick="openChangePinModal()"><i class="fas fa-key" style="color: #f59e0b;"></i> Ganti PIN Keamanan</div>
-                <div class="dropdown-item" onclick="showPage('pengaturan', null)"><i class="fas fa-user-cog" style="color: #0284c7;"></i> Pengaturan Akun</div>
+                <div class="dropdown-item" id="drop-item-pengaturan" onclick="showPage('pengaturan', null)"><i class="fas fa-user-cog" style="color: #0284c7;"></i> Pengaturan Akun</div>
                 <div class="dropdown-item" onclick="openMonitorMode()"><i class="fas fa-tv" style="color: #10b981;"></i> Buka Tampilan Monitor</div>
                 <div class="dropdown-item" style="color: #dc2626; font-weight: 700; border-top: 1px solid var(--border-color); margin-top: 4px; padding-top: 8px;" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Kunci Layar / Ganti Akun</div>
             </div>
@@ -2038,7 +2038,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <span>Daftar Karyawan Dept SMTI</span>
                         <div style="display: flex; gap: 8px;">
                             <button class="btn" style="background: #16a34a;" onclick="exportTableToCSV()"><i class="fas fa-file-excel"></i> Export CSV</button>
-                            <button class="btn" onclick="openModal()"><i class="fas fa-plus"></i> Tambah Karyawan</button>
+                            <button class="btn super-admin-only" id="btn-tambah-karyawan" onclick="openModal()"><i class="fas fa-plus"></i> Tambah Karyawan</button>
                         </div>
                     </div>
 
@@ -2193,7 +2193,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         </select>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-sm" style="background: #10b981;" onclick="openAddInternModal()">
+                        <button class="btn btn-sm super-admin-only" id="btn-tambah-magang" style="background: #10b981;" onclick="openAddInternModal()">
                             <i class="fas fa-plus"></i> Tambah Anak Magang
                         </button>
                         <button class="btn btn-sm" style="background: #64748b;" onclick="exportInternsToCSV()">
@@ -3110,8 +3110,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <td><span style="background: var(--hover-color); padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;"><i class="fas fa-user-tie" style="color: #0284c7;"></i> ${intern.mentor || 'Tim SMTI'}</span></td>
                         <td><span class="status" style="background: ${statusColor}; color: ${statusTextColor}; font-weight: 700;">${intern.status || 'Aktif'}</span></td>
                         <td style="text-align: center; white-space: nowrap;">
-                            <button class="action-btn btn-edit" title="Edit anak magang" onclick="editInternById(${intern.id})"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn btn-delete" title="Hapus anak magang" onclick="deleteInternById(${intern.id})"><i class="fas fa-trash"></i></button>
+                            ${isCurrentUserSuperAdmin() ? `
+                                <button class="action-btn btn-edit" title="Edit anak magang" onclick="editInternById(${intern.id})"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn btn-delete" title="Hapus anak magang" onclick="deleteInternById(${intern.id})"><i class="fas fa-trash"></i></button>
+                            ` : `
+                                <span style="font-size: 11px; color: #94a3b8; font-style: italic;"><i class="fas fa-lock"></i> Terkunci</span>
+                            `}
                         </td>
                     </tr>
                 `;
@@ -3134,6 +3138,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         function openAddInternModal(editId = null) {
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menambah atau mengedit data anak magang.");
+                return;
+            }
             document.getElementById('form-magang').reset();
             document.getElementById('magang-edit-id').value = editId || '';
 
@@ -3172,6 +3180,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         function saveIntern(e) {
             e.preventDefault();
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menyimpan data anak magang.");
+                return;
+            }
             const editId = document.getElementById('magang-edit-id').value;
             const nama = document.getElementById('input-magang-nama').value.trim();
             const type = document.getElementById('input-magang-type').value;
@@ -3238,6 +3250,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         function deleteInternById(id) {
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menghapus data anak magang.");
+                return;
+            }
             const intern = SMTI_INTERNS.find(i => i.id == id);
             if (!intern) return;
 
@@ -3844,7 +3860,18 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         /* --- NAVIGATION --- */
+        function isCurrentUserSuperAdmin() {
+            if (!currentAuthUser) return false;
+            return !!(currentAuthUser.isSuperAdmin || (currentAuthUser.name && currentAuthUser.name.toLowerCase().includes('septian')));
+        }
+
         function showPage(pageId, element) {
+            const restrictedPages = ['karyawan', 'magang', 'pengaturan', 'bantuan'];
+            if (restrictedPages.includes(pageId) && !isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Menu ini dikhususkan untuk Super Admin (Septian).");
+                return;
+            }
+
             document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
             const target = document.getElementById(pageId);
             if (target) target.classList.add('active');
@@ -5662,12 +5689,21 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         function handleGlobalSearch(e) {
             const val = e.target.value.toLowerCase().trim();
             if (val.length > 0) {
+                if (!isCurrentUserSuperAdmin()) {
+                    showPage('proyek', document.querySelectorAll('.menu-item')[1]);
+                    const projBox = document.getElementById('project-search-box');
+                    if (projBox) {
+                        projBox.value = val;
+                        searchProjects(e);
+                    }
+                    return;
+                }
                 const projectSection = document.getElementById('proyek');
                 if (projectSection && projectSection.classList.contains('active')) {
                     document.getElementById('project-search-box').value = val;
                     searchProjects(e);
                 } else {
-                    showPage('karyawan', document.querySelectorAll('.menu-item')[3]);
+                    showPage('karyawan', document.getElementById('menu-item-karyawan'));
                     document.getElementById('search-input').value = val;
                     filterKaryawan();
                 }
@@ -5716,6 +5752,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         function openModal() {
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menambah karyawan.");
+                return;
+            }
             document.getElementById('modal-title').innerText = 'Tambah Karyawan Baru';
             document.getElementById('form-karyawan').reset();
             document.getElementById('modalKaryawan').style.display = 'flex';
@@ -5758,8 +5798,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <td><span style="font-weight: 600; color: var(--text-color);">${emp.role}</span></td>
                         <td><span class="status" style="background: ${color}; color: ${textColor}; font-weight: 700;">${emp.status || 'TKO'}</span></td>
                         <td>
-                            <button class="action-btn btn-edit" title="Edit karyawan & PIN" onclick="event.stopPropagation(); editEmployeeById(${empId})"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn btn-delete" title="Hapus karyawan permanen" onclick="event.stopPropagation(); deleteEmployeeById(${empId})"><i class="fas fa-trash"></i></button>
+                            ${isCurrentUserSuperAdmin() ? `
+                                <button class="action-btn btn-edit" title="Edit karyawan & PIN" onclick="event.stopPropagation(); editEmployeeById(${empId})"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn btn-delete" title="Hapus karyawan permanen" onclick="event.stopPropagation(); deleteEmployeeById(${empId})"><i class="fas fa-trash"></i></button>
+                            ` : `
+                                <span style="font-size: 11px; color: #94a3b8; font-style: italic;"><i class="fas fa-lock"></i> Terkunci</span>
+                            `}
                         </td>
                     </tr>
                 `;
@@ -5768,6 +5812,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         function saveKaryawan(e) {
             e.preventDefault();
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menambah data karyawan.");
+                return;
+            }
             const nama = document.getElementById('input-nama').value.trim();
             const jabatan = document.getElementById('input-jabatan').value.trim();
             const status = document.getElementById('input-status').value;
@@ -5798,6 +5846,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         function editEmployeeById(id) {
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat mengubah data karyawan.");
+                return;
+            }
             const emp = SMTI_EMPLOYEES.find(e => (e.id && e.id == id) || e.name === id);
             if (!emp) return;
 
@@ -5822,6 +5874,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         function deleteEmployeeById(id) {
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menghapus data karyawan.");
+                return;
+            }
             const emp = SMTI_EMPLOYEES.find(e => (e.id && e.id == id) || e.name === id);
             if (!emp) return;
 
@@ -6152,6 +6208,40 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const chatAuthorSelect = document.getElementById('comment-author-select');
             if (chatAuthorSelect) {
                 chatAuthorSelect.value = user.name;
+            }
+
+            // 5. Update batasan hak akses (Sembunyikan menu Karyawan, Anak Magang, Pengaturan, Bantuan jika bukan Super Admin)
+            updateUIPermissions(user);
+        }
+
+        function updateUIPermissions(user) {
+            const isSuperAdmin = user && (user.isSuperAdmin || (user.name && user.name.toLowerCase().includes('septian')));
+
+            // 4 Menu yang disembunyikan untuk selain Super Admin
+            const menuKaryawan = document.getElementById('menu-item-karyawan');
+            const menuMagang = document.getElementById('menu-item-magang');
+            const menuPengaturan = document.getElementById('menu-item-pengaturan');
+            const menuBantuan = document.getElementById('menu-item-bantuan');
+            const dropPengaturan = document.getElementById('drop-item-pengaturan');
+
+            if (menuKaryawan) menuKaryawan.style.display = isSuperAdmin ? 'flex' : 'none';
+            if (menuMagang) menuMagang.style.display = isSuperAdmin ? 'flex' : 'none';
+            if (menuPengaturan) menuPengaturan.style.display = isSuperAdmin ? 'flex' : 'none';
+            if (menuBantuan) menuBantuan.style.display = isSuperAdmin ? 'flex' : 'none';
+            if (dropPengaturan) dropPengaturan.style.display = isSuperAdmin ? 'flex' : 'none';
+
+            // Tombol aksi khusus Super Admin
+            document.querySelectorAll('.super-admin-only').forEach(el => {
+                el.style.display = isSuperAdmin ? '' : 'none';
+            });
+
+            // Jika user non-super-admin sedang membuka halaman terlarang, kembalikan ke dasbor
+            const activeSection = document.querySelector('.page-section.active');
+            if (activeSection && !isSuperAdmin) {
+                const restricted = ['karyawan', 'magang', 'pengaturan', 'bantuan'];
+                if (restricted.includes(activeSection.id)) {
+                    showPage('dasbor', document.querySelector('.menu-item[onclick*="dasbor"]'));
+                }
             }
         }
 
