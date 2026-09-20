@@ -3012,9 +3012,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             window.syncInternsTimeout = setTimeout(syncInternsToCloud, 700);
         }
 
+        const VERCEL_INTERNS_ENDPOINT = (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1'))
+            ? 'https://smti-pupuk-kujang.vercel.app/api/interns'
+            : '/api/interns';
+
         async function syncInternsToCloud() {
             try {
-                const res = await fetch('/api/interns', {
+                const res = await fetch(VERCEL_INTERNS_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(SMTI_INTERNS)
@@ -3029,7 +3033,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         async function fetchInternsFromCloud() {
             try {
-                const res = await fetch('/api/interns');
+                const res = await fetch(VERCEL_INTERNS_ENDPOINT);
                 if (res.ok) {
                     const json = await res.json();
                     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
@@ -3354,9 +3358,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             window.syncEmployeesTimeout = setTimeout(syncEmployeesToCloud, 700);
         }
 
+        const VERCEL_EMPLOYEES_ENDPOINT = (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1'))
+            ? 'https://smti-pupuk-kujang.vercel.app/api/employees'
+            : '/api/employees';
+
         async function syncEmployeesToCloud() {
             try {
-                const res = await fetch('/api/employees', {
+                const res = await fetch(VERCEL_EMPLOYEES_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(SMTI_EMPLOYEES)
@@ -3371,7 +3379,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         async function fetchEmployeesFromCloud() {
             try {
-                const res = await fetch('/api/employees');
+                const res = await fetch(VERCEL_EMPLOYEES_ENDPOINT);
                 if (res.ok) {
                     const json = await res.json();
                     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
@@ -3658,6 +3666,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         async function syncFromCloud(showNotification = false) {
             try {
+                // Tarik data karyawan dan anak magang terbaru dari cloud
+                fetchEmployeesFromCloud();
+                fetchInternsFromCloud();
                 const res = await fetch(VERCEL_API_ENDPOINT);
                 if (res.ok) {
                     const json = await res.json();
