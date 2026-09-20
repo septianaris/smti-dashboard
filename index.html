@@ -2677,7 +2677,11 @@
                         </div>
                         <div class="form-group">
                             <label>Penanggung Jawab (PIC) *</label>
-                            <input type="text" id="new-proj-pic" required placeholder="Contoh: Dion / Tim SMTI">
+                            <input type="text" id="new-proj-pic" list="pic-suggestions-list" required placeholder="Contoh: Dion / Tim SMTI">
+                            <datalist id="pic-suggestions-list"></datalist>
+                            <small style="color: #0284c7; font-size: 11px; margin-top: 4px; display: block;">
+                                <i class="fas fa-magic"></i> Otomatis akun login Anda (dapat diganti jika menugaskan personil lain)
+                            </small>
                         </div>
                     </div>
 
@@ -4853,6 +4857,14 @@
             }
 
             select.innerHTML = optionsHtml;
+
+            // Otomatis pilih akun yang sedang login saat ini
+            if (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) {
+                const hasMatch = Array.from(select.options).some(opt => opt.value.toLowerCase() === currentAuthUser.name.toLowerCase());
+                if (hasMatch) {
+                    select.value = currentAuthUser.name;
+                }
+            }
         }
 
         function populateNewProjectMemberCheckboxes() {
@@ -5519,11 +5531,37 @@
             renderProjectsList();
         }
 
+        function populatePicSuggestions() {
+            const dl = document.getElementById('pic-suggestions-list');
+            if (!dl) return;
+            let html = '';
+            SMTI_EMPLOYEES.forEach(emp => {
+                html += `<option value="${emp.name}">${emp.name} (${emp.role})</option>`;
+            });
+            if (typeof SMTI_INTERNS !== 'undefined' && SMTI_INTERNS && SMTI_INTERNS.length > 0) {
+                SMTI_INTERNS.forEach(intern => {
+                    html += `<option value="${intern.name}">${intern.name} (Anak Magang - ${intern.type || 'SMTI'})</option>`;
+                });
+            }
+            dl.innerHTML = html;
+        }
+
         function openAddProjectModal() {
             document.getElementById('form-tambah-proyek').reset();
             const d = new Date();
             d.setDate(d.getDate() + 30);
             document.getElementById('new-proj-deadline').value = d.toISOString().split('T')[0];
+
+            // Otomatis isi kolom PIC dengan akun pengguna yang sedang login via PIN
+            const picInput = document.getElementById('new-proj-pic');
+            if (picInput) {
+                if (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) {
+                    picInput.value = currentAuthUser.name;
+                } else {
+                    picInput.value = '';
+                }
+            }
+            populatePicSuggestions();
 
             loadUserSavedWorkflowTemplates();
             populateWorkflowTemplateDropdown('MIKU');
@@ -5590,8 +5628,9 @@
 
             // Collect invited team members
             const checkedMembers = Array.from(document.querySelectorAll('.new-proj-member-check:checked')).map(cb => cb.value);
-            if (checkedMembers.length === 0 && pic) {
-                checkedMembers.push(pic.split('/')[0].trim());
+            const cleanPic = pic.split('/')[0].trim();
+            if (cleanPic && !checkedMembers.some(m => m.toLowerCase() === cleanPic.toLowerCase())) {
+                checkedMembers.unshift(cleanPic);
             }
 
             const newProject = {
