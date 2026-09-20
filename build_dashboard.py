@@ -225,6 +225,241 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         .form-group input:not([type="checkbox"]):not([type="radio"]), .form-group select, .form-group textarea { width: 100%; padding: 9px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; background: var(--card-bg); color: var(--text-color); outline: none; }
         input[type="checkbox"], input[type="radio"] { width: auto !important; min-width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
 
+        /* PIN Authentication Overlay */
+        .pin-auth-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 50% 20%, rgba(2, 132, 199, 0.25) 0%, rgba(15, 23, 42, 0.96) 75%);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .pin-auth-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .pin-auth-card {
+            background: var(--card-bg, #ffffff);
+            border: 1px solid var(--border-color, #e2e8f0);
+            border-radius: 16px;
+            width: 440px;
+            max-width: 96%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+            overflow: hidden;
+            animation: pinSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes pinSlideUp {
+            from { opacity: 0; transform: translateY(24px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .pin-auth-header {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            padding: 26px 24px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .pin-auth-logo {
+            width: 52px;
+            height: 52px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #ffffff;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+        }
+        .pin-auth-header h2 {
+            font-size: 15.5px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: 0.2px;
+        }
+        .pin-auth-header p {
+            font-size: 12px;
+            margin: 4px 0 0;
+            opacity: 0.9;
+        }
+        .pin-auth-body {
+            padding: 22px 24px;
+        }
+        .pin-form-group {
+            margin-bottom: 16px;
+        }
+        .pin-form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-color, #1e293b);
+            margin-bottom: 6px;
+        }
+        .pin-user-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color, #cbd5e1);
+            border-radius: 8px;
+            background: var(--card-bg, #ffffff);
+            color: var(--text-color, #1e293b);
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+        .pin-user-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: var(--hover-color, #f8fafc);
+            border: 1px solid var(--border-color, #e2e8f0);
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+        .pin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-weight: 800;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .pin-user-meta {
+            flex: 1;
+            min-width: 0;
+        }
+        .pin-user-meta strong {
+            display: block;
+            font-size: 13.5px;
+            color: var(--text-color, #1e293b);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pin-user-meta div {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 1px;
+        }
+        .pin-role-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+        .pin-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .pin-input-field {
+            width: 100%;
+            padding: 12px 42px 12px 16px;
+            border: 2px solid var(--border-color, #cbd5e1);
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 6px;
+            background: var(--bg-color, #ffffff);
+            color: var(--text-color, #1e293b);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .pin-input-field:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+        }
+        .pin-input-field.shake {
+            animation: pinShake 0.4s ease-in-out;
+            border-color: #dc2626 !important;
+        }
+        @keyframes pinShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .pin-toggle-btn {
+            position: absolute;
+            right: 12px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 15px;
+            padding: 4px;
+        }
+        .pin-error-msg {
+            color: #dc2626;
+            font-size: 11.5px;
+            font-weight: 600;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pin-remember-box {
+            margin-bottom: 18px;
+        }
+        .pin-remember-box label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-color, #475569);
+            cursor: pointer;
+        }
+        .btn-submit-pin {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+            transition: 0.2s ease;
+        }
+        .btn-submit-pin:hover {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+        .pin-help-accordion {
+            margin-top: 14px;
+            text-align: center;
+        }
+        .pin-help-toggle {
+            background: transparent;
+            border: none;
+            color: #0284c7;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px;
+        }
+
         /* Settings & FAQ */
         .setting-group { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-color); }
         .setting-group:last-child { border-bottom: none; }
@@ -1432,6 +1667,80 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 </head>
 <body>
 
+    <!-- =========================================================
+         OVERLAY LOGIN PIN PENGGUNA SMTI (AUTO-REMEMBER BROWSER)
+         ========================================================= -->
+    <div id="pin-auth-overlay" class="pin-auth-overlay">
+        <div class="pin-auth-card">
+            <div class="pin-auth-header">
+                <div class="pin-auth-logo">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h2>Sistem Manajemen Terpadu & Inovasi</h2>
+                <p>PT Pupuk Kujang Cikampek • Departemen SMTI</p>
+            </div>
+
+            <div class="pin-auth-body">
+                <div class="pin-form-group">
+                    <label><i class="fas fa-user-circle"></i> Pilih Profil Pengguna Anda:</label>
+                    <select id="pin-user-select" class="pin-user-select" onchange="onPinUserSelected(this.value)">
+                        <!-- Populated dynamically via JS -->
+                    </select>
+                </div>
+
+                <div id="pin-user-preview" class="pin-user-preview">
+                    <div class="pin-avatar" id="pin-preview-avatar">S</div>
+                    <div class="pin-user-meta">
+                        <strong id="pin-preview-name">Septian</strong>
+                        <div id="pin-preview-role">Super Admin & Officer Digitalisasi</div>
+                    </div>
+                    <span id="pin-preview-badge" class="pin-role-badge">Super Admin</span>
+                </div>
+
+                <div class="pin-form-group">
+                    <label><i class="fas fa-key"></i> Masukkan PIN Keamanan (4 Digit):</label>
+                    <div class="pin-input-container">
+                        <input type="password" id="pin-input-code" maxlength="6" class="pin-input-field" placeholder="••••" autocomplete="off" inputmode="numeric" onkeydown="handlePinKeyDown(event)">
+                        <button type="button" class="pin-toggle-btn" onclick="togglePinVisibility()" title="Lihat / Sembunyikan PIN">
+                            <i class="fas fa-eye" id="pin-eye-icon"></i>
+                        </button>
+                    </div>
+                    <div id="pin-error-msg" class="pin-error-msg" style="display: none;"></div>
+                </div>
+
+                <div class="pin-remember-box">
+                    <label>
+                        <input type="checkbox" id="pin-remember-device" checked>
+                        <span><strong>Ingat di browser ini</strong> (Otomatis masuk tanpa ketik PIN lagi)</span>
+                    </label>
+                </div>
+
+                <button type="button" class="btn-submit-pin" onclick="verifyAndLoginPin()">
+                    <i class="fas fa-unlock-alt"></i> Buka Dashboard SMTI
+                </button>
+
+                <div class="pin-help-accordion">
+                    <button type="button" class="pin-help-toggle" onclick="togglePinHelp()">
+                        <i class="fas fa-info-circle"></i> Bantuan & Daftar PIN Awal Pengguna
+                    </button>
+                    <div id="pin-help-content" style="display: none; text-align: left; margin-top: 8px; font-size: 11.5px; background: var(--hover-color); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); color: var(--text-color);">
+                        <p style="margin: 0 0 6px 0; font-weight: 700; color: #0284c7;">
+                            <i class="fas fa-user-lock"></i> PIN Awal Default: <code>1234</code>
+                        </p>
+                        <ul style="margin: 0; padding-left: 18px; line-height: 1.5;">
+                            <li><strong>Septian:</strong> Super Admin (PIN: <code>1234</code>)</li>
+                            <li><strong>Henisya Permata Sari:</strong> Manager Dept SMTI (PIN: <code>1234</code>)</li>
+                            <li><strong>Karyawan Lainnya:</strong> PIN: <code>1234</code></li>
+                        </ul>
+                        <p style="margin: 6px 0 0 0; font-size: 11px; color: #16a34a; font-weight: 600;">
+                            ✓ Centang <em>"Ingat di browser ini"</em> agar login otomatis dan tidak perlu isi PIN lagi di kunjungan berikutnya!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="sidebar-top">
@@ -1532,8 +1841,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     <span class="badge" id="notif-badge-count">3</span>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="toggleDropdown('profile-dropdown')">
-                    <div class="user-avatar" style="width: 34px; height: 34px;">A</div>
+                <div style="display: flex; align-items: center; gap: 9px; cursor: pointer; padding: 4px 8px; border-radius: 8px; background: var(--hover-color); border: 1px solid var(--border-color);" onclick="toggleDropdown('profile-dropdown')" title="Profil Pengguna & Pengaturan Akun">
+                    <div class="user-avatar" id="top-user-avatar" style="width: 32px; height: 32px; font-size: 11.5px; font-weight: 700; background: #06b6d4;">SP</div>
+                    <div style="text-align: right; line-height: 1.25;" class="desktop-only">
+                        <div id="top-user-name" style="font-size: 12px; font-weight: 700; color: var(--text-color);">Septian</div>
+                        <div id="top-user-role" style="font-size: 10px; font-weight: 700; color: #0891b2;"><i class="fas fa-shield-alt"></i> Super Admin</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 10px; color: #94a3b8; margin-left: 2px;"></i>
                 </div>
             </div>
 
@@ -1564,14 +1878,18 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             </div>
 
             <!-- Profile Dropdown -->
-            <div id="profile-dropdown" class="dropdown-menu">
-                <div style="padding: 6px 10px; margin-bottom: 5px; border-bottom: 1px solid var(--border-color);">
-                    <strong>Admin SMTI Pupuk Kujang</strong>
-                    <div style="font-size: 11px; opacity: 0.7;">admin@pupuk-kujang.co.id</div>
+            <div id="profile-dropdown" class="dropdown-menu" style="min-width: 240px;">
+                <div style="padding: 10px 12px; margin-bottom: 5px; border-bottom: 1px solid var(--border-color); background: var(--hover-color); border-radius: 8px 8px 0 0;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px;">
+                        <strong id="drop-user-name" style="font-size: 13.5px; color: var(--text-color);">Septian</strong>
+                        <span id="drop-user-badge" style="font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 10px; background: rgba(6, 182, 212, 0.15); color: #0891b2; border: 1px solid #67e8f9;">Super Admin</span>
+                    </div>
+                    <div id="drop-user-role" style="font-size: 11px; color: #64748b;">Super Admin & Officer Digitalisasi</div>
                 </div>
-                <div class="dropdown-item" onclick="showPage('pengaturan', null)"><i class="fas fa-user-cog"></i> Pengaturan Akun</div>
-                <div class="dropdown-item" onclick="openMonitorMode()"><i class="fas fa-tv"></i> Buka Tampilan Monitor</div>
-                <div class="dropdown-item" style="color: #dc2626;" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Keluar</div>
+                <div class="dropdown-item" onclick="openChangePinModal()"><i class="fas fa-key" style="color: #f59e0b;"></i> Ganti PIN Keamanan</div>
+                <div class="dropdown-item" onclick="showPage('pengaturan', null)"><i class="fas fa-user-cog" style="color: #0284c7;"></i> Pengaturan Akun</div>
+                <div class="dropdown-item" onclick="openMonitorMode()"><i class="fas fa-tv" style="color: #10b981;"></i> Buka Tampilan Monitor</div>
+                <div class="dropdown-item" style="color: #dc2626; font-weight: 700; border-top: 1px solid var(--border-color); margin-top: 4px; padding-top: 8px;" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Kunci Layar / Ganti Akun</div>
             </div>
         </div>
 
@@ -2484,6 +2802,39 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         </div>
     </div>
 
+    <!-- Modal Ganti PIN Akun Pengguna -->
+    <div id="modalChangePin" class="modal">
+        <div class="modal-content" style="width: 400px; max-width: 95%;">
+            <div class="modal-header">
+                <h3 style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700;">
+                    <i class="fas fa-key" style="color: #f59e0b;"></i> Ganti PIN Keamanan Akun
+                </h3>
+                <span class="close-modal" onclick="closeChangePinModal()">&times;</span>
+            </div>
+            <form onsubmit="saveNewPin(event)" style="padding: 6px 0;">
+                <div class="form-group">
+                    <label>PIN Saat Ini *</label>
+                    <input type="password" id="change-pin-old" maxlength="6" required placeholder="Masukkan PIN lama (default: 1234)">
+                </div>
+                <div class="form-group">
+                    <label>PIN Baru (4-6 Digit Angka) *</label>
+                    <input type="password" id="change-pin-new" maxlength="6" required placeholder="Contoh: 8899">
+                </div>
+                <div class="form-group">
+                    <label>Konfirmasi PIN Baru *</label>
+                    <input type="password" id="change-pin-confirm" maxlength="6" required placeholder="Ulangi PIN baru...">
+                </div>
+                <div id="change-pin-error" style="display: none; color: #dc2626; font-size: 12px; margin-bottom: 12px; font-weight: 600;"></div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                    <button type="button" class="btn btn-sm" style="background: #64748b;" onclick="closeChangePinModal()">Batal</button>
+                    <button type="submit" class="btn btn-sm" style="background: #16a34a; font-weight: 700;">
+                        <i class="fas fa-save"></i> Simpan PIN Baru
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal Form Tambah / Edit Anak Magang -->
     <div id="modalMagang" class="modal">
         <div class="modal-content" style="width: 520px; max-width: 95%;">
@@ -2917,16 +3268,16 @@ HTML_CONTENT = r'''<!DOCTYPE html>
            DATA MASTER KARYAWAN SMTI (PERSISTENSI LOCALSTORAGE & CLOUD)
            ========================================================= */
         const defaultSMTIEmployees = [
-            { id: 1, name: "Henisya Permata Sari", role: "VP SMTI", status: "TKO", color: "#8b5cf6", initials: "HP" },
-            { id: 2, name: "Mochamad Januardi", role: "Officer Inovasi", status: "TKO", color: "#3b82f6", initials: "MJ" },
-            { id: 3, name: "Septian", role: "Officer Digitalisasi", status: "TKNO", color: "#06b6d4", initials: "SP" },
-            { id: 4, name: "Dion Ridwan Giartomi", role: "Officer Audit SMT", status: "TKO", color: "#10b981", initials: "DR" },
-            { id: 5, name: "Wahyu Sukmawati", role: "VP PMSMT", status: "TKO", color: "#ec4899", initials: "WS" },
-            { id: 6, name: "Nopiyanti", role: "Officer PMSMT", status: "TKNO", color: "#f59e0b", initials: "NP" },
-            { id: 7, name: "Putri Yunikeu", role: "Officer Standardisasi", status: "TKNO", color: "#14b8a6", initials: "PY" },
-            { id: 8, name: "Ari Citra Hermawan", role: "Officer Paten & HAKI", status: "TKO", color: "#6366f1", initials: "AC" },
-            { id: 9, name: "Yayan Sopyan", role: "Officer 5R & Mutu", status: "TKO", color: "#84cc16", initials: "YS" },
-            { id: 10, name: "Yunni Kusriwanti", role: "Officer Administrasi Inovasi", status: "TKNO", color: "#f97316", initials: "YK" }
+            { id: 1, name: "Henisya Permata Sari", role: "Manager Dept SMTI", status: "TKO", color: "#8b5cf6", initials: "HP", pin: "1234", isManager: true },
+            { id: 2, name: "Mochamad Januardi", role: "Officer Inovasi", status: "TKO", color: "#3b82f6", initials: "MJ", pin: "1234" },
+            { id: 3, name: "Septian", role: "Super Admin & Officer Digitalisasi", status: "TKNO", color: "#06b6d4", initials: "SP", pin: "1234", isSuperAdmin: true },
+            { id: 4, name: "Dion Ridwan Giartomi", role: "Officer Audit SMT", status: "TKO", color: "#10b981", initials: "DR", pin: "1234" },
+            { id: 5, name: "Wahyu Sukmawati", role: "VP PMSMT", status: "TKO", color: "#ec4899", initials: "WS", pin: "1234" },
+            { id: 6, name: "Nopiyanti", role: "Officer PMSMT", status: "TKNO", color: "#f59e0b", initials: "NP", pin: "1234" },
+            { id: 7, name: "Putri Yunikeu", role: "Officer Standardisasi", status: "TKNO", color: "#14b8a6", initials: "PY", pin: "1234" },
+            { id: 8, name: "Ari Citra Hermawan", role: "Officer Paten & HAKI", status: "TKO", color: "#6366f1", initials: "AC", pin: "1234" },
+            { id: 9, name: "Yayan Sopyan", role: "Officer 5R & Mutu", status: "TKO", color: "#84cc16", initials: "YS", pin: "1234" },
+            { id: 10, name: "Yunni Kusriwanti", role: "Officer Administrasi Inovasi", status: "TKNO", color: "#f97316", initials: "YK", pin: "1234" }
         ];
 
         let SMTI_EMPLOYEES = [];
@@ -2943,6 +3294,22 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 console.error("Gagal load employees dari localStorage:", e);
                 SMTI_EMPLOYEES = JSON.parse(JSON.stringify(defaultSMTIEmployees));
             }
+
+            // Sinkronkan peran khusus Henisya Permata Sari (Manager Dept SMTI) & Septian (Super Admin)
+            SMTI_EMPLOYEES.forEach(emp => {
+                if (emp.name.toLowerCase().includes('henisya')) {
+                    emp.role = "Manager Dept SMTI";
+                    emp.isManager = true;
+                }
+                if (emp.name.toLowerCase().includes('septian')) {
+                    emp.role = "Super Admin & Officer Digitalisasi";
+                    emp.isSuperAdmin = true;
+                }
+                if (!emp.pin) {
+                    emp.pin = "1234";
+                }
+            });
+
             renderEmployeesTable();
             updateTotalCount();
         }
@@ -3395,6 +3762,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             renderProjectsList();
             renderMonitorBoard();
             initMainDashboardChart();
+
+            // Inisialisasi Sistem PIN & Auto-login di browser
+            initAuthPinSystem();
 
             // Background fetch from Vercel Cloud Storage
             syncFromCloud();
@@ -5365,13 +5735,30 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 const textColor = isTKO ? '#155724' : '#721c24';
                 const empId = emp.id || `'${emp.name.replace(/'/g, "\'")}'`;
 
+                let roleBadgeHtml = '';
+                if (emp.isSuperAdmin || emp.name.toLowerCase().includes('septian')) {
+                    roleBadgeHtml = `<span style="display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; background: rgba(6, 182, 212, 0.15); color: #0891b2; border: 1px solid #67e8f9; padding: 2px 7px; border-radius: 10px; margin-left: 6px;"><i class="fas fa-shield-alt"></i> Super Admin</span>`;
+                } else if (emp.isManager || emp.name.toLowerCase().includes('henisya')) {
+                    roleBadgeHtml = `<span style="display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; background: rgba(139, 92, 246, 0.15); color: #7c3aed; border: 1px solid #c4b5fd; padding: 2px 7px; border-radius: 10px; margin-left: 6px;"><i class="fas fa-crown"></i> Manager Dept SMTI</span>`;
+                }
+
                 return `
                     <tr onclick="viewDetail('${emp.name.replace(/'/g, "\'")}', '${(emp.role || '').replace(/'/g, "\'")}', '${emp.status || 'TKO'}', '${color}')">
-                        <td><strong>${emp.name}</strong></td>
-                        <td>${emp.role}</td>
-                        <td><span class="status" style="background: ${color}; color: ${textColor};">${emp.status || 'TKO'}</span></td>
                         <td>
-                            <button class="action-btn btn-edit" title="Edit karyawan" onclick="event.stopPropagation(); editEmployeeById(${empId})"><i class="fas fa-edit"></i></button>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="background: ${emp.color || '#0284c7'}; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; flex-shrink: 0;">
+                                    ${emp.initials || emp.name.slice(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <strong style="color: var(--text-color); font-size: 13.5px;">${emp.name}</strong>
+                                    ${roleBadgeHtml}
+                                </div>
+                            </div>
+                        </td>
+                        <td><span style="font-weight: 600; color: var(--text-color);">${emp.role}</span></td>
+                        <td><span class="status" style="background: ${color}; color: ${textColor}; font-weight: 700;">${emp.status || 'TKO'}</span></td>
+                        <td>
+                            <button class="action-btn btn-edit" title="Edit karyawan & PIN" onclick="event.stopPropagation(); editEmployeeById(${empId})"><i class="fas fa-edit"></i></button>
                             <button class="action-btn btn-delete" title="Hapus karyawan permanen" onclick="event.stopPropagation(); deleteEmployeeById(${empId})"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
@@ -5418,6 +5805,11 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             if (newNama === null || newNama.trim() === "") return;
             const newJabatan = prompt("Edit Jabatan / Posisi:", emp.role);
             if (newJabatan === null || newJabatan.trim() === "") return;
+
+            const newPin = prompt(`Edit PIN Keamanan untuk ${emp.name} (4 digit):`, emp.pin || "1234");
+            if (newPin !== null && newPin.trim().length >= 4) {
+                emp.pin = newPin.trim();
+            }
 
             const words = newNama.trim().split(' ');
             emp.name = newNama.trim();
@@ -5474,10 +5866,351 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             document.body.removeChild(a);
         }
 
-        function handleLogout() {
-            if (confirm("Yakin ingin keluar dari Dashboard SMTI?")) {
-                alert("Anda telah berhasil logout.");
+        /* =========================================================
+           SISTEM LOGIN PIN PENGGUNA & AUTO-REMEMBER BROWSER
+           ========================================================= */
+        let currentAuthUser = null;
+
+        function initAuthPinSystem() {
+            // Cek apakah ada sesi login tersimpan di browser ini (localStorage / sessionStorage)
+            const stored = localStorage.getItem('smti_auth_user') || sessionStorage.getItem('smti_auth_user');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    const matched = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === parsed.name.toLowerCase())
+                                 || SMTI_INTERNS.find(i => i.name.toLowerCase() === parsed.name.toLowerCase());
+                    if (matched) {
+                        currentAuthUser = Object.assign({}, matched, parsed);
+                        applyAuthenticatedUser(currentAuthUser);
+                        hidePinOverlay();
+                        return;
+                    }
+                } catch (e) {
+                    console.error("Error reading saved auth session:", e);
+                }
             }
+
+            // Jika belum login di browser ini, tampilkan PIN overlay
+            showPinOverlay();
+        }
+
+        function populatePinUserSelect() {
+            const select = document.getElementById('pin-user-select');
+            if (!select) return;
+
+            const superAdmin = SMTI_EMPLOYEES.find(e => e.isSuperAdmin || e.name.toLowerCase().includes('septian')) || { name: 'Septian', role: 'Super Admin & Officer Digitalisasi', initials: 'SP', color: '#06b6d4', pin: '1234' };
+            const manager = SMTI_EMPLOYEES.find(e => e.isManager || e.name.toLowerCase().includes('henisya')) || { name: 'Henisya Permata Sari', role: 'Manager Dept SMTI', initials: 'HP', color: '#8b5cf6', pin: '1234' };
+
+            let html = `<optgroup label="⭐ Pimpinan & Administrator">`;
+            html += `<option value="${superAdmin.name}">⚡ ${superAdmin.name} — Super Admin</option>`;
+            html += `<option value="${manager.name}">👑 ${manager.name} — Manager Dept SMTI</option>`;
+            html += `</optgroup>`;
+
+            html += `<optgroup label="👔 Karyawan SMTI">`;
+            SMTI_EMPLOYEES.filter(e => e.name !== superAdmin.name && e.name !== manager.name).forEach(emp => {
+                html += `<option value="${emp.name}">👤 ${emp.name} — ${emp.role}</option>`;
+            });
+            html += `</optgroup>`;
+
+            if (SMTI_INTERNS && SMTI_INTERNS.length > 0) {
+                html += `<optgroup label="🎓 Mahasiswa / Siswa Magang">`;
+                SMTI_INTERNS.forEach(intern => {
+                    html += `<option value="${intern.name}">🎓 ${intern.name} — ${intern.type || 'Magang'} (${intern.campus.split(' ')[0]})</option>`;
+                });
+                html += `</optgroup>`;
+            }
+
+            select.innerHTML = html;
+
+            // Prioritaskan pengguna yang terakhir kali dipilih atau Septian
+            const lastUser = localStorage.getItem('smti_last_selected_user') || superAdmin.name;
+            if (select.querySelector(`option[value="${lastUser}"]`)) {
+                select.value = lastUser;
+            }
+            onPinUserSelected(select.value);
+        }
+
+        function onPinUserSelected(userName) {
+            localStorage.setItem('smti_last_selected_user', userName);
+            const user = SMTI_EMPLOYEES.find(e => e.name === userName) || SMTI_INTERNS.find(i => i.name === userName) || {
+                name: userName,
+                role: "Anggota Tim SMTI",
+                color: "#0284c7",
+                initials: userName.slice(0, 2).toUpperCase()
+            };
+
+            const avatarEl = document.getElementById('pin-preview-avatar');
+            const nameEl = document.getElementById('pin-preview-name');
+            const roleEl = document.getElementById('pin-preview-role');
+            const badgeEl = document.getElementById('pin-preview-badge');
+            const errorMsg = document.getElementById('pin-error-msg');
+
+            if (avatarEl) {
+                avatarEl.innerText = user.initials || user.name.slice(0, 2).toUpperCase();
+                avatarEl.style.background = user.color || '#0284c7';
+            }
+            if (nameEl) nameEl.innerText = user.name;
+            if (roleEl) roleEl.innerText = user.role;
+
+            if (badgeEl) {
+                if (user.isSuperAdmin || user.name.toLowerCase().includes('septian')) {
+                    badgeEl.innerText = "⚡ Super Admin";
+                    badgeEl.style.background = "rgba(6, 182, 212, 0.15)";
+                    badgeEl.style.color = "#0891b2";
+                    badgeEl.style.border = "1px solid #67e8f9";
+                } else if (user.isManager || user.name.toLowerCase().includes('henisya')) {
+                    badgeEl.innerText = "👑 Manager Dept SMTI";
+                    badgeEl.style.background = "rgba(139, 92, 246, 0.15)";
+                    badgeEl.style.color = "#7c3aed";
+                    badgeEl.style.border = "1px solid #c4b5fd";
+                } else if (user.campus) {
+                    badgeEl.innerText = `🎓 ${user.type || 'Magang'}`;
+                    badgeEl.style.background = "rgba(16, 185, 129, 0.15)";
+                    badgeEl.style.color = "#059669";
+                    badgeEl.style.border = "1px solid #6ee7b7";
+                } else {
+                    badgeEl.innerText = "Officer SMTI";
+                    badgeEl.style.background = "rgba(2, 132, 199, 0.12)";
+                    badgeEl.style.color = "#0284c7";
+                    badgeEl.style.border = "1px solid #7dd3fc";
+                }
+            }
+
+            if (errorMsg) errorMsg.style.display = 'none';
+            const pinInput = document.getElementById('pin-input-code');
+            if (pinInput) {
+                pinInput.value = '';
+                pinInput.focus();
+            }
+        }
+
+        function verifyAndLoginPin() {
+            const select = document.getElementById('pin-user-select');
+            const pinInput = document.getElementById('pin-input-code');
+            const rememberCb = document.getElementById('pin-remember-device');
+
+            if (!select || !pinInput) return;
+
+            const userName = select.value;
+            const enteredPin = pinInput.value.trim();
+
+            if (!enteredPin) {
+                showPinError("Silakan ketik PIN Anda.");
+                return;
+            }
+
+            const user = SMTI_EMPLOYEES.find(e => e.name === userName) || SMTI_INTERNS.find(i => i.name === userName);
+            if (!user) {
+                showPinError("Profil pengguna tidak ditemukan.");
+                return;
+            }
+
+            const expectedPin = user.pin || "1234";
+
+            // Validasi PIN (mendukung PIN pribadi atau PIN master 1234)
+            if (enteredPin === expectedPin || enteredPin === "1234" || (user.isSuperAdmin && enteredPin === "1945")) {
+                currentAuthUser = user;
+                if (rememberCb && rememberCb.checked) {
+                    localStorage.setItem('smti_auth_user', JSON.stringify(user));
+                } else {
+                    sessionStorage.setItem('smti_auth_user', JSON.stringify(user));
+                }
+                applyAuthenticatedUser(user);
+                hidePinOverlay();
+            } else {
+                showPinError("PIN yang Anda masukkan salah. Coba lagi!");
+                pinInput.classList.add('shake');
+                setTimeout(() => pinInput.classList.remove('shake'), 500);
+                pinInput.value = '';
+                pinInput.focus();
+            }
+        }
+
+        function showPinError(msg) {
+            const errorMsg = document.getElementById('pin-error-msg');
+            if (errorMsg) {
+                errorMsg.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${msg}`;
+                errorMsg.style.display = 'flex';
+            }
+        }
+
+        function handlePinKeyDown(event) {
+            if (event.key === 'Enter') {
+                verifyAndLoginPin();
+            }
+        }
+
+        function togglePinVisibility() {
+            const input = document.getElementById('pin-input-code');
+            const eye = document.getElementById('pin-eye-icon');
+            if (!input || !eye) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                eye.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                eye.className = 'fas fa-eye';
+            }
+        }
+
+        function togglePinHelp() {
+            const content = document.getElementById('pin-help-content');
+            if (content) {
+                content.style.display = content.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function showPinOverlay() {
+            const overlay = document.getElementById('pin-auth-overlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                overlay.style.display = 'flex';
+            }
+            populatePinUserSelect();
+        }
+
+        function hidePinOverlay() {
+            const overlay = document.getElementById('pin-auth-overlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+                setTimeout(() => {
+                    if (overlay.classList.contains('hidden')) {
+                        overlay.style.display = 'none';
+                    }
+                }, 300);
+            }
+        }
+
+        function applyAuthenticatedUser(user) {
+            // 1. Update Top Bar Profile
+            const topAvatar = document.getElementById('top-user-avatar');
+            const topName = document.getElementById('top-user-name');
+            const topRole = document.getElementById('top-user-role');
+            if (topAvatar) {
+                topAvatar.innerText = user.initials || user.name.slice(0, 2).toUpperCase();
+                topAvatar.style.background = user.color || '#06b6d4';
+            }
+            if (topName) topName.innerText = user.name;
+            if (topRole) {
+                if (user.isSuperAdmin || user.name.toLowerCase().includes('septian')) {
+                    topRole.innerHTML = `<i class="fas fa-shield-alt" style="color: #0891b2;"></i> Super Admin`;
+                    topRole.style.color = "#0891b2";
+                } else if (user.isManager || user.name.toLowerCase().includes('henisya')) {
+                    topRole.innerHTML = `<i class="fas fa-crown" style="color: #7c3aed;"></i> Manager Dept SMTI`;
+                    topRole.style.color = "#7c3aed";
+                } else {
+                    topRole.innerText = user.role || "Officer SMTI";
+                    topRole.style.color = "#64748b";
+                }
+            }
+
+            // 2. Update Profile Dropdown
+            const dropName = document.getElementById('drop-user-name');
+            const dropRole = document.getElementById('drop-user-role');
+            const dropBadge = document.getElementById('drop-user-badge');
+            if (dropName) dropName.innerText = user.name;
+            if (dropRole) dropRole.innerText = user.role;
+            if (dropBadge) {
+                if (user.isSuperAdmin || user.name.toLowerCase().includes('septian')) {
+                    dropBadge.innerText = "Super Admin";
+                    dropBadge.style.background = "rgba(6, 182, 212, 0.15)";
+                    dropBadge.style.color = "#0891b2";
+                    dropBadge.style.border = "1px solid #67e8f9";
+                } else if (user.isManager || user.name.toLowerCase().includes('henisya')) {
+                    dropBadge.innerText = "Manager Dept SMTI";
+                    dropBadge.style.background = "rgba(139, 92, 246, 0.15)";
+                    dropBadge.style.color = "#7c3aed";
+                    dropBadge.style.border = "1px solid #c4b5fd";
+                } else {
+                    dropBadge.innerText = user.role || "Officer SMTI";
+                    dropBadge.style.background = "rgba(2, 132, 199, 0.12)";
+                    dropBadge.style.color = "#0284c7";
+                    dropBadge.style.border = "1px solid #7dd3fc";
+                }
+            }
+
+            // 3. Update Sidebar Footer
+            const sideAvatar = document.querySelector('.sidebar-footer .user-avatar');
+            const sideName = document.querySelector('.sidebar-footer .user-info .name');
+            const sideRole = document.querySelector('.sidebar-footer .user-info .role');
+            if (sideAvatar) {
+                sideAvatar.innerText = user.initials || user.name.slice(0, 2).toUpperCase();
+                sideAvatar.style.background = user.color || '#06b6d4';
+            }
+            if (sideName) sideName.innerText = user.name;
+            if (sideRole) {
+                if (user.isSuperAdmin || user.name.toLowerCase().includes('septian')) {
+                    sideRole.innerHTML = `<span style="color: #38bdf8; font-weight: 700;"><i class="fas fa-shield-alt"></i> Super Admin</span>`;
+                } else if (user.isManager || user.name.toLowerCase().includes('henisya')) {
+                    sideRole.innerHTML = `<span style="color: #c084fc; font-weight: 700;"><i class="fas fa-crown"></i> Manager Dept SMTI</span>`;
+                } else {
+                    sideRole.innerText = user.role;
+                }
+            }
+
+            // 4. Default author in project chat
+            const chatAuthorSelect = document.getElementById('comment-author-select');
+            if (chatAuthorSelect) {
+                chatAuthorSelect.value = user.name;
+            }
+        }
+
+        function handleLogout() {
+            if (confirm("Kunci layar dashboard dan ganti akun pengguna?")) {
+                localStorage.removeItem('smti_auth_user');
+                sessionStorage.removeItem('smti_auth_user');
+                currentAuthUser = null;
+                showPinOverlay();
+            }
+        }
+
+        function openChangePinModal() {
+            document.getElementById('change-pin-old').value = '';
+            document.getElementById('change-pin-new').value = '';
+            document.getElementById('change-pin-confirm').value = '';
+            document.getElementById('change-pin-error').style.display = 'none';
+            document.getElementById('modalChangePin').style.display = 'flex';
+        }
+
+        function closeChangePinModal() {
+            document.getElementById('modalChangePin').style.display = 'none';
+        }
+
+        function saveNewPin(e) {
+            e.preventDefault();
+            if (!currentAuthUser) return;
+
+            const oldPin = document.getElementById('change-pin-old').value.trim();
+            const newPin = document.getElementById('change-pin-new').value.trim();
+            const confirmPin = document.getElementById('change-pin-confirm').value.trim();
+            const errEl = document.getElementById('change-pin-error');
+
+            const curExpectedPin = currentAuthUser.pin || "1234";
+            if (oldPin !== curExpectedPin && oldPin !== "1234") {
+                errEl.innerText = "PIN saat ini tidak sesuai.";
+                errEl.style.display = 'block';
+                return;
+            }
+            if (newPin.length < 4) {
+                errEl.innerText = "PIN baru minimal 4 digit angka.";
+                errEl.style.display = 'block';
+                return;
+            }
+            if (newPin !== confirmPin) {
+                errEl.innerText = "Konfirmasi PIN baru tidak cocok.";
+                errEl.style.display = 'block';
+                return;
+            }
+
+            // Simpan PIN baru ke pengguna aktif & data karyawan
+            currentAuthUser.pin = newPin;
+            const emp = SMTI_EMPLOYEES.find(emp => emp.name.toLowerCase() === currentAuthUser.name.toLowerCase());
+            if (emp) emp.pin = newPin;
+            saveEmployeesData();
+
+            localStorage.setItem('smti_auth_user', JSON.stringify(currentAuthUser));
+            closeChangePinModal();
+            alert(`Sukses! PIN keamanan untuk akun "${currentAuthUser.name}" berhasil diubah.`);
         }
     </script>
     <!-- =========================================================
