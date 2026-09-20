@@ -3866,7 +3866,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         function showPage(pageId, element) {
-            const restrictedPages = ['karyawan', 'magang', 'pengaturan', 'bantuan'];
+            const restrictedPages = ['karyawan', 'magang', 'pengaturan'];
             if (restrictedPages.includes(pageId) && !isCurrentUserSuperAdmin()) {
                 alert("Akses Terbatas: Menu ini dikhususkan untuk Super Admin (Septian).");
                 return;
@@ -6227,7 +6227,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             if (menuKaryawan) menuKaryawan.style.display = isSuperAdmin ? 'flex' : 'none';
             if (menuMagang) menuMagang.style.display = isSuperAdmin ? 'flex' : 'none';
             if (menuPengaturan) menuPengaturan.style.display = isSuperAdmin ? 'flex' : 'none';
-            if (menuBantuan) menuBantuan.style.display = isSuperAdmin ? 'flex' : 'none';
+            if (menuBantuan) menuBantuan.style.display = 'flex';
             if (dropPengaturan) dropPengaturan.style.display = isSuperAdmin ? 'flex' : 'none';
 
             // Tombol aksi khusus Super Admin
@@ -6238,7 +6238,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             // Jika user non-super-admin sedang membuka halaman terlarang, kembalikan ke dasbor
             const activeSection = document.querySelector('.page-section.active');
             if (activeSection && !isSuperAdmin) {
-                const restricted = ['karyawan', 'magang', 'pengaturan', 'bantuan'];
+                const restricted = ['karyawan', 'magang', 'pengaturan'];
                 if (restricted.includes(activeSection.id)) {
                     showPage('dasbor', document.querySelector('.menu-item[onclick*="dasbor"]'));
                 }
