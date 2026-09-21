@@ -153,6 +153,7 @@
         /* Cards & Grids */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
         .card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); margin-bottom: 20px; border: 1px solid var(--border-color); }
+        .card[onclick]:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0,0,0,0.08); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-weight: 700; font-size: 16px; }
         .chart-container { position: relative; height: 320px; width: 100%; }
         
@@ -1891,40 +1892,49 @@
         <!-- ================= PAGE DASBOR ================= -->
         <div id="dasbor" class="page-section active">
             <div class="dashboard-grid">
-                <div class="card" style="border-left: 4px solid #0284c7;">
-                    <div class="card-header"><span>Total Proyek Berjalan</span><i class="fas fa-tasks" style="color: #0284c7;"></i></div>
-                    <h2 id="dash-total-proyek" style="font-size: 30px; font-weight: 800;">8</h2>
-                    <small style="color: #64748b;">Inovasi, Mutu, & Digitalisasi</small>
+                <div class="card" style="border-left: 4px solid #0284c7; cursor: pointer; transition: transform 0.2s;" onclick="showPage('proyek', document.querySelectorAll('.menu-item')[1])" title="Klik untuk membuka Daftar Proyek Berjalan">
+                    <div class="card-header"><span>Total Proyek SMTI</span><i class="fas fa-tasks" style="color: #0284c7;"></i></div>
+                    <div style="display: flex; align-items: baseline; gap: 8px;">
+                        <h2 id="dash-total-proyek" style="font-size: 30px; font-weight: 800;">11</h2>
+                        <span id="dash-running-badge" style="font-size: 12.5px; font-weight: 700; color: #0284c7; background: rgba(2,132,199,0.12); padding: 2px 7px; border-radius: 6px;">8 Berjalan</span>
+                    </div>
+                    <small id="dash-proyek-subtext" style="color: #64748b;">8 Sedang Berjalan • 3 Selesai</small>
                 </div>
-                <div class="card" style="border-left: 4px solid #dc2626;">
-                    <div class="card-header"><span>Proyek Urgensi Tinggi</span><i class="fas fa-bell" style="color: #dc2626;"></i></div>
-                    <h2 id="dash-urgent-proyek" style="font-size: 30px; font-weight: 800; color: #dc2626;">3</h2>
+                <div class="card" style="border-left: 4px solid #dc2626; cursor: pointer; transition: transform 0.2s;" onclick="showPage('proyek', document.querySelectorAll('.menu-item')[1]); filterProjects('Tinggi', document.querySelector('.tab-btn[data-filter=\'Tinggi\']'))" title="Klik untuk memfilter proyek urgensi tinggi">
+                    <div class="card-header"><span>Urgensi Tinggi (Aktif)</span><i class="fas fa-fire" style="color: #dc2626;"></i></div>
+                    <h2 id="dash-urgent-proyek" style="font-size: 30px; font-weight: 800; color: #dc2626;">2</h2>
                     <small style="color: #dc2626; font-weight: 600;"><i class="fas fa-clock"></i> Membutuhkan Tindakan Segera</small>
                 </div>
-                <div class="card" style="border-left: 4px solid #d97706;">
-                    <div class="card-header"><span>Urgensi Sedang</span><i class="fas fa-hourglass-half" style="color: #d97706;"></i></div>
+                <div class="card" style="border-left: 4px solid #d97706; cursor: pointer; transition: transform 0.2s;" onclick="showPage('proyek', document.querySelectorAll('.menu-item')[1]); filterProjects('Sedang', document.querySelector('.tab-btn[data-filter=\'Sedang\']'))" title="Klik untuk memfilter proyek urgensi sedang">
+                    <div class="card-header"><span>Urgensi Sedang (Aktif)</span><i class="fas fa-hourglass-half" style="color: #d97706;"></i></div>
                     <h2 id="dash-med-proyek" style="font-size: 30px; font-weight: 800; color: #d97706;">3</h2>
                     <small style="color: #64748b;">Dalam Pengawalan Rutin</small>
                 </div>
-                <div class="card" style="border-left: 4px solid #16a34a;">
-                    <div class="card-header"><span>Total Karyawan</span><i class="fas fa-users" style="color: #16a34a;"></i></div>
-                    <h2 id="dash-karyawan-count" style="font-size: 30px; font-weight: 800;">10</h2>
-                    <small style="color: #64748b;">Tim SMTI & PMSMT</small>
+                <div class="card" style="border-left: 4px solid #16a34a; cursor: pointer; transition: transform 0.2s;" onclick="if(isCurrentUserSuperAdmin()) showPage('karyawan', document.getElementById('menu-item-karyawan'))" title="Klik untuk melihat personil SMTI">
+                    <div class="card-header"><span>Personil Dept SMTI</span><i class="fas fa-users" style="color: #16a34a;"></i></div>
+                    <h2 id="dash-karyawan-count" style="font-size: 30px; font-weight: 800;">12</h2>
+                    <small id="dash-karyawan-subtext" style="color: #64748b;">8 TKO • 4 TKNO</small>
                 </div>
             </div>
 
-            <!-- Urgent Highlight Banner on Dashboard -->
-            <div class="card" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.06), rgba(2, 132, 199, 0.06)); border: 1px solid rgba(220, 38, 38, 0.2);">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                    <div>
-                        <span class="urgency-badge high" style="margin-bottom: 6px;"><i class="fas fa-exclamation-circle"></i> PENGINGAT DEADLINE SEGERA</span>
-                        <h3 style="font-size: 17px; font-weight: 700;">KIX - Prototyping and Pitch Preparation</h3>
-                        <p style="font-size: 13px; color: #64748b; margin-top: 4px;">Pendampingan intensif peserta internal & afiliasi PT Pupuk Kujang. Target Pitching: 15 Mei 2026.</p>
+            <!-- Urgent Highlight Banner on Dashboard (Dynamic) -->
+            <div class="card" id="dash-urgent-banner" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.06), rgba(2, 132, 199, 0.06)); border: 1px solid rgba(220, 38, 38, 0.2);">
+                <!-- Dynamically rendered by renderDashboardUrgentBanner() -->
+            </div>
+
+            <!-- Live Status Progres Proyek Berjalan Terkini di Dasbor -->
+            <div class="card">
+                <div class="card-header" style="margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-stream" style="color: #0284c7; font-size: 16px;"></i>
+                        <span style="font-size: 15px; font-weight: 700;">Status Progres Proyek Berjalan Terkini</span>
                     </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn" style="background: #dc2626;" onclick="openFlowModal(1)"><i class="fas fa-sitemap"></i> Buka Alur & Input Checklist</button>
-                        <button class="btn" onclick="openMonitorMode()"><i class="fas fa-desktop"></i> Pantau di Monitor</button>
-                    </div>
+                    <button class="btn btn-sm" style="background: #0284c7;" onclick="showPage('proyek', document.querySelectorAll('.menu-item')[1])">
+                        Lihat Seluruh Proyek <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div id="dash-running-projects-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+                    <!-- Rendered dynamically by renderDashboardRunningProjects() -->
                 </div>
             </div>
 
@@ -4011,6 +4021,117 @@
             return (p.status === 'Completed' || p.status === 'Finished' || p.progress >= 100);
         }
 
+        function renderDashboardUrgentBanner() {
+            const banner = document.getElementById('dash-urgent-banner');
+            if (!banner) return;
+
+            // Cari proyek aktif prioritas tertinggi yang belum selesai
+            const activeUrgent = projectDataSMTI.filter(p => !isProjectCompleted(p) && p.urgency === 'Tinggi');
+            const targetProj = activeUrgent.length > 0 ? activeUrgent[0] : projectDataSMTI.find(p => !isProjectCompleted(p));
+
+            if (targetProj) {
+                const stageIndex = targetProj.flow.findIndex(s => s.status === 'active');
+                const activeStage = stageIndex >= 0 ? targetProj.flow[stageIndex] : targetProj.flow[0];
+                const stageName = activeStage ? activeStage.title : 'Tahap Berjalan';
+
+                banner.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                        <div style="flex: 1; min-width: 260px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
+                                <span class="urgency-badge high"><i class="fas fa-exclamation-circle"></i> PRIORITAS UTAMA SEDANG BERJALAN</span>
+                                <span class="project-category-tag" style="font-size: 11px;">${targetProj.category}</span>
+                                <span style="font-size: 12px; color: #dc2626; font-weight: 700;"><i class="fas fa-calendar-alt"></i> Target Deadline: ${targetProj.deadline}</span>
+                            </div>
+                            <h3 style="font-size: 17px; font-weight: 800; color: var(--text-color); margin: 4px 0;">${targetProj.name}</h3>
+                            <p style="font-size: 13px; color: #64748b; margin: 4px 0 8px 0; line-height: 1.4;">${targetProj.description}</p>
+                            <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 12px;">
+                                <span><i class="fas fa-user-tie" style="color: #0284c7;"></i> PIC: <strong>${targetProj.pic}</strong></span>
+                                <span><i class="fas fa-sitemap" style="color: #0284c7;"></i> Tahap: <strong>${stageName}</strong></span>
+                                <div style="display: inline-flex; align-items: center; gap: 6px;">
+                                    <span>Progres:</span>
+                                    <div style="width: 90px; height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; display: inline-block;">
+                                        <div style="width: ${targetProj.progress}%; height: 100%; background: #0284c7; border-radius: 4px;"></div>
+                                    </div>
+                                    <strong style="color: #0284c7;">${targetProj.progress}%</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn" style="background: #dc2626; font-weight: 700;" onclick="openFlowModal(${targetProj.id})">
+                                <i class="fas fa-sitemap"></i> Buka Alur & Input Checklist
+                            </button>
+                            <button class="btn" style="background: #0284c7;" onclick="openMonitorMode()">
+                                <i class="fas fa-desktop"></i> Pantau di Monitor
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                banner.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-check-circle" style="font-size: 30px; color: #16a34a;"></i>
+                            <div>
+                                <h4 style="margin: 0; color: #16a34a; font-size: 15px;">Semua Proyek Berjalan Terkendali</h4>
+                                <p style="margin: 2px 0 0 0; font-size: 12.5px; color: #64748b;">Tidak ada proyek darurat yang memerlukan tindakan mendesak.</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm" style="background: #0284c7;" onclick="showPage('proyek', document.querySelectorAll('.menu-item')[1])">
+                            Lihat Daftar Proyek
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderDashboardRunningProjects() {
+            const container = document.getElementById('dash-running-projects-list');
+            if (!container) return;
+
+            const runningProjects = projectDataSMTI.filter(p => !isProjectCompleted(p));
+            if (runningProjects.length === 0) {
+                container.innerHTML = `<div style="grid-column: 1 / -1; padding: 24px; text-align: center; color: #64748b; font-size: 13px;">Semua proyek telah tuntas diselesaikan.</div>`;
+                return;
+            }
+
+            container.innerHTML = runningProjects.map(p => {
+                const urgencyClass = p.urgency === 'Tinggi' ? 'high' : (p.urgency === 'Sedang' ? 'med' : 'low');
+                const urgencyColor = p.urgency === 'Tinggi' ? '#dc2626' : (p.urgency === 'Sedang' ? '#d97706' : '#16a34a');
+                const stageIndex = p.flow.findIndex(s => s.status === 'active');
+                const activeStageName = stageIndex >= 0 ? p.flow[stageIndex].title : 'Tahap Berjalan';
+
+                return `
+                    <div style="background: var(--hover-color); border: 1px solid var(--border-color); border-left: 4px solid ${urgencyColor}; border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span class="project-category-tag" style="font-size: 10.5px;">${p.category}</span>
+                                <span class="urgency-badge ${urgencyClass}" style="font-size: 10px; padding: 2px 6px;">${p.urgency}</span>
+                            </div>
+                            <h4 style="font-size: 13.5px; font-weight: 700; color: var(--text-color); margin: 0; line-height: 1.35;">${p.name}</h4>
+                            <div style="font-size: 11.5px; color: #64748b; margin-top: 5px;">
+                                <i class="fas fa-sitemap" style="color: #0284c7;"></i> ${activeStageName}
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                                <span style="color: #64748b;">PIC: <strong>${p.pic.split('/')[0].trim()}</strong></span>
+                                <strong style="color: #0284c7;">${p.progress}%</strong>
+                            </div>
+                            <div style="height: 6px; background: rgba(0,0,0,0.08); border-radius: 4px; overflow: hidden;">
+                                <div style="width: ${p.progress}%; height: 100%; background: ${p.progress === 100 ? '#16a34a' : '#0284c7'}; border-radius: 4px;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border-color);">
+                                <small style="font-size: 11px; color: #dc2626;"><i class="fas fa-clock"></i> ${p.daysLeft || p.deadline}</small>
+                                <button class="btn btn-sm" style="background: #0284c7; font-size: 11px; padding: 3px 9px;" onclick="openFlowModal(${p.id})">
+                                    <i class="fas fa-external-link-alt"></i> Alur
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         function renderProjectsList() {
             const container = document.getElementById('project-card-container');
             if (!container) return;
@@ -4037,30 +4158,42 @@
             const totalCount = projectDataSMTI.length;
             const completedCount = projectDataSMTI.filter(p => isProjectCompleted(p)).length;
             const runningCount = totalCount - completedCount;
-            const highCount = projectDataSMTI.filter(p => p.urgency === 'Tinggi').length;
-            const medCount = projectDataSMTI.filter(p => p.urgency === 'Sedang').length;
-            const lowCount = projectDataSMTI.filter(p => p.urgency === 'Rendah').length;
+
+            // Hitung urgensi HANYA untuk proyek yang sedang aktif berjalan
+            const runningHighCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && p.urgency === 'Tinggi').length;
+            const runningMedCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && p.urgency === 'Sedang').length;
+            const runningLowCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && p.urgency === 'Rendah').length;
+
+            const allHighCount = projectDataSMTI.filter(p => p.urgency === 'Tinggi').length;
+            const allMedCount = projectDataSMTI.filter(p => p.urgency === 'Sedang').length;
+            const allLowCount = projectDataSMTI.filter(p => p.urgency === 'Rendah').length;
 
             if (document.getElementById('proyek-kpi-total')) document.getElementById('proyek-kpi-total').innerText = totalCount;
             if (document.getElementById('proyek-kpi-running')) document.getElementById('proyek-kpi-running').innerText = runningCount;
             if (document.getElementById('proyek-kpi-completed')) document.getElementById('proyek-kpi-completed').innerText = completedCount;
-            if (document.getElementById('proyek-kpi-high')) document.getElementById('proyek-kpi-high').innerText = highCount;
-            if (document.getElementById('proyek-kpi-med')) document.getElementById('proyek-kpi-med').innerText = medCount;
-            if (document.getElementById('proyek-kpi-low')) document.getElementById('proyek-kpi-low').innerText = lowCount;
+            if (document.getElementById('proyek-kpi-high')) document.getElementById('proyek-kpi-high').innerText = allHighCount;
+            if (document.getElementById('proyek-kpi-med')) document.getElementById('proyek-kpi-med').innerText = allMedCount;
+            if (document.getElementById('proyek-kpi-low')) document.getElementById('proyek-kpi-low').innerText = allLowCount;
 
             // Update tab badge counters
             if (document.getElementById('count-proj-all')) document.getElementById('count-proj-all').innerText = totalCount;
             if (document.getElementById('count-proj-running')) document.getElementById('count-proj-running').innerText = runningCount;
             if (document.getElementById('count-proj-completed')) document.getElementById('count-proj-completed').innerText = completedCount;
-            if (document.getElementById('count-proj-high')) document.getElementById('count-proj-high').innerText = highCount;
-            if (document.getElementById('count-proj-med')) document.getElementById('count-proj-med').innerText = medCount;
-            if (document.getElementById('count-proj-low')) document.getElementById('count-proj-low').innerText = lowCount;
+            if (document.getElementById('count-proj-high')) document.getElementById('count-proj-high').innerText = allHighCount;
+            if (document.getElementById('count-proj-med')) document.getElementById('count-proj-med').innerText = allMedCount;
+            if (document.getElementById('count-proj-low')) document.getElementById('count-proj-low').innerText = allLowCount;
 
-            // Main Dashboard overview counts
+            // Main Dashboard overview counts (Synchronized dengan proyek aktif)
             if (document.getElementById('dash-total-proyek')) document.getElementById('dash-total-proyek').innerText = totalCount;
-            if (document.getElementById('dash-urgent-proyek')) document.getElementById('dash-urgent-proyek').innerText = highCount;
-            if (document.getElementById('dash-med-proyek')) document.getElementById('dash-med-proyek').innerText = medCount;
-            if (document.getElementById('side-urgent-count')) document.getElementById('side-urgent-count').innerText = highCount + " Urgent";
+            if (document.getElementById('dash-running-badge')) document.getElementById('dash-running-badge').innerText = runningCount + " Berjalan";
+            if (document.getElementById('dash-proyek-subtext')) document.getElementById('dash-proyek-subtext').innerText = `${runningCount} Sedang Berjalan • ${completedCount} Selesai`;
+            if (document.getElementById('dash-urgent-proyek')) document.getElementById('dash-urgent-proyek').innerText = runningHighCount;
+            if (document.getElementById('dash-med-proyek')) document.getElementById('dash-med-proyek').innerText = runningMedCount;
+            if (document.getElementById('side-urgent-count')) document.getElementById('side-urgent-count').innerText = runningHighCount + " Urgent";
+
+            // Render banner darurat & daftar ringkas live di Dasbor
+            renderDashboardUrgentBanner();
+            renderDashboardRunningProjects();
 
             if (filtered.length === 0) {
                 container.innerHTML = `
@@ -5825,6 +5958,10 @@
                 const ratioEl = document.getElementById('stat-tko-ratio');
                 if (ratioEl) {
                     ratioEl.innerText = `${tkoPct}% TKO / ${tknoPct}% TKNO (${tkoCount} TKO, ${tknoCount} TKNO)`;
+                }
+                const subEl = document.getElementById('dash-karyawan-subtext');
+                if (subEl) {
+                    subEl.innerText = `${tkoCount} TKO • ${tknoCount} TKNO`;
                 }
             }
         }
