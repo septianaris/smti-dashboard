@@ -3,6 +3,9 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
 
   if (req.method === "OPTIONS") {
     res.status(200).end();
@@ -16,7 +19,8 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     try {
       const response = await fetch(`https://edge-config.vercel.com/${EDGE_CONFIG_ID}/item/interns`, {
-        headers: { Authorization: `Bearer ${READ_TOKEN}` }
+        headers: { Authorization: `Bearer ${READ_TOKEN}` },
+        cache: "no-store"
       });
       if (!response.ok) {
         return res.status(200).json({ success: false, data: null });

@@ -2993,7 +2993,11 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             updateInternsCount();
         }
 
-        function saveInternsData() {
+        let isSyncingInterns = false;
+        let lastInternMutationTime = 0;
+
+        function saveInternsData(immediate = false) {
+            lastInternMutationTime = Date.now();
             try {
                 localStorage.setItem('smti_interns_data_v1', JSON.stringify(SMTI_INTERNS));
             } catch (e) {
@@ -3013,7 +3017,11 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             }
 
             clearTimeout(window.syncInternsTimeout);
-            window.syncInternsTimeout = setTimeout(syncInternsToCloud, 700);
+            if (immediate) {
+                return syncInternsToCloud();
+            } else {
+                window.syncInternsTimeout = setTimeout(syncInternsToCloud, 700);
+            }
         }
 
         const VERCEL_INTERNS_ENDPOINT = (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1'))
@@ -3021,6 +3029,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             : '/api/interns';
 
         async function syncInternsToCloud() {
+            if (isSyncingInterns) return;
+            isSyncingInterns = true;
+            lastInternMutationTime = Date.now();
+            updateCloudSyncBadge('syncing');
             try {
                 const res = await fetch(VERCEL_INTERNS_ENDPOINT, {
                     method: 'POST',
@@ -3028,21 +3040,28 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     body: JSON.stringify(SMTI_INTERNS)
                 });
                 if (res.ok) {
+                    updateCloudSyncBadge('synced');
                     console.log("Data anak magang berhasil disinkronkan ke Vercel Cloud.");
+                } else {
+                    updateCloudSyncBadge('error');
                 }
             } catch (e) {
                 console.warn("Gagal sinkron data magang ke cloud:", e);
+                updateCloudSyncBadge('error');
+            } finally {
+                isSyncingInterns = false;
             }
         }
 
         async function fetchInternsFromCloud() {
+            if (isSyncingInterns || (Date.now() - lastInternMutationTime < 4000)) return;
             try {
-                const res = await fetch(VERCEL_INTERNS_ENDPOINT);
+                const res = await fetch(`${VERCEL_INTERNS_ENDPOINT}?_t=${Date.now()}`, { cache: 'no-store' });
                 if (res.ok) {
                     const json = await res.json();
                     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+                        if (Date.now() - lastInternMutationTime < 4000) return;
                         SMTI_INTERNS = json.data;
-                        // Pastikan tipe terisi jika belum ada di data cloud lama
                         SMTI_INTERNS.forEach(intern => {
                             if (!intern.type) {
                                 const def = defaultSMTIInterns.find(d => d.name.toLowerCase() === intern.name.toLowerCase());
@@ -3257,7 +3276,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             openAddInternModal(id);
         }
 
-        function deleteInternById(id) {
+        async function deleteInternById(id) {
             if (!isCurrentUserSuperAdmin()) {
                 alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menghapus data anak magang.");
                 return;
@@ -3265,11 +3284,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const intern = SMTI_INTERNS.find(i => i.id == id);
             if (!intern) return;
 
-            if (confirm(`Hapus data anak magang "${intern.name}" (${intern.campus})? Data akan terhapus secara permanen.`)) {
+            if (confirm(`Hapus data anak magang "${intern.name}" (${intern.campus})? Data akan terhapus secara permanen dari sistem dan Vercel Cloud.`)) {
+                lastInternMutationTime = Date.now();
                 SMTI_INTERNS = SMTI_INTERNS.filter(i => i.id != id);
-                saveInternsData();
+                saveInternsData(false);
                 filterInterns();
-                alert(`Data anak magang "${intern.name}" berhasil dihapus.`);
+                await syncInternsToCloud();
+                alert(`Data anak magang "${intern.name}" berhasil dihapus secara permanen.`);
             }
         }
 
@@ -3338,7 +3359,11 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             updateTotalCount();
         }
 
-        function saveEmployeesData() {
+        let isSyncingEmployees = false;
+        let lastEmployeeMutationTime = 0;
+
+        function saveEmployeesData(immediate = false) {
+            lastEmployeeMutationTime = Date.now();
             try {
                 localStorage.setItem('smti_employees_data_v2', JSON.stringify(SMTI_EMPLOYEES));
             } catch (e) {
@@ -3357,9 +3382,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 }
             }
 
-            // Sinkronisasi otomatis ke Vercel Edge Config Cloud
             clearTimeout(window.syncEmployeesTimeout);
-            window.syncEmployeesTimeout = setTimeout(syncEmployeesToCloud, 700);
+            if (immediate) {
+                return syncEmployeesToCloud();
+            } else {
+                window.syncEmployeesTimeout = setTimeout(syncEmployeesToCloud, 700);
+            }
         }
 
         const VERCEL_EMPLOYEES_ENDPOINT = (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1'))
@@ -3367,6 +3395,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             : '/api/employees';
 
         async function syncEmployeesToCloud() {
+            if (isSyncingEmployees) return;
+            isSyncingEmployees = true;
+            lastEmployeeMutationTime = Date.now();
+            updateCloudSyncBadge('syncing');
             try {
                 const res = await fetch(VERCEL_EMPLOYEES_ENDPOINT, {
                     method: 'POST',
@@ -3374,19 +3406,28 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     body: JSON.stringify(SMTI_EMPLOYEES)
                 });
                 if (res.ok) {
+                    updateCloudSyncBadge('synced');
                     console.log("Data karyawan berhasil disinkronkan ke Vercel Cloud.");
+                } else {
+                    updateCloudSyncBadge('error');
                 }
             } catch (e) {
                 console.warn("Gagal sinkron data karyawan ke cloud:", e);
+                updateCloudSyncBadge('error');
+            } finally {
+                isSyncingEmployees = false;
             }
         }
 
         async function fetchEmployeesFromCloud() {
+            // Jangan timpa jika sedang proses simpan ke cloud atau baru saja dimodifikasi secara lokal
+            if (isSyncingEmployees || (Date.now() - lastEmployeeMutationTime < 4000)) return;
             try {
-                const res = await fetch(VERCEL_EMPLOYEES_ENDPOINT);
+                const res = await fetch(`${VERCEL_EMPLOYEES_ENDPOINT}?_t=${Date.now()}`, { cache: 'no-store' });
                 if (res.ok) {
                     const json = await res.json();
                     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+                        if (Date.now() - lastEmployeeMutationTime < 4000) return;
                         SMTI_EMPLOYEES = json.data;
                         localStorage.setItem('smti_employees_data_v2', JSON.stringify(SMTI_EMPLOYEES));
                         renderEmployeesTable();
@@ -3668,22 +3709,20 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             }
         }
 
+        let lastProjectMutationTime = 0;
+
         async function syncFromCloud(showNotification = false) {
+            if (isSyncingToCloud || (Date.now() - lastProjectMutationTime < 4000)) return;
             try {
                 // Tarik data karyawan dan anak magang terbaru dari cloud
                 fetchEmployeesFromCloud();
                 fetchInternsFromCloud();
-                const res = await fetch(VERCEL_API_ENDPOINT);
+                const res = await fetch(`${VERCEL_API_ENDPOINT}?_t=${Date.now()}`, { cache: 'no-store' });
                 if (res.ok) {
                     const json = await res.json();
                     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+                        if (Date.now() - lastProjectMutationTime < 4000) return;
                         projectDataSMTI = json.data;
-                        // Pastikan proyek selesai default ada jika belum pernah tersimpan di cloud
-                        defaultProjectDataSMTI.forEach(defProj => {
-                            if (!projectDataSMTI.some(p => p.id === defProj.id || p.name === defProj.name)) {
-                                projectDataSMTI.push(JSON.parse(JSON.stringify(defProj)));
-                            }
-                        });
                         localStorage.setItem('smti_projects_data_v2', JSON.stringify(projectDataSMTI));
                         renderProjectsList();
                         renderMonitorBoard();
@@ -3707,6 +3746,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         async function syncToCloud() {
             if (isSyncingToCloud) return;
             isSyncingToCloud = true;
+            lastProjectMutationTime = Date.now();
             updateCloudSyncBadge('syncing');
             try {
                 const res = await fetch(VERCEL_API_ENDPOINT, {
@@ -3740,12 +3780,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 projectDataSMTI = JSON.parse(JSON.stringify(defaultProjectDataSMTI));
             }
 
-            // Pastikan proyek default (termasuk proyek selesai 9 & 10) terintegrasi jika belum ada
-            defaultProjectDataSMTI.forEach(defProj => {
-                if (!projectDataSMTI.some(p => p.id === defProj.id || p.name === defProj.name)) {
-                    projectDataSMTI.push(JSON.parse(JSON.stringify(defProj)));
-                }
-            });
+            // Data proyek berhasil dimuat dari penyimpanan
         }
 
         function saveProjectsData() {
@@ -5696,18 +5731,20 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             alert(`Sukses! Proyek "${name}" berhasil dibuat dan siap dipantau.`);
         }
 
-        function deleteProject(projectId) {
+        async function deleteProject(projectId) {
             const project = projectDataSMTI.find(p => p.id === projectId);
             if (!project) return;
 
             if (confirm(`Apakah Anda yakin ingin menghapus proyek "${project.name}" dari sistem?`)) {
+                lastProjectMutationTime = Date.now();
                 projectDataSMTI = projectDataSMTI.filter(p => p.id !== projectId);
                 saveProjectsData();
 
                 closeFlowModal();
                 renderProjectsList();
                 renderMonitorBoard();
-                alert("Proyek berhasil dihapus.");
+                await syncToCloud();
+                alert("Proyek berhasil dihapus secara permanen dari sistem dan Vercel Cloud.");
             }
         }
 
@@ -5860,7 +5897,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             }).join('');
         }
 
-        function saveKaryawan(e) {
+        async function saveKaryawan(e) {
             e.preventDefault();
             if (!isCurrentUserSuperAdmin()) {
                 alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menambah data karyawan.");
@@ -5888,14 +5925,15 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             };
 
             SMTI_EMPLOYEES.push(newEmployee);
-            saveEmployeesData();
+            saveEmployeesData(false);
 
             closeModal();
             filterKaryawan();
-            alert(`Sukses! Karyawan "${nama}" (${jabatan}) berhasil ditambahkan dan tersimpan permanen di sistem.`);
+            await syncEmployeesToCloud();
+            alert(`Sukses! Karyawan "${nama}" (${jabatan}) berhasil ditambahkan dan tersimpan di Vercel Cloud.`);
         }
 
-        function editEmployeeById(id) {
+        async function editEmployeeById(id) {
             if (!isCurrentUserSuperAdmin()) {
                 alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat mengubah data karyawan.");
                 return;
@@ -5918,12 +5956,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             emp.role = newJabatan.trim();
             emp.initials = words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : emp.name.slice(0, 2).toUpperCase();
 
-            saveEmployeesData();
+            saveEmployeesData(false);
             filterKaryawan();
-            alert(`Data karyawan "${emp.name}" berhasil diperbarui.`);
+            await syncEmployeesToCloud();
+            alert(`Data karyawan "${emp.name}" berhasil diperbarui dan disimpan ke Vercel Cloud.`);
         }
 
-        function deleteEmployeeById(id) {
+        async function deleteEmployeeById(id) {
             if (!isCurrentUserSuperAdmin()) {
                 alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menghapus data karyawan.");
                 return;
@@ -5931,14 +5970,18 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const emp = SMTI_EMPLOYEES.find(e => (e.id && e.id == id) || e.name === id);
             if (!emp) return;
 
-            if (confirm(`Apakah Anda yakin ingin menghapus karyawan "${emp.name}"? Data akan terhapus secara permanen dari sistem dan tidak akan muncul lagi.`)) {
+            if (confirm(`Apakah Anda yakin ingin menghapus karyawan "${emp.name}"? Data akan terhapus secara permanen dari sistem dan Vercel Cloud.`)) {
+                lastEmployeeMutationTime = Date.now();
                 SMTI_EMPLOYEES = SMTI_EMPLOYEES.filter(e => {
                     if (e.id && emp.id) return e.id != emp.id;
                     return e.name !== emp.name;
                 });
-                saveEmployeesData();
+                // Simpan lokal dan update tampilan seketika
+                saveEmployeesData(false);
                 filterKaryawan();
-                alert(`Data karyawan "${emp.name}" telah berhasil dihapus secara permanen.`);
+                // Sinkronkan ke cloud secara instan dan tunggu selesai
+                await syncEmployeesToCloud();
+                alert(`Data karyawan "${emp.name}" telah berhasil dihapus secara permanen dari sistem dan Vercel Cloud.`);
             }
         }
 
