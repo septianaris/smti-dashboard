@@ -834,6 +834,18 @@
             color: #86efac;
         }
 
+        .mon-pill-btn.mon-pill-completed.active {
+            background: #10b981;
+            color: #ffffff;
+            border-color: #34d399;
+            box-shadow: 0 0 18px rgba(16, 185, 129, 0.5);
+        }
+
+        .mon-pill-btn.mon-pill-completed:hover:not(.active) {
+            border-color: rgba(16, 185, 129, 0.5);
+            color: #6ee7b7;
+        }
+
         .mon-cat-select {
             background: rgba(15, 23, 42, 0.85);
             color: #f8fafc;
@@ -879,6 +891,7 @@
         .monitor-col-high { border-top: 4px solid #dc2626; background: rgba(220, 38, 38, 0.04); }
         .monitor-col-med { border-top: 4px solid #d97706; background: rgba(217, 119, 6, 0.04); }
         .monitor-col-low { border-top: 4px solid #16a34a; background: rgba(22, 163, 74, 0.04); }
+        .monitor-col-completed { border-top: 4px solid #10b981; background: rgba(16, 185, 129, 0.04); }
 
         .monitor-col-header {
             display: flex;
@@ -901,6 +914,7 @@
         .monitor-col-high .monitor-col-header h3 { color: #f87171; }
         .monitor-col-med .monitor-col-header h3 { color: #fbbf24; }
         .monitor-col-low .monitor-col-header h3 { color: #4ade80; }
+        .monitor-col-completed .monitor-col-header h3 { color: #34d399; }
 
         .monitor-col-badge {
             background: rgba(255,255,255,0.1);
@@ -945,6 +959,15 @@
 
         .monitor-card-low {
             border-left: 4px solid #16a34a;
+        }
+
+        .monitor-card-completed {
+            border-left: 4px solid #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(30, 41, 59, 0.7));
+        }
+
+        .bar-completed {
+            background: linear-gradient(90deg, #10b981, #34d399);
         }
 
         .monitor-card-title {
@@ -2401,17 +2424,20 @@
             <div class="monitor-filter-left">
                 <span class="monitor-filter-title"><i class="fas fa-filter"></i> TAMPILKAN URGENSI:</span>
                 <div class="monitor-filter-pills">
-                    <button class="mon-pill-btn active" onclick="setMonitorUrgencyFilter('semua', this)" id="mon-btn-all" title="Tampilkan seluruh kolom tingkat urgensi (Tekan 1)">
-                        <i class="fas fa-th-large"></i> Semua Kolom <span class="mon-pill-count" id="mon-pill-count-all">0</span>
+                    <button class="mon-pill-btn active" onclick="setMonitorUrgencyFilter('semua', this)" id="mon-btn-all" title="Tampilkan seluruh kolom proyek aktif berjalan (Tekan 1)">
+                        <i class="fas fa-th-large"></i> Semua Berjalan <span class="mon-pill-count" id="mon-pill-count-all">0</span>
                     </button>
-                    <button class="mon-pill-btn mon-pill-high" onclick="setMonitorUrgencyFilter('Tinggi', this)" id="mon-btn-high" title="Hanya tampilkan Prioritas Utama (Tekan 2)">
+                    <button class="mon-pill-btn mon-pill-high" onclick="setMonitorUrgencyFilter('Tinggi', this)" id="mon-btn-high" title="Hanya tampilkan Prioritas Utama Aktif (Tekan 2)">
                         <i class="fas fa-fire"></i> Urgensi Tinggi Saja <span class="mon-pill-count" id="mon-pill-count-high">0</span>
                     </button>
-                    <button class="mon-pill-btn mon-pill-med" onclick="setMonitorUrgencyFilter('Sedang', this)" id="mon-btn-med" title="Hanya tampilkan Dalam Pengawalan (Tekan 3)">
+                    <button class="mon-pill-btn mon-pill-med" onclick="setMonitorUrgencyFilter('Sedang', this)" id="mon-btn-med" title="Hanya tampilkan Dalam Pengawalan Aktif (Tekan 3)">
                         <i class="fas fa-hourglass-half"></i> Urgensi Sedang Saja <span class="mon-pill-count" id="mon-pill-count-med">0</span>
                     </button>
-                    <button class="mon-pill-btn mon-pill-low" onclick="setMonitorUrgencyFilter('Rendah', this)" id="mon-btn-low" title="Hanya tampilkan Rutin & Monitoring (Tekan 4)">
+                    <button class="mon-pill-btn mon-pill-low" onclick="setMonitorUrgencyFilter('Rendah', this)" id="mon-btn-low" title="Hanya tampilkan Rutin Aktif (Tekan 4)">
                         <i class="fas fa-check-circle"></i> Rutin Saja <span class="mon-pill-count" id="mon-pill-count-low">0</span>
+                    </button>
+                    <button class="mon-pill-btn mon-pill-completed" onclick="setMonitorUrgencyFilter('Selesai', this)" id="mon-btn-completed" title="Tampilkan Proyek yang Sudah Selesai 100% (Tekan 5)">
+                        <i class="fas fa-check-double"></i> Sudah Selesai <span class="mon-pill-count" id="mon-pill-count-completed">0</span>
                     </button>
                 </div>
             </div>
@@ -2432,7 +2458,7 @@
             <div class="monitor-column monitor-col-high" id="mon-col-high">
                 <div class="monitor-col-header">
                     <h3><i class="fas fa-fire"></i> PRIORITAS UTAMA (URGENSI TINGGI)</h3>
-                    <span class="monitor-col-badge" id="mon-count-high">3 Proyek</span>
+                    <span class="monitor-col-badge" id="mon-count-high">0 Proyek</span>
                 </div>
                 <div class="monitor-card-list" id="monitor-list-high">
                     <!-- Dynamic -->
@@ -2443,20 +2469,31 @@
             <div class="monitor-column monitor-col-med" id="mon-col-med">
                 <div class="monitor-col-header">
                     <h3><i class="fas fa-hourglass-half"></i> DALAM PENGAWALAN (URGENSI SEDANG)</h3>
-                    <span class="monitor-col-badge" id="mon-count-med">3 Proyek</span>
+                    <span class="monitor-col-badge" id="mon-count-med">0 Proyek</span>
                 </div>
                 <div class="monitor-card-list" id="monitor-list-med">
                     <!-- Dynamic -->
                 </div>
             </div>
 
-            <!-- Kolom 3: Rutin & Selesai -->
+            <!-- Kolom 3: Rutin & Monitoring -->
             <div class="monitor-column monitor-col-low" id="mon-col-low">
                 <div class="monitor-col-header">
                     <h3><i class="fas fa-check-circle"></i> RUTIN & MONITORING</h3>
-                    <span class="monitor-col-badge" id="mon-count-low">2 Proyek</span>
+                    <span class="monitor-col-badge" id="mon-count-low">0 Proyek</span>
                 </div>
                 <div class="monitor-card-list" id="monitor-list-low">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+
+            <!-- Kolom 4: Arsip Proyek Sudah Selesai (Tuntas 100%) -->
+            <div class="monitor-column monitor-col-completed" id="mon-col-completed" style="display: none;">
+                <div class="monitor-col-header">
+                    <h3><i class="fas fa-check-double"></i> ARSIP PROYEK SUDAH SELESAI (100% TUNTAS)</h3>
+                    <span class="monitor-col-badge" id="mon-count-completed" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);">0 Proyek</span>
+                </div>
+                <div class="monitor-card-list" id="monitor-list-completed">
                     <!-- Dynamic -->
                 </div>
             </div>
@@ -4806,7 +4843,13 @@
             if (btnEl) {
                 btnEl.classList.add('active');
             } else {
-                const mapId = { 'semua': 'mon-btn-all', 'Tinggi': 'mon-btn-high', 'Sedang': 'mon-btn-med', 'Rendah': 'mon-btn-low' };
+                const mapId = {
+                    'semua': 'mon-btn-all',
+                    'Tinggi': 'mon-btn-high',
+                    'Sedang': 'mon-btn-med',
+                    'Rendah': 'mon-btn-low',
+                    'Selesai': 'mon-btn-completed'
+                };
                 const target = document.getElementById(mapId[filterVal]);
                 if (target) target.classList.add('active');
             }
@@ -4822,9 +4865,11 @@
             const highList = document.getElementById('monitor-list-high');
             const medList = document.getElementById('monitor-list-med');
             const lowList = document.getElementById('monitor-list-low');
+            const completedList = document.getElementById('monitor-list-completed');
             const colHigh = document.getElementById('mon-col-high');
             const colMed = document.getElementById('mon-col-med');
             const colLow = document.getElementById('mon-col-low');
+            const colCompleted = document.getElementById('mon-col-completed');
             const board = document.querySelector('.monitor-board');
 
             if (!highList || !medList || !lowList || !colHigh || !colMed || !colLow || !board) return;
@@ -4835,48 +4880,73 @@
                 filteredProjects = filteredProjects.filter(p => p.category === currentMonitorCategoryFilter);
             }
 
-            const highProjects = filteredProjects.filter(p => p.urgency === 'Tinggi');
-            const medProjects = filteredProjects.filter(p => p.urgency === 'Sedang');
-            const lowProjects = filteredProjects.filter(p => p.urgency === 'Rendah');
+            // PISAHKAN SECARA TEGAS: Proyek Berjalan (Aktif) vs Proyek Selesai
+            const activeProjects = filteredProjects.filter(p => !isProjectCompleted(p));
+            const completedProjects = filteredProjects.filter(p => isProjectCompleted(p));
+
+            // Kolom urgensi pada Live Board HANYA diisi oleh proyek yang masih berjalan
+            const highProjects = activeProjects.filter(p => p.urgency === 'Tinggi');
+            const medProjects = activeProjects.filter(p => p.urgency === 'Sedang');
+            const lowProjects = activeProjects.filter(p => p.urgency === 'Rendah');
 
             // Update column badges
             document.getElementById('mon-count-high').innerText = highProjects.length + " Proyek";
             document.getElementById('mon-count-med').innerText = medProjects.length + " Proyek";
             document.getElementById('mon-count-low').innerText = lowProjects.length + " Proyek";
+            if (document.getElementById('mon-count-completed')) {
+                document.getElementById('mon-count-completed').innerText = completedProjects.length + " Proyek Tuntas";
+            }
 
             // Update filter pill counters
             const pAll = document.getElementById('mon-pill-count-all');
             const pHigh = document.getElementById('mon-pill-count-high');
             const pMed = document.getElementById('mon-pill-count-med');
             const pLow = document.getElementById('mon-pill-count-low');
-            if (pAll) pAll.innerText = filteredProjects.length;
+            const pCompleted = document.getElementById('mon-pill-count-completed');
+
+            if (pAll) pAll.innerText = activeProjects.length; // Hanya menghitung proyek aktif berjalan
             if (pHigh) pHigh.innerText = highProjects.length;
             if (pMed) pMed.innerText = medProjects.length;
             if (pLow) pLow.innerText = lowProjects.length;
+            if (pCompleted) pCompleted.innerText = completedProjects.length;
 
             // Handle Column Visibility & Grid Expansion based on currentMonitorUrgencyFilter
             if (currentMonitorUrgencyFilter === 'Tinggi') {
                 colHigh.style.display = 'flex';
                 colMed.style.display = 'none';
                 colLow.style.display = 'none';
+                if (colCompleted) colCompleted.style.display = 'none';
                 board.style.gridTemplateColumns = '1fr';
                 highList.className = 'monitor-card-list monitor-card-list-expanded';
             } else if (currentMonitorUrgencyFilter === 'Sedang') {
                 colHigh.style.display = 'none';
                 colMed.style.display = 'flex';
                 colLow.style.display = 'none';
+                if (colCompleted) colCompleted.style.display = 'none';
                 board.style.gridTemplateColumns = '1fr';
                 medList.className = 'monitor-card-list monitor-card-list-expanded';
             } else if (currentMonitorUrgencyFilter === 'Rendah') {
                 colHigh.style.display = 'none';
                 colMed.style.display = 'none';
                 colLow.style.display = 'flex';
+                if (colCompleted) colCompleted.style.display = 'none';
                 board.style.gridTemplateColumns = '1fr';
                 lowList.className = 'monitor-card-list monitor-card-list-expanded';
+            } else if (currentMonitorUrgencyFilter === 'Selesai') {
+                colHigh.style.display = 'none';
+                colMed.style.display = 'none';
+                colLow.style.display = 'none';
+                if (colCompleted) {
+                    colCompleted.style.display = 'flex';
+                    board.style.gridTemplateColumns = '1fr';
+                    if (completedList) completedList.className = 'monitor-card-list monitor-card-list-expanded';
+                }
             } else {
+                // Default: Semua Kolom (HANYA 3 KOLOM PROYEK AKTIF BERJALAN)
                 colHigh.style.display = 'flex';
                 colMed.style.display = 'flex';
                 colLow.style.display = 'flex';
+                if (colCompleted) colCompleted.style.display = 'none';
                 board.style.gridTemplateColumns = 'repeat(3, 1fr)';
                 highList.className = 'monitor-card-list';
                 medList.className = 'monitor-card-list';
@@ -4915,16 +4985,48 @@
                 `;
             };
 
-            const emptyStateHtml = (urgencyName) => `
+            const createCompletedMonitorCard = (p) => {
+                return `
+                    <div class="monitor-project-card monitor-card-completed" onclick="openFlowModal(${p.id})">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                            <span style="font-size: 10px; font-weight: 700; color: #34d399; text-transform: uppercase;">${p.category}</span>
+                            <span style="font-size: 11px; font-weight: 800; color: #34d399; background: rgba(16, 185, 129, 0.2); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.4);">
+                                <i class="fas fa-check-circle"></i> Selesai 100%
+                            </span>
+                        </div>
+                        <div class="monitor-card-title">${p.name}</div>
+                        <div class="monitor-card-stage" style="color: #6ee7b7;">
+                            <i class="fas fa-flag-checkered" style="color: #34d399;"></i> Status: <span class="monitor-stage-highlight" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3);">Seluruh Alur Tuntas Diselesaikan</span>
+                        </div>
+
+                        <div class="monitor-progress-box">
+                            <div class="monitor-progress-label">
+                                <span style="color: #94a3b8;">Progres Kerja</span>
+                                <strong style="color: #34d399;">100%</strong>
+                            </div>
+                            <div class="monitor-progress-track">
+                                <div class="monitor-progress-bar bar-completed" style="width: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="monitor-card-footer">
+                            <span><i class="fas fa-user-circle"></i> ${p.pic}</span>
+                            <span class="monitor-click-hint" style="color: #34d399;"><i class="fas fa-eye"></i> Buka Arsip Flow</span>
+                        </div>
+                    </div>
+                `;
+            };
+
+            const emptyStateHtml = (title, msg) => `
                 <div style="text-align: center; padding: 45px 20px; color: #94a3b8; font-size: 13px; grid-column: 1 / -1; width: 100%; border: 1px dashed rgba(255,255,255,0.12); border-radius: 12px; margin: 10px 0;">
-                    <i class="fas fa-folder-open" style="font-size: 32px; opacity: 0.4; margin-bottom: 10px; display: block;"></i>
-                    Tidak ada proyek dengan status ${urgencyName} saat ini.
+                    <i class="fas fa-check-circle" style="font-size: 32px; color: #4ade80; margin-bottom: 10px; display: block;"></i>
+                    ${msg || `Tidak ada proyek dengan status ${title} saat ini.`}
                 </div>
             `;
 
             highList.innerHTML = highProjects.length > 0
                 ? highProjects.map(p => createMonitorCard(p, 'monitor-card-high', 'bar-high')).join('')
-                : emptyStateHtml('Urgensi Tinggi');
+                : emptyStateHtml('Urgensi Tinggi', 'Semua proyek prioritas tinggi tuntas diselesaikan.');
 
             medList.innerHTML = medProjects.length > 0
                 ? medProjects.map(p => createMonitorCard(p, 'monitor-card-med', 'bar-med')).join('')
@@ -4933,9 +5035,29 @@
             lowList.innerHTML = lowProjects.length > 0
                 ? lowProjects.map(p => createMonitorCard(p, 'monitor-card-low', 'bar-low')).join('')
                 : emptyStateHtml('Rutin & Monitoring');
+
+            if (completedList) {
+                completedList.innerHTML = completedProjects.length > 0
+                    ? completedProjects.map(p => createCompletedMonitorCard(p)).join('')
+                    : emptyStateHtml('Selesai', 'Belum ada proyek yang berstatus selesai 100%.');
+            }
+
+            // Update Ticker Berjalan (Hanya mengingatkan proyek AKTIF yang sedang berjalan!)
+            const tickerEl = document.getElementById('monitor-ticker-content');
+            if (tickerEl) {
+                const urgentRunning = activeProjects.filter(p => p.urgency === 'Tinggi' || p.urgency === 'Sedang');
+                if (urgentRunning.length > 0) {
+                    tickerEl.innerHTML = urgentRunning.map(p => {
+                        const icon = p.urgency === 'Tinggi' ? '⚠️ PENGINGAT TINGGI:' : '📌 PENGAWALAN:';
+                        return `${icon} <strong>${p.name}</strong> (${p.category}) - Progres: ${p.progress}% [PIC: ${p.pic}] • Target: ${p.deadline}`;
+                    }).join(' ••• ');
+                } else {
+                    tickerEl.innerHTML = `✅ Seluruh proyek prioritas tinggi sedang berjalan lancar & terkendali • Departemen SMTI PT Pupuk Kujang`;
+                }
+            }
         }
 
-        // Keyboard navigation for Monitor Mode (1: Semua, 2: Tinggi, 3: Sedang, 4: Rutin, Esc: Tutup)
+        // Keyboard navigation for Monitor Mode (1: Semua Berjalan, 2: Tinggi, 3: Sedang, 4: Rutin, 5: Selesai, Esc: Tutup)
         document.addEventListener('keydown', function(e) {
             const overlay = document.getElementById('monitor-overlay');
             if (!overlay || !overlay.classList.contains('active')) return;
@@ -4950,6 +5072,8 @@
                 setMonitorUrgencyFilter('Sedang');
             } else if (e.key === '4') {
                 setMonitorUrgencyFilter('Rendah');
+            } else if (e.key === '5') {
+                setMonitorUrgencyFilter('Selesai');
             } else if (e.key === 'Escape') {
                 const flowModal = document.getElementById('flowModal');
                 if (flowModal && flowModal.classList.contains('active')) {
