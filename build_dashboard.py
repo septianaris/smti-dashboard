@@ -2111,44 +2111,52 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             <tr><th>Nama Karyawan</th><th>Jabatan</th><th>Status</th><th>Aksi</th></tr>
                         </thead>
                         <tbody id="employee-table-body">
-                            <tr onclick="viewDetail('Henisya Permata Sari', 'VP SMTI', 'TKO', '#d4edda')">
-                                <td><strong>Henisya Permata Sari</strong></td><td>VP SMTI</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
+                            <tr onclick="viewDetail('Henisya Permata Sari', 'Manager Dept SMTI', 'TKO', '#d4edda')">
+                                <td><strong>Henisya Permata Sari</strong></td><td>Manager Dept SMTI</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
                                 <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
                             </tr>
-                            <tr onclick="viewDetail('Mochamad Januardi', 'Officer Inovasi', 'TKO', '#d4edda')">
-                                <td><strong>Mochamad Januardi</strong></td><td>Officer Inovasi</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
+                            <tr onclick="viewDetail('Mochamad Januardi', 'Officer MIKU', 'TKO', '#d4edda')">
+                                <td><strong>Mochamad Januardi</strong></td><td>Officer MIKU</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
                                 <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
                             </tr>
-                            <tr onclick="viewDetail('Nopiyanti', 'Officer PMSMT', 'TKNO', '#f8d7da')">
-                                <td><strong>Nopiyanti</strong></td><td>Officer PMSMT</td><td><span class="status" style="background: #f8d7da; color: #721c24;">TKNO</span></td>
+                            <tr onclick="viewDetail('Septian', 'Super Admin SMTI', 'TKNO', '#f8d7da')">
+                                <td><strong>Septian</strong></td><td>Super Admin SMTI</td><td><span class="status" style="background: #f8d7da; color: #721c24;">TKNO</span></td>
                                 <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
                             </tr>
-                            <tr onclick="viewDetail('Wahyu Sukmawati','VP PMSMT','TKO','#d4edda')">
-                                <td><strong>Wahyu Sukmawati</strong></td><td>VP PMSMT</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
+                            <tr onclick="viewDetail('Dion Ridwan Giartomi', 'Staf Miku', 'TKO', '#d4edda')">
+                                <td><strong>Dion Ridwan Giartomi</strong></td><td>Staf Miku</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
                                 <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
                             </tr>
-                            <tr onclick="viewDetail('Putri Yunikeu', 'Officer Standardisasi', 'TKNO', '#f8d7da')">
-                                <td><strong>Putri Yunikeu</strong></td><td>Officer Standardisasi</td><td><span class="status" style="background: #f8d7da; color: #721c24;">TKNO</span></td>
+                            <tr onclick="viewDetail('Wahyu Sukmawati', 'Officer BangSisdur', 'TKO', '#d4edda')">
+                                <td><strong>Wahyu Sukmawati</strong></td><td>Officer BangSisdur</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
                                 <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
                             </tr>
-                            <tr onclick="viewDetail('Ari Citra Hermawan', 'Officer Paten & HAKI', 'TKO', '#d4edda')">
-                                <td><strong>Ari Citra Hermawan</strong></td><td>Officer Paten & HAKI</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
+                            <tr onclick="viewDetail('Nopiyanti', 'Staf PMSMT', 'TKO', '#d4edda')">
+                                <td><strong>Nopiyanti</strong></td><td>Staf PMSMT</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
                                 <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
                             </tr>
-                            <tr onclick="viewDetail('Septian', 'Officer Digitalisasi', 'TKNO', '#f8d7da')">
-                                <td><strong>Septian</strong></td><td>Officer Digitalisasi</td><td><span class="status" style="background: #f8d7da; color: #721c24;">TKNO</span></td>
+                            <tr onclick="viewDetail('Yayan Sopyan', 'Staf PMSMT', 'TKO', '#d4edda')">
+                                <td><strong>Yayan Sopyan</strong></td><td>Staf PMSMT</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
                                 <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
                             </tr>
-                            <tr onclick="viewDetail('Dion Ridwan Giartomi', 'Officer Audit SMT', 'TKO', '#d4edda')">
-                                <td><strong>Dion Ridwan Giartomi</strong></td><td>Officer Audit SMT</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
+                            <tr onclick="viewDetail('Yunni Kusriwanti', 'Officer PMSMT', 'TKO', '#d4edda')">
+                                <td><strong>Yunni Kusriwanti</strong></td><td>Officer PMSMT</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
                                 <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
                             </tr>
-                            <tr onclick="viewDetail('Yayan Sopyan', 'Officer 5R & Mutu', 'TKO', '#d4edda')">
-                                <td><strong>Yayan Sopyan</strong></td><td>Officer 5R & Mutu</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
+                            <tr onclick="viewDetail('Yudha Triansyah', 'Staf PMSMT', 'TKNO', '#f8d7da')">
+                                <td><strong>Yudha Triansyah</strong></td><td>Staf PMSMT</td><td><span class="status" style="background: #f8d7da; color: #721c24;">TKNO</span></td>
                                 <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
                             </tr>
-                            <tr onclick="viewDetail('Yunni Kusriwanti', 'Officer Administrasi Inovasi', 'TKNO', '#f8d7da')">
-                                <td><strong>Yunni Kusriwanti</strong></td><td>Officer Administrasi Inovasi</td><td><span class="status" style="background: #f8d7da; color: #721c24;">TKNO</span></td>
+                            <tr onclick="viewDetail('Mugia Agung Persada', 'Staf Miku', 'TKNO', '#f8d7da')">
+                                <td><strong>Mugia Agung Persada</strong></td><td>Staf Miku</td><td><span class="status" style="background: #f8d7da; color: #721c24;">TKNO</span></td>
+                                <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
+                            </tr>
+                            <tr onclick="viewDetail('Nadia Riani Thadsyah', 'Staf BangSisdur', 'TKNO', '#f8d7da')">
+                                <td><strong>Nadia Riani Thadsyah</strong></td><td>Staf BangSisdur</td><td><span class="status" style="background: #f8d7da; color: #721c24;">TKNO</span></td>
+                                <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
+                            </tr>
+                            <tr onclick="viewDetail('Anugrah Wilfan Harnanditya', 'Staf BangSisdur', 'TKNO', '#f8d7da')">
+                                <td><strong>Anugrah Wilfan Harnanditya</strong></td><td>Staf BangSisdur</td><td><span class="status" style="background: #f8d7da; color: #721c24;">TKNO</span></td>
                                 <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
                             </tr>
                         </tbody>
@@ -2558,9 +2566,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <small>Target Deadline</small>
                         <strong id="modal-meta-deadline" style="color: #dc2626;">-</strong>
                     </div>
-                    <div class="flow-meta-item">
-                        <small>Penanggung Jawab (PIC)</small>
-                        <strong id="modal-meta-pic">-</strong>
+                    <div class="flow-meta-item" style="position: relative;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                            <small>Penanggung Jawab (PIC)</small>
+                            <button type="button" class="btn-xs" style="background: rgba(2, 132, 199, 0.1); border: 1px solid rgba(2, 132, 199, 0.3); color: #0284c7; padding: 2px 7px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: 700;" onclick="openChangePicModal()" title="Ubah Penanggung Jawab Proyek">
+                                <i class="fas fa-user-edit"></i> Ganti PIC
+                            </button>
+                        </div>
+                        <strong id="modal-meta-pic" style="color: var(--text-color); font-size: 13.5px;">-</strong>
                     </div>
                     <div class="flow-meta-item">
                         <small>Total Progres</small>
@@ -2764,10 +2777,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         </div>
                         <div class="form-group">
                             <label>Penanggung Jawab (PIC) *</label>
-                            <input type="text" id="new-proj-pic" list="pic-suggestions-list" required placeholder="Contoh: Dion / Tim SMTI">
+                            <select id="new-proj-pic" class="filter-select" style="width: 100%; font-weight: 600; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);" required>
+                                <option value="">-- Pilih Penanggung Jawab (PIC) --</option>
+                            </select>
                             <datalist id="pic-suggestions-list"></datalist>
                             <small style="color: #0284c7; font-size: 11px; margin-top: 4px; display: block;">
-                                <i class="fas fa-magic"></i> Otomatis akun login Anda (dapat diganti jika menugaskan personil lain)
+                                <i class="fas fa-magic"></i> Tersedia 12 Karyawan SMTI & Mahasiswa Magang Aktif. Otomatis memilih akun Anda.
                             </small>
                         </div>
                     </div>
@@ -3132,6 +3147,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             renderInternsTable();
             updateInternsCount();
             populateNewProjectMemberCheckboxes();
+            populatePicSuggestions();
 
             if (typeof currentActiveProjectId !== 'undefined' && currentActiveProjectId) {
                 const curProj = projectDataSMTI.find(p => p.id === currentActiveProjectId);
@@ -3197,6 +3213,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         renderInternsTable();
                         updateInternsCount();
                         populateNewProjectMemberCheckboxes();
+                        populatePicSuggestions();
                     }
                 }
             } catch (e) {
@@ -3439,15 +3456,17 @@ HTML_CONTENT = r'''<!DOCTYPE html>
            ========================================================= */
         const defaultSMTIEmployees = [
             { id: 1, name: "Henisya Permata Sari", role: "Manager Dept SMTI", status: "TKO", color: "#8b5cf6", initials: "HP", pin: "1234", isManager: true },
-            { id: 2, name: "Mochamad Januardi", role: "Officer Inovasi", status: "TKO", color: "#3b82f6", initials: "MJ", pin: "1234" },
-            { id: 3, name: "Septian", role: "Super Admin & Officer Digitalisasi", status: "TKNO", color: "#06b6d4", initials: "SP", pin: "1234", isSuperAdmin: true },
-            { id: 4, name: "Dion Ridwan Giartomi", role: "Officer Audit SMT", status: "TKO", color: "#10b981", initials: "DR", pin: "1234" },
-            { id: 5, name: "Wahyu Sukmawati", role: "VP PMSMT", status: "TKO", color: "#ec4899", initials: "WS", pin: "1234" },
-            { id: 6, name: "Nopiyanti", role: "Officer PMSMT", status: "TKNO", color: "#f59e0b", initials: "NP", pin: "1234" },
-            { id: 7, name: "Putri Yunikeu", role: "Officer Standardisasi", status: "TKNO", color: "#14b8a6", initials: "PY", pin: "1234" },
-            { id: 8, name: "Ari Citra Hermawan", role: "Officer Paten & HAKI", status: "TKO", color: "#6366f1", initials: "AC", pin: "1234" },
-            { id: 9, name: "Yayan Sopyan", role: "Officer 5R & Mutu", status: "TKO", color: "#84cc16", initials: "YS", pin: "1234" },
-            { id: 10, name: "Yunni Kusriwanti", role: "Officer Administrasi Inovasi", status: "TKNO", color: "#f97316", initials: "YK", pin: "1234" }
+            { id: 2, name: "Mochamad Januardi", role: "Officer MIKU", status: "TKO", color: "#3b82f6", initials: "MJ", pin: "1234" },
+            { id: 3, name: "Septian", role: "Super Admin SMTI", status: "TKNO", color: "#06b6d4", initials: "SE", pin: "1234", isSuperAdmin: true },
+            { id: 4, name: "Dion Ridwan Giartomi", role: "Staf Miku", status: "TKO", color: "#10b981", initials: "DR", pin: "1234" },
+            { id: 5, name: "Wahyu Sukmawati", role: "Officer BangSisdur", status: "TKO", color: "#ec4899", initials: "WS", pin: "1234" },
+            { id: 6, name: "Nopiyanti", role: "Staf PMSMT", status: "TKO", color: "#f59e0b", initials: "NO", pin: "1234" },
+            { id: 9, name: "Yayan Sopyan", role: "Staf PMSMT", status: "TKO", color: "#84cc16", initials: "YS", pin: "1234" },
+            { id: 10, name: "Yunni Kusriwanti", role: "Officer PMSMT", status: "TKO", color: "#f97316", initials: "YK", pin: "1234" },
+            { id: 11, name: "Yudha Triansyah", role: "Staf PMSMT", status: "TKNO", color: "#f59e0b", initials: "YT", pin: "1234" },
+            { id: 12, name: "Mugia Agung Persada", role: "Staf Miku", status: "TKNO", color: "#06b6d4", initials: "MA", pin: "1234" },
+            { id: 13, name: "Nadia Riani Thadsyah", role: "Staf BangSisdur", status: "TKNO", color: "#3b82f6", initials: "NR", pin: "1234" },
+            { id: 14, name: "Anugrah Wilfan Harnanditya", role: "Staf BangSisdur", status: "TKNO", color: "#06b6d4", initials: "AW", pin: "1234" }
         ];
 
         let SMTI_EMPLOYEES = [];
@@ -3498,6 +3517,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             renderEmployeesTable();
             updateTotalCount();
             populateNewProjectMemberCheckboxes();
+            populatePicSuggestions();
 
             if (typeof currentActiveProjectId !== 'undefined' && currentActiveProjectId) {
                 try {
@@ -3562,6 +3582,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         renderEmployeesTable();
                         updateTotalCount();
                         populateNewProjectMemberCheckboxes();
+                        populatePicSuggestions();
                     }
                 }
             } catch (e) {
@@ -3583,7 +3604,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 progress: 27,
                 deadline: "15 Mei 2026",
                 daysLeft: "H-3 Hari",
-                pic: "Mochamad Januardi / Tim MIKU",
+                pic: "Mochamad Januardi",
                 description: "Pendampingan intensif peserta internal PKC dan 4 anak perusahaan (PT KIKC, PT WKS, PT SKP, PT Hurip Utama) dalam penyusunan prototipe dan proposal pitching inovasi KIX.",
                 alertNote: "Perhatian Kritis: Realisasi pengisian formulir inovasi baru mencapai 27.2%, butuh asistensi langsung ke masing-masing gugus!",
                 comments: [
@@ -3608,7 +3629,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 progress: 65,
                 deadline: "31 Mei 2026",
                 daysLeft: "H-18 Hari",
-                pic: "Septian / Kompartemen Operasi",
+                pic: "Septian",
                 description: "Inisiatif inovasi digitalisasi operasional Pabrik 1A, Pabrik 1B, dan Pabrik NPK untuk efisiensi energi dan peningkatan EBITDA yang akan diluncurkan pada peringatan HUT Pupuk Kujang.",
                 alertNote: "Arahan Direktur Utama: Fokus pada estimasi penghematan energi dan kesiapan live dashboard saat HUT!",
                 comments: [
@@ -3632,7 +3653,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 progress: 80,
                 deadline: "20 Agustus 2026",
                 daysLeft: "H-8 Hari",
-                pic: "Dion Ridwan Giartomi / Tim PMSMT",
+                pic: "Dion Ridwan Giartomi",
                 description: "Sertifikasi Sistem Manajemen Keamanan Informasi (ISO 27001:2022) dan surveillance audit Sistem Manajemen Terintegrasi (ISO 9001, 14001, 45001, 50001, SMK3).",
                 alertNote: "Batas Waktu CAR: Penyelesaian tindak lanjut temuan audit tahap 1 wajib diunggah sebelum audit final!",
                 comments: [
@@ -3656,7 +3677,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 progress: 45,
                 deadline: "22 Mei 2026",
                 daysLeft: "H-12 Hari",
-                pic: "Nopiyanti / Tim K3 & SMTI",
+                pic: "Nopiyanti",
                 description: "Keikutsertaan 3 gugus inovasi unggulan PT Pupuk Kujang dalam ajang Konferensi dan Kompetisi K3 Tingkat Nasional di Yogyakarta.",
                 alertNote: "Peringatan Dokumen: 2 dari 3 gugus belum mengumpulkan biodata lengkap dan surat pernyataan orisinalitas!",
                 comments: [
@@ -3674,13 +3695,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 id: 5,
                 name: "Pengelolaan & Pendaftaran Paten Inovasi (Plantastic & TJSL)",
                 category: "MIKU",
-                teamMembers: ["Ari Citra Hermawan", "Putri Yunikeu"],
+                teamMembers: ["Mugia Agung Persada", "Wahyu Sukmawati"],
                 urgency: "Sedang",
                 status: "In Progress",
                 progress: 70,
                 deadline: "15 Juni 2026",
                 daysLeft: "H-25 Hari",
-                pic: "Ari Citra Hermawan / Inventor SMTI",
+                pic: "Mugia Agung Persada",
                 description: "Proses pendaftaran hak paten resmi ke DJKI Kemenkumham untuk 2 judul inovasi: Plantastic 5 (Chatbot AI) dan Sistem Pencegahan Potensi Kebakaran TJSL.",
                 alertNote: "Status Terkini: Dokumen kelengkapan revisi selesai diasistensikan, sedang proses pengusulan tambahan 2 inventor paten TJSL.",
                 comments: [
@@ -3704,7 +3725,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 progress: 35,
                 deadline: "30 Juni 2026",
                 daysLeft: "H-40 Hari",
-                pic: "Mochamad Januardi / HRD & SMTI",
+                pic: "Mochamad Januardi",
                 description: "Program training 4 sesi pembekalan inovator PKC fokus pada penyusunan proposal terstruktur dan validasi perhitungan EBITDA inovasi.",
                 alertNote: "Menunggu konfirmasi jadwal training agar tidak bentrok dengan jadwal shift operasi pabrik.",
                 comments: [],
@@ -3726,7 +3747,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 progress: 50,
                 deadline: "31 Agustus 2026",
                 daysLeft: "On Track",
-                pic: "Yayan Sopyan / Tim 5R",
+                pic: "Yayan Sopyan",
                 description: "Program rutin pembudayaan Ringkas, Rapi, Resik, Rawat, Rajin (5R) mencakup area pabrik, kantor administrasi, dan lingkungan perumahan dinas.",
                 alertNote: "Jadwal: Sosialisasi Minggu 1-3 Agustus, dilanjutkan Penilaian Lapangan Minggu ke-4 Agustus 2026.",
                 comments: [],
@@ -3742,13 +3763,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 id: 8,
                 name: "Pengurusan SNI Mitra Binaan & Rapat Single Branding PI",
                 category: "Pengembangan Sistem dan Prosedur",
-                teamMembers: ["Putri Yunikeu", "Wahyu Sukmawati"],
+                teamMembers: ["Wahyu Sukmawati", "Nadia Riani Thadsyah"],
                 urgency: "Rendah",
                 status: "In Progress",
                 progress: 40,
                 deadline: "31 Agustus 2026",
                 daysLeft: "On Track",
-                pic: "Putri Yunikeu / Tim Standardisasi",
+                pic: "Wahyu Sukmawati",
                 description: "Pendampingan sertifikasi SNI produk mitra binaan UMKM serta harmonisasi regulasi SNI Single Branding bersama Holding Pupuk Indonesia.",
                 alertNote: "Rapat koordinasi bersama holding PI diagendakan pada 11 Agustus 2026.",
                 comments: [],
@@ -3770,7 +3791,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 progress: 100,
                 deadline: "10 April 2026",
                 daysLeft: "Selesai",
-                pic: "Dion Ridwan Giartomi / Tim PMSMT",
+                pic: "Dion Ridwan Giartomi",
                 description: "Pelaksanaan audit surveillance eksternal sistem manajemen mutu dan lingkungan bersama auditor independen TUV Rheinland Indonesia.",
                 alertNote: "Audit surveillance 1 selesai 100% tuntas dengan rekomendasi perpanjangan sertifikasi tanpa temuan Mayor!",
                 comments: [
@@ -3789,13 +3810,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 id: 10,
                 name: "Implementasi & Sosialisasi Budaya 5R Terpadu Gudang & Kantor SMTI",
                 category: "Pengembangan Sistem dan Prosedur",
-                teamMembers: ["Yayan Sopyan", "Nopiyanti", "Ari Citra Hermawan"],
+                teamMembers: ["Yayan Sopyan", "Nopiyanti", "Anugrah Wilfan Harnanditya"],
                 urgency: "Rendah",
                 status: "Completed",
                 progress: 100,
                 deadline: "25 Maret 2026",
                 daysLeft: "Selesai",
-                pic: "Yayan Sopyan / Tim 5R",
+                pic: "Yayan Sopyan",
                 description: "Program standardisasi penataan tempat kerja Ringkas, Rapi, Resik, Rawat, Rajin (5R), zonasi gudang suku cadang, dan sertifikasi kepatuhan 5R lingkungan SMTI.",
                 alertNote: "Penilaian 5R batch 1 selesai dengan predikat Kategori Emas (Skor 94.2) dari Tim Penilai Pusat!",
                 comments: [
@@ -3852,6 +3873,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
                         if (Date.now() - lastProjectMutationTime < 4000) return;
                         projectDataSMTI = json.data;
+                        projectDataSMTI.forEach(normalizeProjectPic);
                         localStorage.setItem('smti_projects_data_v2', JSON.stringify(projectDataSMTI));
                         renderProjectsList();
                         renderMonitorBoard();
@@ -3896,6 +3918,69 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             }
         }
 
+        /* =========================================================
+           NORMALISASI PIC & ANGGOTA TIM PROYEK (SINKRON DENGAN 12 SMTI & MAGANG)
+           ========================================================= */
+        function normalizeProjectPic(project) {
+            if (!project || !project.pic) return;
+            let pic = String(project.pic).trim();
+            const picLower = pic.toLowerCase();
+
+            if (picLower === 'henisya' || picLower.startsWith('henisya')) {
+                project.pic = 'Henisya Permata Sari';
+            } else if (picLower.includes('januardi')) {
+                project.pic = 'Mochamad Januardi';
+            } else if (picLower.includes('septian')) {
+                project.pic = 'Septian';
+            } else if (picLower.includes('dion')) {
+                project.pic = 'Dion Ridwan Giartomi';
+            } else if (picLower.includes('nopiyanti')) {
+                project.pic = 'Nopiyanti';
+            } else if (picLower.includes('yayan')) {
+                project.pic = 'Yayan Sopyan';
+            } else if (picLower.includes('yunni')) {
+                project.pic = 'Yunni Kusriwanti';
+            } else if (picLower.includes('yudha')) {
+                project.pic = 'Yudha Triansyah';
+            } else if (picLower.includes('mugia')) {
+                project.pic = 'Mugia Agung Persada';
+            } else if (picLower.includes('ari citra')) {
+                project.pic = 'Mugia Agung Persada';
+            } else if (picLower.includes('putri yunikeu')) {
+                project.pic = 'Wahyu Sukmawati';
+            } else if (picLower.includes('wahyu')) {
+                project.pic = 'Wahyu Sukmawati';
+            } else if (picLower.includes('nadia')) {
+                project.pic = 'Nadia Riani Thadsyah';
+            } else if (picLower.includes('anugrah') || picLower.includes('wilfan')) {
+                project.pic = 'Anugrah Wilfan Harnanditya';
+            } else {
+                // Periksa apakah cocok dengan salah satu nama anak magang aktif
+                if (typeof SMTI_INTERNS !== 'undefined' && Array.isArray(SMTI_INTERNS)) {
+                    const matchIntern = SMTI_INTERNS.find(i => picLower.includes(i.name.toLowerCase()));
+                    if (matchIntern) {
+                        project.pic = matchIntern.name;
+                    } else if (pic.includes('/')) {
+                        project.pic = pic.split('/')[0].trim();
+                    }
+                } else if (pic.includes('/')) {
+                    project.pic = pic.split('/')[0].trim();
+                }
+            }
+
+            // Bersihkan juga anggota tim lama bila ada
+            if (Array.isArray(project.teamMembers)) {
+                project.teamMembers = project.teamMembers.map(m => {
+                    const mLower = String(m).toLowerCase().trim();
+                    if (mLower === 'henisya' || mLower.startsWith('henisya')) return 'Henisya Permata Sari';
+                    if (mLower.includes('januardi')) return 'Mochamad Januardi';
+                    if (mLower.includes('ari citra')) return 'Mugia Agung Persada';
+                    if (mLower.includes('putri yunikeu')) return 'Wahyu Sukmawati';
+                    return m;
+                });
+                project.teamMembers = [...new Set(project.teamMembers)];
+            }
+        }
         function loadProjectsData() {
             try {
                 const stored = localStorage.getItem('smti_projects_data_v2');
@@ -3909,7 +3994,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 projectDataSMTI = JSON.parse(JSON.stringify(defaultProjectDataSMTI));
             }
 
-            // Data proyek berhasil dimuat dari penyimpanan
+            // Normalisasi otomatis seluruh PIC & tim proyek sesuai daftar karyawan resmi & magang
+            projectDataSMTI.forEach(normalizeProjectPic);
         }
 
         function saveProjectsData() {
@@ -4188,8 +4274,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 });
 
             } else if (currentMainChartMode === 'pic') {
-                // ================= MODE 2: BEBAN KERJA 12 PERSONIL SMTI =================
+                // ================= MODE 2: BEBAN KERJA 12 PERSONIL SMTI & MAGANG =================
                 const empList = (typeof SMTI_EMPLOYEES !== 'undefined' && SMTI_EMPLOYEES.length > 0) ? SMTI_EMPLOYEES : defaultSMTIEmployees;
+                const internList = (typeof SMTI_INTERNS !== 'undefined' && Array.isArray(SMTI_INTERNS)) ? SMTI_INTERNS : [];
 
                 const workloadMap = {};
                 empList.forEach(e => {
@@ -4197,40 +4284,59 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         role: e.role || 'Personil SMTI',
                         status: e.status || 'TKO',
                         count: 0,
-                        projects: []
+                        projects: [],
+                        isIntern: false
                     };
                 });
 
+                const internWorkloadMap = {};
                 const otherContributors = {};
 
                 projectDataSMTI.forEach(p => {
                     const picRaw = (p.pic || '').trim();
                     const picLower = picRaw.toLowerCase();
-                    let matchedName = null;
+                    let matchedEmp = null;
+                    let matchedIntern = null;
 
                     for (const e of empList) {
                         const eLower = e.name.toLowerCase();
-                        const parts = eLower.split(' ');
-                        if (picLower.includes(eLower)) {
-                            matchedName = e.name;
-                            break;
-                        }
-                        if (parts[0] && parts[0].length >= 3 && picLower.includes(parts[0])) {
-                            matchedName = e.name;
-                            break;
-                        }
-                        if (parts.length > 1 && parts[1].length >= 4 && picLower.includes(parts[1])) {
-                            matchedName = e.name;
+                        if (picLower === eLower || picLower.includes(eLower)) {
+                            matchedEmp = e;
                             break;
                         }
                     }
 
-                    if (matchedName && workloadMap[matchedName]) {
-                        workloadMap[matchedName].count += 1;
-                        workloadMap[matchedName].projects.push(`${p.name} (${p.progress}%)`);
+                    if (!matchedEmp) {
+                        for (const i of internList) {
+                            const iLower = i.name.toLowerCase();
+                            if (picLower === iLower || picLower.includes(iLower)) {
+                                matchedIntern = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (matchedEmp) {
+                        if (workloadMap[matchedEmp.name]) {
+                            workloadMap[matchedEmp.name].count += 1;
+                            workloadMap[matchedEmp.name].projects.push(`${p.name} (${p.progress}%)`);
+                        }
+                    } else if (matchedIntern) {
+                        if (!internWorkloadMap[matchedIntern.name]) {
+                            internWorkloadMap[matchedIntern.name] = {
+                                role: matchedIntern.role || 'Mahasiswa Magang',
+                                status: 'Magang',
+                                campus: matchedIntern.campus || 'Magang SMTI',
+                                count: 0,
+                                projects: [],
+                                isIntern: true
+                            };
+                        }
+                        internWorkloadMap[matchedIntern.name].count += 1;
+                        internWorkloadMap[matchedIntern.name].projects.push(`${p.name} (${p.progress}%)`);
                     } else {
                         const cleanName = picRaw.split('/')[0].trim() || 'Lainnya';
-                        if (!otherContributors[cleanName]) otherContributors[cleanName] = { count: 0, projects: [] };
+                        if (!otherContributors[cleanName]) otherContributors[cleanName] = { count: 0, projects: [], status: 'Mitra', role: 'Kontributor SMTI' };
                         otherContributors[cleanName].count += 1;
                         otherContributors[cleanName].projects.push(`${p.name} (${p.progress}%)`);
                     }
@@ -4239,20 +4345,27 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 // Urutkan personil SMTI dari beban tertinggi ke terendah
                 const sorted = Object.entries(workloadMap).sort((a, b) => b[1].count - a[1].count);
 
+                // Tambahkan peserta magang yang menjadi PIC proyek
+                Object.entries(internWorkloadMap).forEach(([k, v]) => {
+                    sorted.push([k + ' (Magang)', v]);
+                });
+
                 // Tambahkan mitra di akhir jika ada
                 Object.entries(otherContributors).forEach(([k, v]) => {
-                    sorted.push([k + ' (Mitra)', { role: 'Kontributor SMTI', status: 'Mitra', count: v.count, projects: v.projects }]);
+                    sorted.push([k + ' (Mitra)', v]);
                 });
 
                 const labels = sorted.map(([name, d]) => `${name} (${d.status})`);
                 const dataValues = sorted.map(([, d]) => d.count);
                 const bgColors = sorted.map(([, d]) => {
+                    if (d.status === 'Magang') return 'rgba(16, 185, 129, 0.85)'; // Emerald green untuk anak magang
                     if (d.status === 'Mitra') return 'rgba(245, 158, 11, 0.85)';
                     if (d.count >= 2) return '#0284c7';
                     if (d.count === 1) return '#06b6d4';
                     return 'rgba(148, 163, 184, 0.35)'; // Abu-abu jika 0
                 });
                 const borderColors = sorted.map(([, d]) => {
+                    if (d.status === 'Magang') return '#10b981';
                     if (d.status === 'Mitra') return '#f59e0b';
                     if (d.count >= 2) return '#0284c7';
                     if (d.count === 1) return '#0891b2';
@@ -6360,17 +6473,128 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         function populatePicSuggestions() {
             const dl = document.getElementById('pic-suggestions-list');
-            if (!dl) return;
-            let html = '';
+            const selectAdd = document.getElementById('new-proj-pic');
+            const selectChange = document.getElementById('change-pic-select');
+
+            let datalistHtml = '';
+            let optgroupsHtml = '';
+
+            // Group 1: 12 Karyawan Dept SMTI
+            optgroupsHtml += `<optgroup label="👔 Karyawan Dept SMTI (${SMTI_EMPLOYEES.length} Personil)">`;
             SMTI_EMPLOYEES.forEach(emp => {
-                html += `<option value="${emp.name}">${emp.name} (${emp.role})</option>`;
+                const optText = `${emp.name} (${emp.role} • ${emp.status || 'TKO'})`;
+                datalistHtml += `<option value="${emp.name}">${optText}</option>`;
+                optgroupsHtml += `<option value="${emp.name}">${optText}</option>`;
             });
+            optgroupsHtml += `</optgroup>`;
+
+            // Group 2: Mahasiswa & Siswa Magang / PKL SMTI
             if (typeof SMTI_INTERNS !== 'undefined' && SMTI_INTERNS && SMTI_INTERNS.length > 0) {
-                SMTI_INTERNS.forEach(intern => {
-                    html += `<option value="${intern.name}">${intern.name} (Anak Magang - ${intern.type || 'SMTI'})</option>`;
+                const activeInterns = SMTI_INTERNS.filter(i => (i.status || 'Aktif') === 'Aktif');
+                const nonActiveInterns = SMTI_INTERNS.filter(i => (i.status || 'Aktif') !== 'Aktif');
+
+                optgroupsHtml += `<optgroup label="🎓 Mahasiswa / Siswa Magang SMTI (${activeInterns.length} Aktif)">`;
+                activeInterns.forEach(intern => {
+                    const label = `🎓 ${intern.name} (Magang: ${intern.role} • ${intern.campus.split(' ')[0]})`;
+                    datalistHtml += `<option value="${intern.name}">${label}</option>`;
+                    optgroupsHtml += `<option value="${intern.name}">${label}</option>`;
                 });
+                optgroupsHtml += `</optgroup>`;
+
+                if (nonActiveInterns.length > 0) {
+                    optgroupsHtml += `<optgroup label="Alumni Magang / Selesai (${nonActiveInterns.length})">`;
+                    nonActiveInterns.forEach(intern => {
+                        const label = `[Selesai] ${intern.name} (${intern.campus.split(' ')[0]})`;
+                        datalistHtml += `<option value="${intern.name}">${label}</option>`;
+                        optgroupsHtml += `<option value="${intern.name}">${label}</option>`;
+                    });
+                    optgroupsHtml += `</optgroup>`;
+                }
             }
-            dl.innerHTML = html;
+
+            if (dl) dl.innerHTML = datalistHtml;
+            if (selectAdd) {
+                const curVal = selectAdd.value;
+                selectAdd.innerHTML = `<option value="">-- Pilih Penanggung Jawab (PIC) --</option>` + optgroupsHtml;
+                if (curVal) selectAdd.value = curVal;
+            }
+            if (selectChange) {
+                const curVal = selectChange.value;
+                selectChange.innerHTML = `<option value="">-- Pilih Penanggung Jawab Baru --</option>` + optgroupsHtml;
+                if (curVal) selectChange.value = curVal;
+            }
+        }
+
+        function openChangePicModal() {
+            const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
+            if (!project) return;
+
+            const nameEl = document.getElementById('change-pic-project-name');
+            if (nameEl) nameEl.innerText = `${project.name} (${project.category})`;
+
+            populatePicSuggestions();
+
+            const select = document.getElementById('change-pic-select');
+            if (select) {
+                const currentPic = (project.pic || '').trim();
+                let matched = false;
+                for (let i = 0; i < select.options.length; i++) {
+                    if (select.options[i].value.toLowerCase() === currentPic.toLowerCase()) {
+                        select.selectedIndex = i;
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) {
+                    const picFirst = currentPic.split(' ')[0].toLowerCase();
+                    for (let i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value.toLowerCase().includes(picFirst)) {
+                            select.selectedIndex = i;
+                            matched = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            document.getElementById('modalChangePic').style.display = 'flex';
+        }
+
+        function closeChangePicModal() {
+            document.getElementById('modalChangePic').style.display = 'none';
+        }
+
+        function saveChangedProjectPic() {
+            const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
+            if (!project) return;
+
+            const select = document.getElementById('change-pic-select');
+            const newPic = select ? select.value.trim() : '';
+
+            if (!newPic) {
+                alert("Harap pilih salah satu personil atau anak magang sebagai PIC!");
+                return;
+            }
+
+            const oldPic = project.pic;
+            project.pic = newPic;
+
+            // Otomatis masukkan PIC baru ke daftar anggota tim proyek jika belum ada
+            if (!project.teamMembers) project.teamMembers = [];
+            if (!project.teamMembers.some(m => m.toLowerCase() === newPic.toLowerCase())) {
+                project.teamMembers.unshift(newPic);
+            }
+
+            saveProjectsData();
+            document.getElementById('modal-meta-pic').innerText = project.pic;
+            renderProjectTeam(project);
+            populateChatAuthorSelect(project);
+            renderProjectsList();
+            renderMonitorBoard();
+            updateMainDashboardChart();
+
+            closeChangePicModal();
+            alert(`Sukses! Penanggung Jawab (PIC) proyek "${project.name}" berhasil diubah menjadi "${newPic}". Data disinkronkan ke Vercel Cloud.`);
         }
 
         function openAddProjectModal() {
@@ -6379,16 +6603,18 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             d.setDate(d.getDate() + 30);
             document.getElementById('new-proj-deadline').value = d.toISOString().split('T')[0];
 
-            // Otomatis isi kolom PIC dengan akun pengguna yang sedang login via PIN
+            populatePicSuggestions();
+
+            // Otomatis pilih akun pengguna yang sedang login sebagai default PIC
             const picInput = document.getElementById('new-proj-pic');
-            if (picInput) {
-                if (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) {
-                    picInput.value = currentAuthUser.name;
-                } else {
-                    picInput.value = '';
+            if (picInput && typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) {
+                for (let i = 0; i < picInput.options.length; i++) {
+                    if (picInput.options[i].value.toLowerCase() === currentAuthUser.name.toLowerCase()) {
+                        picInput.selectedIndex = i;
+                        break;
+                    }
                 }
             }
-            populatePicSuggestions();
 
             loadUserSavedWorkflowTemplates();
             populateWorkflowTemplateDropdown('MIKU');
@@ -7412,6 +7638,43 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             </div>
             <div style="padding: 12px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end;">
                 <button type="button" class="btn" style="background: #0284c7;" onclick="closeInviteMemberModal()">Selesai</button>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================
+         MODAL GANTI PENANGGUNG JAWAB (PIC) PROYEK
+         ========================================================= -->
+    <div id="modalChangePic" class="modal" style="display: none; z-index: 100006;">
+        <div class="modal-content" style="width: 480px; max-width: 95%;">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit" style="color: #0284c7;"></i> Ganti Penanggung Jawab (PIC)</h3>
+                <span class="close-modal" onclick="closeChangePicModal()">&times;</span>
+            </div>
+            <div style="padding: 16px 20px;">
+                <p style="font-size: 12.5px; color: #64748b; margin-bottom: 12px;">
+                    Pilih personil resmi Dept SMTI atau mahasiswa/siswa magang aktif untuk memimpin dan bertanggung jawab atas progres proyek ini:
+                </p>
+                <div class="form-group">
+                    <label style="font-weight: 700; font-size: 12px; margin-bottom: 4px;">Proyek Saat Ini:</label>
+                    <div id="change-pic-project-name" style="font-weight: 700; font-size: 13px; color: #0284c7; padding: 8px 12px; background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 12px;">
+                        -
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="font-weight: 700; font-size: 12px; margin-bottom: 4px;">Pilih PIC Baru *</label>
+                    <select id="change-pic-select" class="filter-select" style="width: 100%; font-size: 13px; font-weight: 600; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">
+                        <!-- Populated by populatePicSuggestions() -->
+                    </select>
+                </div>
+                <div style="font-size: 11px; color: #64748b; margin-top: 6px; line-height: 1.4;">
+                    <i class="fas fa-info-circle" style="color: #0284c7;"></i> PIC baru akan otomatis dimasukkan ke dalam daftar tim proyek dan grafik beban kerja personil akan langsung disinkronkan.
+                </div>
+            </div>
+            <div style="padding: 12px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" class="btn" style="background: #64748b;" onclick="closeChangePicModal()">Batal</button>
+                <button type="button" class="btn" style="background: #0284c7; font-weight: 700;" onclick="saveChangedProjectPic()">
+                    <i class="fas fa-save"></i> Terapkan PIC Baru
+                </button>
             </div>
         </div>
     </div>
