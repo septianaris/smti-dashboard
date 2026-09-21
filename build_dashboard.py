@@ -187,6 +187,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         .action-btn { padding: 5px 9px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; margin-left: 4px; }
         .btn-pin { background: #0891b2; color: white; }
         .btn-pin:hover { background: #0e7490; }
+        .status.status-interactive { transition: all 0.2s ease; cursor: pointer; }
+        .status.status-interactive:hover { opacity: 0.85; transform: scale(1.06); box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
         .btn-edit { background: #d97706; color: white; }
         .btn-delete { background: #dc2626; color: white; }
 
@@ -2237,7 +2239,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 <div class="dashboard-grid" style="margin-top: 15px;">
                     <div style="background: var(--hover-color); padding: 15px; border-radius: 8px;">
                         <h4>Rasio Status Karyawan</h4>
-                        <p style="font-size: 22px; font-weight: bold; color: #0284c7; margin-top: 5px;">60% TKO / 40% TKNO</p>
+                        <p style="font-size: 20px; font-weight: bold; color: #0284c7; margin-top: 5px;" id="stat-tko-ratio">60% TKO / 40% TKNO</p>
                     </div>
                     <div style="background: var(--hover-color); padding: 15px; border-radius: 8px;">
                         <h4>Penyelesaian Proyek Inovasi</h4>
@@ -2798,27 +2800,31 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 <span class="close-modal" onclick="closeModal()">&times;</span>
             </div>
             <form id="form-karyawan" onsubmit="saveKaryawan(event)">
+                <input type="hidden" id="edit-employee-id" value="">
                 <div class="form-group">
-                    <label>Nama Karyawan</label>
+                    <label>Nama Karyawan *</label>
                     <input type="text" id="input-nama" required placeholder="Contoh: Budi Santoso">
                 </div>
                 <div class="form-group">
-                    <label>Jabatan</label>
+                    <label>Jabatan / Posisi SMTI *</label>
                     <input type="text" id="input-jabatan" required placeholder="Contoh: Officer Inovasi">
                 </div>
                 <div class="form-group">
-                    <label>Status</label>
+                    <label>Status Karyawan (TKO / TKNO) *</label>
                     <select id="input-status" required>
                         <option value="TKO">TKO (Tenaga Kerja Operasional)</option>
                         <option value="TKNO">TKNO (Tenaga Kerja Non-Operasional)</option>
                     </select>
+                    <small style="color: #64748b; font-size: 11px;">Pilih status kepegawaian personil (TKO atau TKNO).</small>
                 </div>
                 <div class="form-group">
                     <label>PIN Login Keamanan (Default: 1234)</label>
                     <input type="text" id="input-pin" maxlength="6" value="1234" placeholder="1234" style="font-family: monospace; letter-spacing: 2px;">
                     <small style="color: #64748b; font-size: 11px;">PIN 4-6 digit digunakan personil saat login pertama di browser (default: 1234).</small>
                 </div>
-                <button type="submit" class="btn" style="width: 100%; margin-top: 10px; justify-content: center;">Simpan Data</button>
+                <button type="submit" id="btn-save-karyawan" class="btn" style="width: 100%; margin-top: 10px; justify-content: center; font-weight: 700;">
+                    <i class="fas fa-save"></i> Simpan Data Karyawan
+                </button>
             </form>
         </div>
     </div>
@@ -5814,8 +5820,23 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         function updateTotalCount() {
             const rows = document.querySelectorAll('#employee-table-body tr');
             const count = rows.length;
-            document.getElementById('dash-karyawan-count').innerText = count;
-            document.getElementById('side-karyawan-count').innerText = count;
+            const el1 = document.getElementById('dash-karyawan-count');
+            if (el1) el1.innerText = count;
+            const el2 = document.getElementById('side-karyawan-count');
+            if (el2) el2.innerText = count;
+
+            // Update rasio TKO / TKNO di Laporan Analytics
+            const total = SMTI_EMPLOYEES.length;
+            if (total > 0) {
+                const tkoCount = SMTI_EMPLOYEES.filter(e => (e.status || 'TKO') === 'TKO').length;
+                const tknoCount = total - tkoCount;
+                const tkoPct = Math.round((tkoCount / total) * 100);
+                const tknoPct = 100 - tkoPct;
+                const ratioEl = document.getElementById('stat-tko-ratio');
+                if (ratioEl) {
+                    ratioEl.innerText = `${tkoPct}% TKO / ${tknoPct}% TKNO (${tkoCount} TKO, ${tknoCount} TKNO)`;
+                }
+            }
         }
 
         function filterKaryawan() {
@@ -5903,8 +5924,16 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menambah karyawan.");
                 return;
             }
-            document.getElementById('modal-title').innerText = 'Tambah Karyawan Baru';
+            document.getElementById('modal-title').innerHTML = '<i class="fas fa-user-plus" style="color: #0284c7;"></i> Tambah Karyawan Baru';
             document.getElementById('form-karyawan').reset();
+            const editIdInput = document.getElementById('edit-employee-id');
+            if (editIdInput) editIdInput.value = '';
+            const statusSelect = document.getElementById('input-status');
+            if (statusSelect) statusSelect.value = 'TKO';
+            const pinInput = document.getElementById('input-pin');
+            if (pinInput) pinInput.value = '1234';
+            const btnSave = document.getElementById('btn-save-karyawan');
+            if (btnSave) btnSave.innerHTML = '<i class="fas fa-plus"></i> Tambah Karyawan';
             document.getElementById('modalKaryawan').style.display = 'flex';
         }
 
@@ -6088,11 +6117,22 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             </div>
                         </td>
                         <td><span style="font-weight: 600; color: var(--text-color);">${emp.role}</span></td>
-                        <td><span class="status" style="background: ${color}; color: ${textColor}; font-weight: 700;">${emp.status || 'TKO'}</span></td>
+                        <td>
+                            ${isCurrentUserSuperAdmin() ? `
+                                <span class="status status-interactive" 
+                                      style="background: ${color}; color: ${textColor}; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; user-select: none;" 
+                                      title="Klik untuk ubah langsung ke ${isTKO ? 'TKNO' : 'TKO'}" 
+                                      onclick="event.stopPropagation(); toggleEmployeeStatus(${empId})">
+                                    ${emp.status || 'TKO'} <i class="fas fa-sync-alt" style="font-size: 9px; opacity: 0.6;"></i>
+                                </span>
+                            ` : `
+                                <span class="status" style="background: ${color}; color: ${textColor}; font-weight: 700;">${emp.status || 'TKO'}</span>
+                            `}
+                        </td>
                         <td>
                             ${isCurrentUserSuperAdmin() ? `
                                 <button class="action-btn btn-pin" title="Atur PIN Keamanan (${emp.name})" onclick="event.stopPropagation(); quickEditPin(${empId})"><i class="fas fa-key"></i></button>
-                                <button class="action-btn btn-edit" title="Edit profil karyawan" onclick="event.stopPropagation(); editEmployeeById(${empId})"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn btn-edit" title="Edit data & status TKO/TKNO (${emp.name})" onclick="event.stopPropagation(); editEmployeeById(${empId})"><i class="fas fa-edit"></i></button>
                                 <button class="action-btn btn-delete" title="Hapus karyawan permanen" onclick="event.stopPropagation(); deleteEmployeeById(${empId})"><i class="fas fa-trash"></i></button>
                             ` : `
                                 <span style="font-size: 11px; color: #94a3b8; font-style: italic;"><i class="fas fa-lock"></i> Terkunci</span>
@@ -6103,12 +6143,31 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             }).join('');
         }
 
+        async function toggleEmployeeStatus(id) {
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat mengubah status karyawan.");
+                return;
+            }
+            const emp = SMTI_EMPLOYEES.find(e => (e.id && e.id == id) || e.name === id);
+            if (!emp) return;
+
+            const oldStatus = emp.status || 'TKO';
+            const newStatus = oldStatus === 'TKO' ? 'TKNO' : 'TKO';
+
+            emp.status = newStatus;
+            saveEmployeesData(false);
+            filterKaryawan();
+            await syncEmployeesToCloud();
+            alert(`Status "${emp.name}" berhasil diubah menjadi: ${newStatus} (${newStatus === 'TKO' ? 'Tenaga Kerja Operasional' : 'Tenaga Kerja Non-Operasional'}) dan tersimpan di Vercel Cloud.`);
+        }
+
         async function saveKaryawan(e) {
             e.preventDefault();
             if (!isCurrentUserSuperAdmin()) {
-                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menambah data karyawan.");
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat mengelola data karyawan.");
                 return;
             }
+            const editId = document.getElementById('edit-employee-id').value;
             const nama = document.getElementById('input-nama').value.trim();
             const jabatan = document.getElementById('input-jabatan').value.trim();
             const status = document.getElementById('input-status').value;
@@ -6117,7 +6176,27 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
             if (!nama || !jabatan) return;
 
-            // Generate initials and avatar color
+            if (editId) {
+                // Mode Edit Karyawan yang sudah ada
+                const emp = SMTI_EMPLOYEES.find(e => (e.id && e.id == editId) || e.name === editId);
+                if (emp) {
+                    const words = nama.split(' ');
+                    emp.name = nama;
+                    emp.role = jabatan;
+                    emp.status = status;
+                    emp.pin = pinVal || "1234";
+                    emp.initials = words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : nama.slice(0, 2).toUpperCase();
+
+                    saveEmployeesData(false);
+                    closeModal();
+                    filterKaryawan();
+                    await syncEmployeesToCloud();
+                    alert(`Sukses! Data karyawan "${nama}" berhasil diperbarui (Status: ${status}, PIN: ${emp.pin}) dan tersimpan di Vercel Cloud.`);
+                    return;
+                }
+            }
+
+            // Mode Tambah Karyawan Baru
             const words = nama.split(' ');
             const initials = words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : nama.slice(0, 2).toUpperCase();
             const palette = ["#8b5cf6", "#3b82f6", "#06b6d4", "#10b981", "#ec4899", "#f59e0b", "#14b8a6", "#6366f1", "#84cc16", "#f97316"];
@@ -6139,10 +6218,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             closeModal();
             filterKaryawan();
             await syncEmployeesToCloud();
-            alert(`Sukses! Karyawan "${nama}" (${jabatan}) berhasil ditambahkan dan tersimpan di Vercel Cloud.`);
+            alert(`Sukses! Karyawan "${nama}" (${jabatan} - ${status}) berhasil ditambahkan dan tersimpan di Vercel Cloud.`);
         }
 
-        async function editEmployeeById(id) {
+        function editEmployeeById(id) {
             if (!isCurrentUserSuperAdmin()) {
                 alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat mengubah data karyawan.");
                 return;
@@ -6150,25 +6229,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const emp = SMTI_EMPLOYEES.find(e => (e.id && e.id == id) || e.name === id);
             if (!emp) return;
 
-            const newNama = prompt("Edit Nama Karyawan:", emp.name);
-            if (newNama === null || newNama.trim() === "") return;
-            const newJabatan = prompt("Edit Jabatan / Posisi:", emp.role);
-            if (newJabatan === null || newJabatan.trim() === "") return;
-
-            const newPin = prompt(`Edit PIN Keamanan untuk ${emp.name} (4 digit):`, emp.pin || "1234");
-            if (newPin !== null && newPin.trim().length >= 4) {
-                emp.pin = newPin.trim();
-            }
-
-            const words = newNama.trim().split(' ');
-            emp.name = newNama.trim();
-            emp.role = newJabatan.trim();
-            emp.initials = words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : emp.name.slice(0, 2).toUpperCase();
-
-            saveEmployeesData(false);
-            filterKaryawan();
-            await syncEmployeesToCloud();
-            alert(`Data karyawan "${emp.name}" berhasil diperbarui dan disimpan ke Vercel Cloud.`);
+            document.getElementById('modal-title').innerHTML = `<i class="fas fa-user-edit" style="color: #d97706;"></i> Edit Data & Status Karyawan`;
+            document.getElementById('edit-employee-id').value = emp.id || emp.name;
+            document.getElementById('input-nama').value = emp.name;
+            document.getElementById('input-jabatan').value = emp.role;
+            document.getElementById('input-status').value = emp.status || 'TKO';
+            document.getElementById('input-pin').value = emp.pin || '1234';
+            document.getElementById('btn-save-karyawan').innerHTML = '<i class="fas fa-save"></i> Simpan Perubahan';
+            document.getElementById('modalKaryawan').style.display = 'flex';
         }
 
         async function deleteEmployeeById(id) {
