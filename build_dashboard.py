@@ -185,6 +185,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         .filter-input, .filter-select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; outline: none; background: var(--card-bg); color: var(--text-color); }
         .filter-input { flex: 1; min-width: 200px; }
         .action-btn { padding: 5px 9px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; margin-left: 4px; }
+        .btn-pin { background: #0891b2; color: white; }
+        .btn-pin:hover { background: #0e7490; }
         .btn-edit { background: #d97706; color: white; }
         .btn-delete { background: #dc2626; color: white; }
 
@@ -2037,8 +2039,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 <div class="card">
                     <div class="card-header">
                         <span>Daftar Karyawan Dept SMTI</span>
-                        <div style="display: flex; gap: 8px;">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                             <button class="btn" style="background: #16a34a;" onclick="exportTableToCSV()"><i class="fas fa-file-excel"></i> Export CSV</button>
+                            <button class="btn super-admin-only" id="btn-kelola-pin" style="background: #0891b2;" onclick="openAdminPinManagerModal()"><i class="fas fa-key"></i> Pengaturan PIN</button>
                             <button class="btn super-admin-only" id="btn-tambah-karyawan" onclick="openModal()"><i class="fas fa-plus"></i> Tambah Karyawan</button>
                         </div>
                     </div>
@@ -2257,6 +2260,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             <div class="card">
                 <h2 style="margin-bottom: 20px;"><i class="fas fa-sliders-h"></i> Pengaturan Sistem & Tampilan Monitor</h2>
                 
+                <div class="setting-group" style="border-left: 3px solid #0891b2; padding-left: 14px;">
+                    <div>
+                        <strong style="color: #0891b2;"><i class="fas fa-key"></i> Pengaturan PIN Login Seluruh Personil (Super Admin)</strong>
+                        <p style="font-size: 12px; opacity: 0.7;">Kelola dan reset PIN autentikasi seluruh personil SMTI. Bawaan saat ini: <strong>1234</strong>.</p>
+                    </div>
+                    <button class="btn btn-sm" style="background: #0891b2; font-weight: 700;" onclick="openAdminPinManagerModal()"><i class="fas fa-key"></i> Kelola PIN Pengguna</button>
+                </div>
+
                 <div class="setting-group">
                     <div>
                         <strong>Pengingat Suara untuk Proyek Urgensi Tinggi</strong>
@@ -2802,8 +2813,52 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <option value="TKNO">TKNO (Tenaga Kerja Non-Operasional)</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>PIN Login Keamanan (Default: 1234)</label>
+                    <input type="text" id="input-pin" maxlength="6" value="1234" placeholder="1234" style="font-family: monospace; letter-spacing: 2px;">
+                    <small style="color: #64748b; font-size: 11px;">PIN 4-6 digit digunakan personil saat login pertama di browser (default: 1234).</small>
+                </div>
                 <button type="submit" class="btn" style="width: 100%; margin-top: 10px; justify-content: center;">Simpan Data</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Pengaturan PIN Super Admin -->
+    <div id="modalAdminPinManager" class="modal">
+        <div class="modal-content" style="width: 650px; max-width: 96%; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h3 style="display: flex; align-items: center; gap: 8px; font-size: 16.5px; font-weight: 700;">
+                    <i class="fas fa-key" style="color: #0891b2;"></i> Pengaturan PIN Keamanan Karyawan Dept SMTI
+                </h3>
+                <span class="close-modal" onclick="closeAdminPinManagerModal()">&times;</span>
+            </div>
+            
+            <div style="padding: 14px 20px; overflow-y: auto; flex: 1;">
+                <div style="background: rgba(8, 145, 178, 0.08); border: 1px solid rgba(8, 145, 178, 0.25); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 700; color: #0891b2;"><i class="fas fa-shield-alt"></i> Standar PIN Keamanan: 1234</div>
+                        <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Secara default, seluruh PIN personil disetel ke <strong>1234</strong>. Anda dapat mengubah PIN per orang atau mereset seluruhnya.</div>
+                    </div>
+                    <button class="btn btn-sm" style="background: #0284c7; white-space: nowrap; font-weight: 700;" onclick="resetAllPinsToDefault()">
+                        <i class="fas fa-sync-alt"></i> Reset Semua ke 1234
+                    </button>
+                </div>
+
+                <div style="font-size: 12px; font-weight: 700; color: var(--text-color); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Daftar Akun & PIN Personil SMTI:</span>
+                    <button type="button" class="btn btn-sm" style="background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); font-size: 11px; padding: 3px 8px; cursor: pointer;" onclick="toggleShowAllPins()">
+                        <i class="fas fa-eye" id="toggle-pins-icon"></i> <span id="toggle-pins-text">Tampilkan PIN</span>
+                    </button>
+                </div>
+
+                <div id="admin-pins-list" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <div style="padding: 12px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end;">
+                <button type="button" class="btn" style="background: #64748b;" onclick="closeAdminPinManagerModal()">Tutup</button>
+            </div>
         </div>
     </div>
 
@@ -5857,6 +5912,151 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             document.getElementById('modalKaryawan').style.display = 'none';
         }
 
+        /* =========================================================
+           MANAJEMEN PIN PENGGUNA (SUPER ADMIN)
+           ========================================================= */
+        let showAdminPins = false;
+
+        function toggleShowAllPins() {
+            showAdminPins = !showAdminPins;
+            const icon = document.getElementById('toggle-pins-icon');
+            const text = document.getElementById('toggle-pins-text');
+            if (icon && text) {
+                if (showAdminPins) {
+                    icon.className = 'fas fa-eye-slash';
+                    text.innerText = 'Sembunyikan PIN';
+                } else {
+                    icon.className = 'fas fa-eye';
+                    text.innerText = 'Tampilkan PIN';
+                }
+            }
+            renderAdminPinsList();
+        }
+
+        function openAdminPinManagerModal() {
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat mengakses Pengaturan PIN.");
+                return;
+            }
+            renderAdminPinsList();
+            document.getElementById('modalAdminPinManager').style.display = 'flex';
+        }
+
+        function closeAdminPinManagerModal() {
+            document.getElementById('modalAdminPinManager').style.display = 'none';
+        }
+
+        function renderAdminPinsList() {
+            const container = document.getElementById('admin-pins-list');
+            if (!container) return;
+
+            let html = '';
+            SMTI_EMPLOYEES.forEach(emp => {
+                const isSuperAdmin = emp.isSuperAdmin || emp.name.toLowerCase().includes('septian');
+                const isManager = emp.isManager || emp.name.toLowerCase().includes('henisya');
+                let badge = '';
+                if (isSuperAdmin) {
+                    badge = `<span style="font-size: 10px; background: rgba(6,182,212,0.15); color: #0891b2; padding: 1px 6px; border-radius: 8px; font-weight: 700; border: 1px solid #67e8f9;"><i class="fas fa-shield-alt"></i> Super Admin</span>`;
+                } else if (isManager) {
+                    badge = `<span style="font-size: 10px; background: rgba(139,92,246,0.15); color: #7c3aed; padding: 1px 6px; border-radius: 8px; font-weight: 700; border: 1px solid #c4b5fd;"><i class="fas fa-crown"></i> Manager Dept SMTI</span>`;
+                }
+                const empPin = emp.pin || '1234';
+                const pinDisplay = showAdminPins ? empPin : '••••';
+
+                html += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 8px; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                            <div style="background: ${emp.color || '#0284c7'}; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; flex-shrink: 0;">
+                                ${emp.initials || emp.name.slice(0, 2).toUpperCase()}
+                            </div>
+                            <div style="min-width: 0;">
+                                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                    <strong style="font-size: 13px; color: var(--text-color);">${emp.name}</strong>
+                                    ${badge}
+                                </div>
+                                <div style="font-size: 11px; color: #64748b;">${emp.role}</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                            <span style="font-family: monospace; font-size: 13px; font-weight: 800; background: var(--card-bg); border: 1px solid var(--border-color); padding: 3px 10px; border-radius: 6px; letter-spacing: 2px; color: #0891b2;">
+                                ${pinDisplay}
+                            </span>
+                            <button class="btn btn-sm" style="background: #0891b2; font-size: 11px; padding: 4px 10px;" onclick="quickEditPin('${emp.name.replace(/'/g, "\'")}')" title="Ubah PIN ${emp.name}">
+                                <i class="fas fa-edit"></i> Ubah
+                            </button>
+                            <button class="btn btn-sm" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; border: 1px solid #bae6fd; font-size: 11px; padding: 4px 10px;" onclick="quickResetPin('${emp.name.replace(/'/g, "\'")}')" title="Reset PIN ke 1234">
+                                <i class="fas fa-undo"></i> 1234
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        async function quickEditPin(id) {
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat mengatur PIN karyawan.");
+                return;
+            }
+            const emp = SMTI_EMPLOYEES.find(e => (e.id && e.id == id) || e.name === id);
+            if (!emp) return;
+
+            const curPin = emp.pin || "1234";
+            const newPin = prompt(`Atur PIN Keamanan untuk "${emp.name}":\n\nPIN Saat Ini: ${curPin}\nMasukkan PIN baru (4-6 digit angka, default: 1234):`, curPin);
+            if (newPin === null) return;
+            const cleanPin = newPin.trim();
+            if (cleanPin.length < 4 || cleanPin.length > 6 || isNaN(cleanPin)) {
+                alert("Format PIN tidak valid! PIN harus berupa 4 sampai 6 digit angka.");
+                return;
+            }
+
+            emp.pin = cleanPin;
+            saveEmployeesData(false);
+            if (document.getElementById('modalAdminPinManager') && document.getElementById('modalAdminPinManager').style.display === 'flex') {
+                renderAdminPinsList();
+            }
+            await syncEmployeesToCloud();
+            alert(`Sukses! PIN keamanan untuk "${emp.name}" berhasil diubah menjadi: ${cleanPin} dan tersimpan di Vercel Cloud.`);
+        }
+
+        async function quickResetPin(id) {
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat mereset PIN karyawan.");
+                return;
+            }
+            const emp = SMTI_EMPLOYEES.find(e => (e.id && e.id == id) || e.name === id);
+            if (!emp) return;
+
+            emp.pin = "1234";
+            saveEmployeesData(false);
+            if (document.getElementById('modalAdminPinManager') && document.getElementById('modalAdminPinManager').style.display === 'flex') {
+                renderAdminPinsList();
+            }
+            await syncEmployeesToCloud();
+            alert(`PIN untuk "${emp.name}" telah di-reset ke default: 1234 dan tersimpan di Vercel Cloud.`);
+        }
+
+        async function resetAllPinsToDefault() {
+            if (!isCurrentUserSuperAdmin()) {
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat mereset seluruh PIN.");
+                return;
+            }
+            if (confirm("Reset PIN seluruh personil SMTI ke default 1234?\n\nSemua akun akan dapat login menggunakan PIN: 1234.")) {
+                SMTI_EMPLOYEES.forEach(emp => { emp.pin = "1234"; });
+                if (typeof SMTI_INTERNS !== 'undefined' && SMTI_INTERNS) {
+                    SMTI_INTERNS.forEach(intern => { intern.pin = "1234"; });
+                    saveInternsData(false);
+                    syncInternsToCloud();
+                }
+                saveEmployeesData(false);
+                renderAdminPinsList();
+                await syncEmployeesToCloud();
+                alert("Sukses! Semua akun karyawan & anak magang telah disetel ke PIN default: 1234 dan tersimpan di Vercel Cloud.");
+            }
+        }
+
         function renderEmployeesTable() {
             const table = document.getElementById('employee-table-body');
             if (!table) return;
@@ -5891,7 +6091,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <td><span class="status" style="background: ${color}; color: ${textColor}; font-weight: 700;">${emp.status || 'TKO'}</span></td>
                         <td>
                             ${isCurrentUserSuperAdmin() ? `
-                                <button class="action-btn btn-edit" title="Edit karyawan & PIN" onclick="event.stopPropagation(); editEmployeeById(${empId})"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn btn-pin" title="Atur PIN Keamanan (${emp.name})" onclick="event.stopPropagation(); quickEditPin(${empId})"><i class="fas fa-key"></i></button>
+                                <button class="action-btn btn-edit" title="Edit profil karyawan" onclick="event.stopPropagation(); editEmployeeById(${empId})"><i class="fas fa-edit"></i></button>
                                 <button class="action-btn btn-delete" title="Hapus karyawan permanen" onclick="event.stopPropagation(); deleteEmployeeById(${empId})"><i class="fas fa-trash"></i></button>
                             ` : `
                                 <span style="font-size: 11px; color: #94a3b8; font-style: italic;"><i class="fas fa-lock"></i> Terkunci</span>
@@ -5911,6 +6112,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const nama = document.getElementById('input-nama').value.trim();
             const jabatan = document.getElementById('input-jabatan').value.trim();
             const status = document.getElementById('input-status').value;
+            const pinInput = document.getElementById('input-pin');
+            const pinVal = pinInput ? (pinInput.value || '1234').trim() : '1234';
 
             if (!nama || !jabatan) return;
 
@@ -5926,7 +6129,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 role: jabatan,
                 status: status,
                 color: color,
-                initials: initials
+                initials: initials,
+                pin: pinVal || "1234"
             };
 
             SMTI_EMPLOYEES.push(newEmployee);
