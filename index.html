@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Dept SMTI - PT Pupuk Kujang</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -3365,10 +3366,14 @@
             populateNewProjectMemberCheckboxes();
 
             if (typeof currentActiveProjectId !== 'undefined' && currentActiveProjectId) {
-                const curProj = projectDataSMTI.find(p => p.id === currentActiveProjectId);
-                if (curProj) {
-                    renderTeamAvatars(curProj);
-                    renderCommentAuthorSelect(curProj);
+                try {
+                    const curProj = projectDataSMTI.find(p => p.id === currentActiveProjectId);
+                    if (curProj) {
+                        if (typeof renderProjectTeam === 'function') renderProjectTeam(curProj);
+                        if (typeof populateChatAuthorSelect === 'function') populateChatAuthorSelect(curProj);
+                    }
+                } catch (err) {
+                    console.warn("Update team avatars/comments warning:", err);
                 }
             }
 
