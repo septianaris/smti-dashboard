@@ -2507,8 +2507,11 @@
             </div>
 
             <div class="flow-modal-body">
-                <!-- Toolbar Cepat Pengatur Status Tahap & Manual Progress -->
-                <div class="stage-control-toolbar">
+                <!-- Banner Notifikasi Hak Akses Proyek (Read-Only / Full Access) -->
+                <div id="modal-permission-notice" style="display: none;"></div>
+
+                <!-- Toolbar Cepat Pengatur Status Tahap & Manual Progress (Khusus PIC & Tim) -->
+                <div class="stage-control-toolbar" id="modal-stage-toolbar">
                     <div class="stage-status-actions">
                         <span style="font-size: 12px; font-weight: 700; color: #64748b;"><i class="fas fa-sliders-h"></i> Atur Status Tahap Ini:</span>
                         <button class="stage-status-btn btn-set-completed" onclick="setStepStatusManually('completed')">
@@ -2539,7 +2542,7 @@
                     <div class="flow-meta-item" style="position: relative;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                             <small>Penanggung Jawab (PIC)</small>
-                            <button type="button" class="btn-xs" style="background: rgba(2, 132, 199, 0.1); border: 1px solid rgba(2, 132, 199, 0.3); color: #0284c7; padding: 2px 7px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: 700;" onclick="openChangePicModal()" title="Ubah Penanggung Jawab Proyek">
+                            <button type="button" class="btn-xs" id="btn-modal-change-pic" style="background: rgba(2, 132, 199, 0.1); border: 1px solid rgba(2, 132, 199, 0.3); color: #0284c7; padding: 2px 7px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: 700;" onclick="openChangePicModal()" title="Ubah Penanggung Jawab Proyek">
                                 <i class="fas fa-user-edit"></i> Ganti PIC
                             </button>
                         </div>
@@ -2563,7 +2566,7 @@
                             <!-- Rendered by JS -->
                         </div>
                     </div>
-                    <button type="button" class="btn btn-sm btn-invite-team" onclick="openInviteTeamModal()">
+                    <button type="button" class="btn btn-sm btn-invite-team" id="btn-modal-invite-team" onclick="openInviteTeamModal()">
                         <i class="fas fa-user-plus"></i> + Undang Karyawan SMTI
                     </button>
                 </div>
@@ -2598,7 +2601,7 @@
                             <i class="fas fa-exclamation-triangle" style="font-size: 16px;"></i>
                             <span id="modal-stage-alert-text">Perhatian: Progres membutuhkan percepatan!</span>
                         </div>
-                        <button class="btn btn-sm" style="background: rgba(220, 38, 38, 0.2); color: #dc2626;" onclick="editAlertNote()">
+                        <button class="btn btn-sm" id="btn-modal-edit-alert" style="background: rgba(220, 38, 38, 0.2); color: #dc2626;" onclick="editAlertNote()">
                             <i class="fas fa-pen"></i> Ubah Catatan
                         </button>
                     </div>
@@ -2613,13 +2616,16 @@
                         <!-- Tasks checklist items container -->
                         <div id="modal-stage-checklist"></div>
 
-                        <!-- Form Input Manual Tambah Checklist Baru -->
-                        <form class="add-task-form" onsubmit="event.preventDefault(); addNewTask();">
+                        <!-- Form Input Manual Tambah Checklist Baru (Hanya untuk PIC & Tim) -->
+                        <form class="add-task-form" id="modal-add-task-form" onsubmit="event.preventDefault(); addNewTask();">
                             <input type="text" id="new-task-input" class="add-task-input" placeholder="+ Ketik nama kegiatan / dokumen syarat baru lalu tekan Enter...">
                             <button type="submit" class="btn btn-sm" style="background: #16a34a;">
                                 <i class="fas fa-plus"></i> Tambah
                             </button>
                         </form>
+                        <div id="modal-task-locked-notice" style="display: none; padding: 10px 14px; background: rgba(148, 163, 184, 0.08); border: 1px dashed var(--border-color); border-radius: 6px; text-align: center; color: #64748b; font-size: 12px; margin-top: 6px;">
+                            <i class="fas fa-lock" style="color: #94a3b8; margin-right: 5px;"></i> Penambahan kegiatan baru disembunyikan (khusus PIC & anggota tim ter-invite).
+                        </div>
                     </div>
                 </div>
 
@@ -2673,22 +2679,22 @@
                 </div>
 
                 <div class="flow-modal-actions">
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-sm" style="background: #16a34a; font-weight: 700;" onclick="markProjectCompletedQuick()" title="Langsung tandai seluruh tahapan dan proyek selesai 100%">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn btn-sm" id="btn-modal-mark-completed" style="background: #16a34a; font-weight: 700;" onclick="markProjectCompletedQuick()" title="Langsung tandai seluruh tahapan dan proyek selesai 100%">
                             <i class="fas fa-check-double"></i> Tandai Selesai (100%)
                         </button>
-                        <button class="btn btn-sm" style="background: #64748b;" onclick="copyProgressSummary()">
+                        <button class="btn btn-sm" id="btn-modal-copy-summary" style="background: #64748b;" onclick="copyProgressSummary()">
                             <i class="fas fa-copy"></i> Salin Ringkasan Progres
                         </button>
-                        <button class="btn btn-sm" style="background: #e67e22;" onclick="reopenOrResetProject()">
+                        <button class="btn btn-sm" id="btn-modal-reopen" style="background: #e67e22;" onclick="reopenOrResetProject()">
                             <i class="fas fa-undo"></i> Buka Ulang / Reset Progres
                         </button>
-                        <button class="btn btn-sm" style="background: #dc2626;" onclick="deleteProject(currentActiveProjectId)">
+                        <button class="btn btn-sm" id="btn-modal-delete" style="background: #dc2626;" onclick="deleteProject(currentActiveProjectId)">
                             <i class="fas fa-trash-alt"></i> Hapus Proyek
                         </button>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn" style="background: #16a34a;" onclick="advanceStage()">
+                        <button class="btn" id="btn-modal-advance-stage" style="background: #16a34a;" onclick="advanceStage()">
                             <i class="fas fa-forward"></i> Tahap Berikutnya
                         </button>
                         <button class="btn" onclick="closeFlowModal()">Tutup</button>
@@ -5458,12 +5464,157 @@
         });
 
         /* =========================================================
+           HAK AKSES PROGRES PROYEK KHUSUS PIC & TIM TER-INVITE (RBAC)
+           ========================================================= */
+        function isSameOrMatchingPerson(nameA, nameB) {
+            if (!nameA || !nameB) return false;
+            const cleanA = String(nameA).replace(/\(.*?\)/g, '').trim().toLowerCase();
+            const cleanB = String(nameB).replace(/\(.*?\)/g, '').trim().toLowerCase();
+            if (cleanA === cleanB) return true;
+            if (cleanA.length >= 4 && cleanB.length >= 4) {
+                if (cleanA.includes(cleanB) || cleanB.includes(cleanA)) return true;
+            }
+            const tokA = cleanA.split(/\s+/).filter(Boolean);
+            const tokB = cleanB.split(/\s+/).filter(Boolean);
+            if (tokA.length > 1 && tokB.length > 1) {
+                if (tokA[0] === tokB[0] && tokA[1] === tokB[1]) return true;
+            }
+            return false;
+        }
+
+        function canUserEditProject(project) {
+            if (!project) return false;
+            if (typeof currentAuthUser === 'undefined' || !currentAuthUser || !currentAuthUser.name) return false;
+
+            // Super Admin (Septian) & Manager (Henisya Permata Sari) memiliki wewenang tata kelola menyeluruh
+            if (currentAuthUser.isSuperAdmin || (currentAuthUser.name && currentAuthUser.name.toLowerCase().includes('septian'))) return true;
+            if (currentAuthUser.isManager || (currentAuthUser.name && currentAuthUser.name.toLowerCase().includes('henisya'))) return true;
+
+            const currentName = currentAuthUser.name.trim().toLowerCase();
+
+            // Cek apakah user adalah PIC proyek (mendukung nama tunggal atau dipisah garis miring / koma / 'dan')
+            const picRaw = (project.pic || '').trim().toLowerCase();
+            if (picRaw) {
+                const picParts = picRaw.split(/[/,&]|(?:\bdan\b)/i).map(p => p.replace(/\(.*?\)/g, '').trim()).filter(Boolean);
+                for (const p of picParts) {
+                    if (isSameOrMatchingPerson(currentName, p)) return true;
+                }
+            }
+
+            // Cek apakah user terdaftar dalam anggota tim proyek yang diundang
+            if (Array.isArray(project.teamMembers)) {
+                for (const member of project.teamMembers) {
+                    if (!member) continue;
+                    const m = String(member).replace(/\(.*?\)/g, '').trim().toLowerCase();
+                    if (isSameOrMatchingPerson(currentName, m)) return true;
+                }
+            }
+
+            return false;
+        }
+
+        function showPermissionDeniedAlert(project, actionDesc = "mengubah progres atau checklist proyek ini") {
+            const picName = project ? (project.pic || 'PIC') : 'PIC';
+            const currentUser = (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) 
+                ? currentAuthUser.name 
+                : 'Pengguna';
+            alert(`🔒 Akses Terkunci (Mode Hanya-Lihat)\n\nAkun Anda: ${currentUser}\nHak Akses: Anda bukan PIC atau anggota tim yang diundang pada proyek ini.\n\nHanya PIC (${picName}) atau anggota tim ter-invite yang dapat ${actionDesc}.`);
+        }
+
+        function updateFlowModalPermissions(project, canEdit) {
+            const currentUserName = (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) 
+                ? currentAuthUser.name 
+                : 'Tamu';
+
+            // 1. Banner Notifikasi Hak Akses
+            const noticeEl = document.getElementById('modal-permission-notice');
+            if (noticeEl) {
+                if (!canEdit) {
+                    noticeEl.style.display = 'flex';
+                    noticeEl.style.alignItems = 'center';
+                    noticeEl.style.justifyContent = 'space-between';
+                    noticeEl.style.gap = '10px';
+                    noticeEl.style.background = 'rgba(245, 158, 11, 0.09)';
+                    noticeEl.style.border = '1px solid rgba(245, 158, 11, 0.3)';
+                    noticeEl.style.padding = '9px 14px';
+                    noticeEl.style.borderRadius = '8px';
+                    noticeEl.style.marginBottom = '12px';
+                    noticeEl.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px; font-size: 12px; color: #b45309; line-height: 1.4;">
+                            <i class="fas fa-lock" style="font-size: 15px; color: #d97706; flex-shrink: 0;"></i>
+                            <span><strong>Mode Hanya-Lihat (Read-Only):</strong> Anda login sebagai <strong>${currentUserName}</strong>. Menu perubahan progres proyek ini disembunyikan & dikunci khusus untuk PIC (<strong>${project.pic}</strong>) serta anggota tim ter-invite.</span>
+                        </div>
+                        <span style="font-size: 10.5px; font-weight: 700; background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 2px 7px; border-radius: 4px; white-space: nowrap;">
+                            <i class="fas fa-eye"></i> Hanya Lihat
+                        </span>
+                    `;
+                } else {
+                    noticeEl.style.display = 'none';
+                }
+            }
+
+            // 2. Toolbar Atur Status Tahap & Manual Progress (Sembunyikan bila bukan PIC/tim)
+            const toolbar = document.getElementById('modal-stage-toolbar');
+            if (toolbar) {
+                toolbar.style.display = canEdit ? 'flex' : 'none';
+            }
+
+            // 3. Tombol Ganti PIC & Undang Karyawan (Sembunyikan bila bukan PIC/tim)
+            const btnChangePic = document.getElementById('btn-modal-change-pic');
+            if (btnChangePic) {
+                btnChangePic.style.display = canEdit ? 'inline-block' : 'none';
+            }
+            const btnInviteTeam = document.getElementById('btn-modal-invite-team');
+            if (btnInviteTeam) {
+                btnInviteTeam.style.display = canEdit ? 'inline-flex' : 'none';
+            }
+
+            // 4. Tombol Ubah Catatan Alert
+            const btnEditAlert = document.getElementById('btn-modal-edit-alert');
+            if (btnEditAlert) {
+                btnEditAlert.style.display = canEdit ? 'inline-flex' : 'none';
+            }
+
+            // 5. Form Tambah Tugas Baru
+            const formAddTask = document.getElementById('modal-add-task-form');
+            if (formAddTask) {
+                formAddTask.style.display = canEdit ? 'flex' : 'none';
+            }
+            const lockedTaskNotice = document.getElementById('modal-task-locked-notice');
+            if (lockedTaskNotice) {
+                lockedTaskNotice.style.display = canEdit ? 'none' : 'block';
+            }
+
+            // 6. Tombol Aksi di Bawah (Yang di-screenshot user):
+            // Sembunyikan: Tandai Selesai, Buka Ulang, Hapus Proyek, Tahap Berikutnya
+            const btnMarkCompleted = document.getElementById('btn-modal-mark-completed');
+            if (btnMarkCompleted) {
+                btnMarkCompleted.style.display = canEdit ? 'inline-flex' : 'none';
+            }
+            const btnReopen = document.getElementById('btn-modal-reopen');
+            if (btnReopen) {
+                btnReopen.style.display = canEdit ? 'inline-flex' : 'none';
+            }
+            const btnDelete = document.getElementById('btn-modal-delete');
+            if (btnDelete) {
+                btnDelete.style.display = canEdit ? 'inline-flex' : 'none';
+            }
+            const btnAdvance = document.getElementById('btn-modal-advance-stage');
+            if (btnAdvance) {
+                btnAdvance.style.display = canEdit ? 'inline-flex' : 'none';
+            }
+        }
+
+        /* =========================================================
            MODAL ALUR PROGRES INTERAKTIF (FLOW STEPPER MODAL)
            ========================================================= */
         function openFlowModal(projectId) {
             currentActiveProjectId = projectId;
             const project = projectDataSMTI.find(p => p.id === projectId);
             if (!project) return;
+
+            const canEdit = canUserEditProject(project);
+            updateFlowModalPermissions(project, canEdit);
 
             document.getElementById('modal-project-title').innerText = project.name;
             document.getElementById('modal-project-desc').innerText = project.description;
@@ -5585,31 +5736,51 @@
             const completed = step.tasks ? step.tasks.filter(t => t[1]).length : 0;
             summaryText.innerText = `${completed}/${total} selesai`;
 
+            const canEdit = canUserEditProject(project);
+
             if (!step.tasks || step.tasks.length === 0) {
                 checklistContainer.innerHTML = `
                     <div style="padding: 12px; text-align: center; color: #94a3b8; font-size: 12.5px; border: 1px dashed var(--border-color); border-radius: 6px; margin-bottom: 8px;">
-                        Belum ada tugas/dokumen syarat di tahap ini. Tambahkan di bawah.
+                        Belum ada tugas/dokumen syarat di tahap ini.${canEdit ? ' Tambahkan di bawah.' : ''}
                     </div>
                 `;
                 return;
             }
 
-            checklistContainer.innerHTML = step.tasks.map((task, tIdx) => `
-                <div class="task-item ${task[1] ? 'checked' : ''}" onclick="toggleTask(${stepIndex}, ${tIdx})">
-                    <div class="task-left">
-                        <input type="checkbox" ${task[1] ? 'checked' : ''} onclick="event.stopPropagation(); toggleTask(${stepIndex}, ${tIdx})">
-                        <span>${task[0]}</span>
+            checklistContainer.innerHTML = step.tasks.map((task, tIdx) => {
+                const isChecked = !!task[1];
+                if (!canEdit) {
+                    return `
+                        <div class="task-item ${isChecked ? 'checked' : ''}" style="cursor: default;" title="Mode Hanya-Lihat: Checklist dikunci untuk non-tim proyek">
+                            <div class="task-left">
+                                <input type="checkbox" ${isChecked ? 'checked' : ''} disabled style="cursor: not-allowed; opacity: 0.65;">
+                                <span>${task[0]}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                return `
+                    <div class="task-item ${isChecked ? 'checked' : ''}" onclick="toggleTask(${stepIndex}, ${tIdx})">
+                        <div class="task-left">
+                            <input type="checkbox" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleTask(${stepIndex}, ${tIdx})">
+                            <span>${task[0]}</span>
+                        </div>
+                        <button class="task-delete-btn" onclick="event.stopPropagation(); deleteTask(${stepIndex}, ${tIdx})" title="Hapus kegiatan ini">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
                     </div>
-                    <button class="task-delete-btn" onclick="event.stopPropagation(); deleteTask(${stepIndex}, ${tIdx})" title="Hapus kegiatan ini">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function toggleTask(stepIndex, taskIndex) {
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project || !project.flow[stepIndex]) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "mencentang kegiatan proyek");
+                return;
+            }
 
             const isChecked = project.flow[stepIndex].tasks[taskIndex][1];
             project.flow[stepIndex].tasks[taskIndex][1] = !isChecked;
@@ -5633,6 +5804,11 @@
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project || !project.flow[currentSelectedStepIndex]) return;
 
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "menambah kegiatan baru");
+                return;
+            }
+
             if (!project.flow[currentSelectedStepIndex].tasks) {
                 project.flow[currentSelectedStepIndex].tasks = [];
             }
@@ -5652,6 +5828,11 @@
         function deleteTask(stepIndex, taskIndex) {
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project || !project.flow[stepIndex]) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "menghapus kegiatan proyek");
+                return;
+            }
 
             const taskName = project.flow[stepIndex].tasks[taskIndex][0];
             if (confirm(`Hapus checklist "${taskName}"?`)) {
@@ -5692,6 +5873,11 @@
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project || !project.flow[currentSelectedStepIndex]) return;
 
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "mengubah status tahapan");
+                return;
+            }
+
             const currentStep = project.flow[currentSelectedStepIndex];
             currentStep.status = newStatus;
 
@@ -5721,6 +5907,11 @@
         function applyManualProgress() {
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "mengatur total progres");
+                return;
+            }
 
             const val = parseInt(document.getElementById('manual-progress-input').value, 10);
             if (isNaN(val) || val < 0 || val > 100) {
@@ -5753,6 +5944,11 @@
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project) return;
 
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "memajukan tahapan proyek");
+                return;
+            }
+
             const currentIndex = project.flow.findIndex(st => st.status === 'active');
             if (currentIndex !== -1) {
                 project.flow[currentIndex].status = 'completed';
@@ -5780,6 +5976,11 @@
         function markProjectCompletedQuick() {
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "menyelesaikan proyek");
+                return;
+            }
             
             if (confirm(`Tandai proyek "${project.name}" sebagai SELESAI (100%)?\nSeluruh tahapan dan checklist kegiatan akan ditandai tuntas.`)) {
                 project.status = 'Completed';
@@ -5807,7 +6008,7 @@
                 saveProjectsData();
                 renderModalStepper(project);
                 selectModalStep(project.flow.length - 1);
-                renderCommentsList(project);
+                renderComments(project);
                 renderProjectsList();
                 renderMonitorBoard();
                 alert(`Selamat! Proyek "${project.name}" berhasil ditandai selesai 100%!`);
@@ -5817,6 +6018,11 @@
         function reopenOrResetProject() {
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "membuka ulang atau mereset proyek");
+                return;
+            }
 
             if (confirm(`Buka ulang (re-open) proyek "${project.name}" untuk revisi atau audit ulang?`)) {
                 project.status = 'In Progress';
@@ -5839,6 +6045,11 @@
         function editAlertNote() {
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "mengubah catatan urgensi");
+                return;
+            }
 
             const newNote = prompt("Ubah Catatan Urgensi / Status Terkini:", project.alertNote || "");
             if (newNote !== null) {
@@ -5872,6 +6083,8 @@
                 return;
             }
 
+            const canEdit = canUserEditProject(project);
+
             container.innerHTML = project.teamMembers.map(name => {
                 const isIntern = SMTI_INTERNS && SMTI_INTERNS.find(i => i.name.toLowerCase() === name.toLowerCase());
                 const person = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === name.toLowerCase()) || isIntern || {
@@ -5881,15 +6094,19 @@
                     color: "#0284c7"
                 };
                 const internBadge = isIntern ? ' <small style="color: #10b981; font-weight: 700; font-size: 10px;">(Magang)</small>' : '';
+                const removeBtn = canEdit ? `
+                    <button type="button" class="team-member-remove" onclick="removeMemberFromProject('${person.name.replace(/'/g, "\\'")}')" title="Keluarkan dari tim proyek">
+                        <i class="fas fa-times"></i>
+                    </button>
+                ` : '';
+
                 return `
                     <div class="team-member-pill" title="${person.name} (${person.role}${isIntern ? ' • ' + isIntern.campus : ''})">
                         <div class="team-avatar-circle" style="background: ${person.color}; ${isIntern ? 'border: 2px solid #10b981;' : ''}">
                             ${person.initials}
                         </div>
                         <span>${person.name}${internBadge}</span>
-                        <button type="button" class="team-member-remove" onclick="removeMemberFromProject('${person.name.replace(/'/g, "\\'")}')" title="Keluarkan dari tim proyek">
-                            <i class="fas fa-times"></i>
-                        </button>
+                        ${removeBtn}
                     </div>
                 `;
             }).join('');
@@ -5898,6 +6115,12 @@
         function openInviteTeamModal() {
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "mengundang anggota tim proyek");
+                return;
+            }
+
             if (!project.teamMembers) project.teamMembers = [];
 
             const list = document.getElementById('invite-employees-list');
@@ -5979,6 +6202,12 @@
         function toggleInviteEmployee(empName) {
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "mengubah tim proyek");
+                return;
+            }
+
             if (!project.teamMembers) project.teamMembers = [];
 
             const idx = project.teamMembers.findIndex(m => m.toLowerCase() === empName.toLowerCase());
@@ -5999,6 +6228,11 @@
         function removeMemberFromProject(empName) {
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project || !project.teamMembers) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "mengeluarkan anggota tim proyek");
+                return;
+            }
 
             project.teamMembers = project.teamMembers.filter(m => m.toLowerCase() !== empName.toLowerCase());
             saveProjectsData();
@@ -6779,6 +7013,11 @@
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project) return;
 
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "mengganti PIC proyek ini");
+                return;
+            }
+
             const nameEl = document.getElementById('change-pic-project-name');
             if (nameEl) nameEl.innerText = `${project.name} (${project.category})`;
 
@@ -6817,6 +7056,11 @@
         function saveChangedProjectPic() {
             const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
             if (!project) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "mengganti PIC proyek ini");
+                return;
+            }
 
             const select = document.getElementById('change-pic-select');
             const newPic = select ? select.value.trim() : '';
@@ -6992,6 +7236,11 @@
         async function deleteProject(projectId) {
             const project = projectDataSMTI.find(p => p.id === projectId);
             if (!project) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "menghapus proyek ini");
+                return;
+            }
 
             if (confirm(`Apakah Anda yakin ingin menghapus proyek "${project.name}" dari sistem?`)) {
                 lastProjectMutationTime = Date.now();
@@ -7779,6 +8028,11 @@
             // 5. Update batasan hak akses (Sembunyikan menu Karyawan, Anak Magang, Pengaturan, Bantuan jika bukan Super Admin)
             updateUIPermissions(user);
             renderNotifications();
+
+            // 6. Jika modal alur proyek sedang terbuka, langsung segarkan izin hak akses sesuai user baru
+            if (document.getElementById('flowModal') && document.getElementById('flowModal').classList.contains('active') && typeof currentActiveProjectId !== 'undefined' && currentActiveProjectId) {
+                openFlowModal(currentActiveProjectId);
+            }
         }
 
         function updateUIPermissions(user) {
@@ -7817,6 +8071,9 @@
                 localStorage.removeItem('smti_auth_user');
                 sessionStorage.removeItem('smti_auth_user');
                 currentAuthUser = null;
+                if (document.getElementById('flowModal') && document.getElementById('flowModal').classList.contains('active')) {
+                    closeFlowModal();
+                }
                 renderNotifications();
                 showPinOverlay();
             }
