@@ -546,6 +546,91 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         .btn-view-flow { width: 100%; padding: 9px; background: linear-gradient(135deg, var(--secondary-color), #0369a1); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-view-flow:hover { background: #0284c7; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
 
+        /* --- CUSTOM INTERACTIVE CHART LEGEND (LEBIH BESAR & JELAS) --- */
+        .chart-legend-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+            user-select: none;
+            outline: none;
+        }
+
+        .chart-legend-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.09);
+        }
+
+        .chart-legend-btn.active {
+            border-color: var(--legend-color);
+            background: var(--legend-bg);
+            color: var(--text-color);
+            box-shadow: 0 3px 12px var(--legend-shadow);
+        }
+
+        .chart-legend-btn.inactive {
+            opacity: 0.52;
+            background: var(--hover-color);
+            border: 2px dashed #94a3b8;
+            color: #64748b;
+            box-shadow: none;
+        }
+
+        .chart-legend-btn.inactive .chart-legend-text {
+            text-decoration: line-through;
+        }
+
+        .chart-legend-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--legend-color);
+            display: inline-block;
+            flex-shrink: 0;
+            box-shadow: 0 0 8px var(--legend-color);
+            transition: all 0.2s ease;
+        }
+
+        .chart-legend-btn.inactive .chart-legend-indicator {
+            background-color: #94a3b8;
+            box-shadow: none;
+        }
+
+        .chart-legend-badge {
+            padding: 2.5px 8.5px;
+            border-radius: 12px;
+            font-size: 11.5px;
+            font-weight: 800;
+            background: var(--legend-color);
+            color: #ffffff;
+            letter-spacing: 0.3px;
+            transition: all 0.2s ease;
+        }
+
+        .chart-legend-btn.inactive .chart-legend-badge {
+            background: #94a3b8;
+            color: #ffffff;
+        }
+
+        .chart-legend-eye {
+            font-size: 12.5px;
+            color: var(--legend-color);
+            transition: all 0.2s ease;
+        }
+
+        .chart-legend-btn.inactive .chart-legend-eye {
+            color: #94a3b8;
+        }
+
         /* =========================================================
            MODE MONITOR TV / REMINDER DISPLAY (FULLSCREEN KIOSK)
            ========================================================= */
@@ -2192,6 +2277,21 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 </div>
                 <div class="chart-container" style="position: relative; height: 340px; width: 100%;">
                     <canvas id="mainChart"></canvas>
+                </div>
+
+                <!-- Tombol Interaktif Garis Grafik (Besar, Jelas, & Nyaman Dilihat) -->
+                <div id="main-chart-legend-wrap" style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-color);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                        <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-layer-group" style="color: #0284c7;"></i> Garis Data Grafik (Klik tombol untuk munculkan / sembunyikan):
+                        </span>
+                        <span style="font-size: 11.5px; color: #94a3b8; font-weight: 600;">
+                            <i class="fas fa-info-circle" style="color: #0284c7;"></i> Tombol Interaktif
+                        </span>
+                    </div>
+                    <div id="main-chart-legend" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                        <!-- Rendered dynamically by renderCustomChartLegend() -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -4299,6 +4399,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const titleEl = document.getElementById('main-chart-title');
             const subEl = document.getElementById('main-chart-subtitle');
             const iconEl = document.getElementById('main-chart-icon');
+            const legendWrap = document.getElementById('main-chart-legend-wrap');
 
             [btnLine, btnPic, btnCat].forEach(btn => {
                 if (btn) {
@@ -4317,6 +4418,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 if (titleEl) titleEl.innerText = 'Tren Kinerja & Progres Akumulatif Seluruh Dept SMTI';
                 if (subEl) subEl.innerText = 'Realisasi capaian departemen vs target tahunan RKAP sepanjang 2026';
                 if (iconEl) iconEl.className = 'fas fa-chart-line';
+                if (legendWrap) legendWrap.style.display = 'block';
             } else if (mode === 'pic') {
                 if (btnPic) {
                     btnPic.style.background = '#0284c7';
@@ -4326,6 +4428,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 if (titleEl) titleEl.innerText = 'Distribusi Beban Kerja 12 Personil Dept SMTI';
                 if (subEl) subEl.innerText = 'Disinkronkan langsung dengan data Personil SMTI (TKO & TKNO) & Proyek Aktif';
                 if (iconEl) iconEl.className = 'fas fa-users';
+                if (legendWrap) legendWrap.style.display = 'none';
             } else if (mode === 'category') {
                 if (btnCat) {
                     btnCat.style.background = '#0284c7';
@@ -4335,8 +4438,73 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 if (titleEl) titleEl.innerText = 'Capaian Progres Riil per Rumpun Kerja SMTI';
                 if (subEl) subEl.innerText = 'Rata-rata progres proyek berjalan & tuntas berdasarkan kategori';
                 if (iconEl) iconEl.className = 'fas fa-layer-group';
+                if (legendWrap) legendWrap.style.display = 'none';
             }
             updateMainDashboardChart();
+        }
+
+        function renderCustomChartLegend() {
+            const wrap = document.getElementById('main-chart-legend');
+            if (!wrap || !mainDashboardChartInstance) return;
+            if (currentMainChartMode !== 'line') return;
+
+            const datasets = mainDashboardChartInstance.data.datasets;
+            if (!datasets || datasets.length === 0) return;
+
+            const metaConfigs = [
+                { label: 'Realisasi Seluruh Dept SMTI', color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-chart-line' },
+                { label: 'Target RKAP Tahunan', color: '#10b981', rgb: '16, 185, 129', icon: 'fa-bullseye' },
+                { label: 'Rumpun MIKU', color: '#f59e0b', rgb: '245, 158, 11', icon: 'fa-lightbulb' },
+                { label: 'Rumpun PMSMT', color: '#8b5cf6', rgb: '139, 92, 246', icon: 'fa-award' },
+                { label: 'BangSisdur', color: '#6366f1', rgb: '99, 102, 241', icon: 'fa-file-invoice' }
+            ];
+
+            let html = '';
+            datasets.forEach((ds, idx) => {
+                const conf = metaConfigs[idx] || { label: ds.label, color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-chart-bar' };
+
+                // Status visibilitas dataset
+                const isVisible = mainDashboardChartInstance.isDatasetVisible
+                    ? mainDashboardChartInstance.isDatasetVisible(idx)
+                    : !mainDashboardChartInstance.getDatasetMeta(idx).hidden;
+
+                // Ambil nilai persen dari label jika ada (misal: "(79.2%)")
+                const valMatch = (ds.label || '').match(/\(([^)]+)\)/);
+                const valBadge = valMatch ? valMatch[1] : '';
+
+                const activeClass = isVisible ? 'active' : 'inactive';
+                const eyeIcon = isVisible ? 'fa-eye' : 'fa-eye-slash';
+                const titleText = isVisible ? `Klik untuk menyembunyikan garis "${conf.label}" dari grafik` : `Klik untuk memunculkan kembali garis "${conf.label}" di grafik`;
+
+                html += `
+                    <button type="button" class="chart-legend-btn ${activeClass}" onclick="toggleMainChartDataset(${idx})" 
+                        style="--legend-color: ${conf.color}; --legend-bg: rgba(${conf.rgb}, 0.12); --legend-shadow: rgba(${conf.rgb}, 0.25);" 
+                        title="${titleText}">
+                        <i class="fas ${eyeIcon} chart-legend-eye"></i>
+                        <span class="chart-legend-indicator"></span>
+                        <i class="fas ${conf.icon}" style="color: ${isVisible ? conf.color : '#94a3b8'}; font-size: 13.5px;"></i>
+                        <span class="chart-legend-text">${conf.label}</span>
+                        ${valBadge ? `<span class="chart-legend-badge">${valBadge}</span>` : ''}
+                    </button>
+                `;
+            });
+
+            wrap.innerHTML = html;
+        }
+
+        function toggleMainChartDataset(index) {
+            if (!mainDashboardChartInstance) return;
+            const isVisible = mainDashboardChartInstance.isDatasetVisible
+                ? mainDashboardChartInstance.isDatasetVisible(index)
+                : !mainDashboardChartInstance.getDatasetMeta(index).hidden;
+
+            if (mainDashboardChartInstance.setDatasetVisibility) {
+                mainDashboardChartInstance.setDatasetVisibility(index, !isVisible);
+            } else {
+                mainDashboardChartInstance.getDatasetMeta(index).hidden = isVisible ? true : null;
+            }
+            mainDashboardChartInstance.update();
+            renderCustomChartLegend();
         }
 
         function updateMainDashboardChart() {
@@ -4460,12 +4628,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         },
                         plugins: {
                             legend: {
-                                position: 'bottom',
-                                labels: {
-                                    boxWidth: 13,
-                                    font: { size: 11, weight: '600' },
-                                    padding: 12
-                                }
+                                display: false
                             },
                             tooltip: {
                                 callbacks: {
@@ -4485,6 +4648,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         }
                     }
                 });
+
+                // Render tombol legenda interaktif kustom (Lebih besar, jelas, dan dapat diklik)
+                renderCustomChartLegend();
 
             } else if (currentMainChartMode === 'pic') {
                 // ================= MODE 2: BEBAN KERJA 12 PERSONIL SMTI & MAGANG =================
