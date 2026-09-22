@@ -4622,8 +4622,60 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         /* =========================================================
-           SISTEM NOTIFIKASI DINAMIS & TERINTEGRASI PROYEK SMTI
+           SISTEM NOTIFIKASI DINAMIS & STATUS BACA PER-USER SMTI
            ========================================================= */
+        function getUserNotifStorageKey() {
+            const currentUserName = (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) 
+                ? currentAuthUser.name.toLowerCase().trim() 
+                : 'umum';
+            return 'smti_read_notifs_u_' + encodeURIComponent(currentUserName);
+        }
+
+        function getUserReadNotifKeys() {
+            try {
+                const stored = localStorage.getItem(getUserNotifStorageKey());
+                return stored ? JSON.parse(stored) : [];
+            } catch(e) {
+                return [];
+            }
+        }
+
+        function markNotifAsRead(notifKey) {
+            try {
+                const keys = getUserReadNotifKeys();
+                if (!keys.includes(notifKey)) {
+                    keys.push(notifKey);
+                    localStorage.setItem(getUserNotifStorageKey(), JSON.stringify(keys));
+                }
+            } catch(e) {
+                console.error("Gagal simpan status baca notifikasi:", e);
+            }
+        }
+
+        function markAllNotifsAsRead() {
+            const activeProjects = projectDataSMTI.filter(p => !isProjectCompleted(p));
+            const keys = getUserReadNotifKeys();
+            activeProjects.forEach(p => {
+                const completedSteps = p.flow ? p.flow.filter(s => s.status === 'completed').length : 0;
+                const notifKey = `notif_${p.id}_${p.progress}_${p.urgency}_${completedSteps}`;
+                if (!keys.includes(notifKey)) {
+                    keys.push(notifKey);
+                }
+            });
+            try {
+                localStorage.setItem(getUserNotifStorageKey(), JSON.stringify(keys));
+            } catch(e) {}
+            renderNotifications();
+        }
+
+        function handleNotifClick(projectId, notifKey) {
+            markNotifAsRead(notifKey);
+            renderNotifications();
+            openFlowModal(projectId);
+            const drop = document.getElementById('notif-dropdown');
+            if (drop) drop.classList.remove('active');
+        }
+
         function renderNotifications() {
             const dropdown = document.getElementById('notif-dropdown');
             const badgeCount = document.getElementById('notif-badge-count');
@@ -4636,6 +4688,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const currentUserName = (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) 
                 ? currentAuthUser.name.toLowerCase() 
                 : '';
+            const currentUserNameDisplay = (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) 
+                ? currentAuthUser.name 
+                : 'Tamu / Umum';
+
+            // Ambil daftar key notifikasi yang sudah dibaca oleh user ini
+            const readKeys = getUserReadNotifKeys();
 
             const notifications = [];
 
@@ -4657,10 +4715,17 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     alertMsg = `Tahap: ${activeStage} • Target: ${p.deadline} (${p.daysLeft || 'Berjalan'})`;
                 }
 
+                // Kunci unik notifikasi berbasis id, progres, urgensi, dan jumlah tahap tuntas
+                const completedStepsCount = p.flow ? p.flow.filter(s => s.status === 'completed').length : 0;
+                const notifKey = `notif_${p.id}_${p.progress}_${p.urgency}_${completedStepsCount}`;
+                const isRead = readKeys.includes(notifKey);
+
                 // Tentukan ikon & level urgensi
                 if (p.urgency === 'Tinggi') {
                     notifications.push({
                         id: p.id,
+                        notifKey: notifKey,
+                        isRead: isRead,
                         type: 'urgent',
                         icon: 'fa-exclamation-triangle',
                         iconColor: '#dc2626',
@@ -4672,11 +4737,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         pic: p.pic,
                         progress: p.progress,
                         daysLeft: p.daysLeft || p.deadline,
-                        priorityScore: 10 + (isUserPic ? 5 : (isUserTeam ? 2 : 0))
+                        priorityScore: (isRead ? 0 : 20) + 10 + (isUserPic ? 5 : (isUserTeam ? 2 : 0))
                     });
                 } else if (p.urgency === 'Sedang') {
                     notifications.push({
                         id: p.id,
+                        notifKey: notifKey,
+                        isRead: isRead,
                         type: 'warning',
                         icon: 'fa-hourglass-half',
                         iconColor: '#d97706',
@@ -4688,11 +4755,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         pic: p.pic,
                         progress: p.progress,
                         daysLeft: p.daysLeft || p.deadline,
-                        priorityScore: 5 + (isUserPic ? 5 : (isUserTeam ? 2 : 0))
+                        priorityScore: (isRead ? 0 : 20) + 5 + (isUserPic ? 5 : (isUserTeam ? 2 : 0))
                     });
                 } else {
                     notifications.push({
                         id: p.id,
+                        notifKey: notifKey,
+                        isRead: isRead,
                         type: 'info',
                         icon: 'fa-check-circle',
                         iconColor: '#16a34a',
@@ -4704,24 +4773,26 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         pic: p.pic,
                         progress: p.progress,
                         daysLeft: p.daysLeft || p.deadline,
-                        priorityScore: 2 + (isUserPic ? 5 : (isUserTeam ? 2 : 0))
+                        priorityScore: (isRead ? 0 : 20) + 2 + (isUserPic ? 5 : (isUserTeam ? 2 : 0))
                     });
                 }
             });
 
-            // Urutkan notifikasi: Prioritas tertinggi dan proyek yang melibatkan akun pengguna berada paling atas
+            // Urutkan notifikasi: Belum dibaca paling atas, lalu urgensi & kepemilikan
             notifications.sort((a, b) => b.priorityScore - a.priorityScore);
 
             const totalNotifs = notifications.length;
+            // Hitung hanya yang BELUM dibaca oleh user saat ini
+            const unreadCount = notifications.filter(n => !n.isRead).length;
 
-            // Update badge counter lonceng di navbar header
+            // Update badge counter angka merah di ikon lonceng header
             if (badgeCount) {
-                if (totalNotifs > 0) {
+                if (unreadCount > 0) {
                     badgeCount.style.display = 'inline-block';
-                    badgeCount.innerText = totalNotifs > 99 ? '99+' : totalNotifs;
-                    badgeCount.title = `${totalNotifs} pengingat proyek aktif`;
+                    badgeCount.innerText = unreadCount > 99 ? '99+' : unreadCount;
+                    badgeCount.title = `${unreadCount} pengingat proyek belum dibaca (${currentUserNameDisplay})`;
                 } else {
-                    badgeCount.style.display = 'none';
+                    badgeCount.style.display = 'none'; // Sembunyikan badge jika 0 / sudah dibaca semua
                 }
             }
 
@@ -4733,12 +4804,20 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             <i class="fas fa-bell" style="color: #0284c7;"></i> Pengingat Proyek & Sistem
                         </div>
                         <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
-                            Disinkronkan langsung dengan proyek aktif
+                            Akun: <strong style="color: #0284c7;">${currentUserNameDisplay}</strong> • <strong>${unreadCount}</strong> Belum Dibaca
                         </div>
                     </div>
-                    <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; background: rgba(2, 132, 199, 0.12); color: #0284c7;">
-                        ${totalNotifs} Berjalan
-                    </span>
+                    <div>
+                        ${unreadCount > 0 ? `
+                            <button type="button" class="btn btn-sm" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; border: 1px solid rgba(2, 132, 199, 0.3); font-size: 10px; padding: 3px 8px; font-weight: 700; cursor: pointer; white-space: nowrap;" onclick="markAllNotifsAsRead()" title="Tandai semua notifikasi proyek telah dibaca untuk akun ${currentUserNameDisplay}">
+                                <i class="fas fa-check-double"></i> Tandai Dibaca
+                            </button>
+                        ` : `
+                            <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; background: rgba(22, 163, 74, 0.12); color: #16a34a; white-space: nowrap;">
+                                <i class="fas fa-check"></i> Semua Terbaca
+                            </span>
+                        `}
+                    </div>
                 </div>
             `;
 
@@ -4755,22 +4834,36 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 notifications.forEach(item => {
                     const badgeClass = item.urgency === 'Urgensi Tinggi' ? 'background: rgba(220, 38, 38, 0.12); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.3);' : (item.urgency === 'Urgensi Sedang' ? 'background: rgba(217, 119, 6, 0.12); color: #d97706; border: 1px solid rgba(217, 119, 6, 0.3);' : 'background: rgba(22, 163, 74, 0.12); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.3);');
 
+                    // Tampilan status belum dibaca vs sudah dibaca
+                    const itemStyle = item.isRead 
+                        ? 'opacity: 0.72; background: transparent;' 
+                        : 'background: rgba(2, 132, 199, 0.05); border-left: 3px solid #0284c7;';
+                    
+                    const unreadDot = !item.isRead 
+                        ? `<span style="width: 7px; height: 7px; border-radius: 50%; background: #0284c7; display: inline-block; box-shadow: 0 0 6px rgba(2, 132, 199, 0.8);" title="Belum dibaca oleh ${currentUserNameDisplay}"></span>` 
+                        : `<span style="width: 7px; height: 7px; border-radius: 50%; background: transparent; display: inline-block;"></span>`;
+
                     html += `
-                        <div class="dropdown-item" onclick="openFlowModal(${item.id}); toggleDropdown('notif-dropdown');" style="align-items: flex-start; padding: 9px 10px; border-radius: 8px; transition: background 0.15s; border-bottom: 1px solid var(--border-color); gap: 10px;">
+                        <div class="dropdown-item" onclick="handleNotifClick(${item.id}, '${item.notifKey}')" style="align-items: flex-start; padding: 9px 10px; border-radius: 8px; transition: all 0.15s; border-bottom: 1px solid var(--border-color); gap: 10px; ${itemStyle}" title="Klik untuk buka alur & tandai dibaca">
                             <div style="margin-top: 2px; width: 22px; height: 22px; border-radius: 50%; background: ${item.urgency === 'Urgensi Tinggi' ? 'rgba(220, 38, 38, 0.12)' : (item.urgency === 'Urgensi Sedang' ? 'rgba(217, 119, 6, 0.12)' : 'rgba(2, 132, 199, 0.12)')}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                 <i class="fas ${item.icon}" style="color: ${item.iconColor}; font-size: 11px;"></i>
                             </div>
                             <div style="flex: 1; min-width: 0;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 4px; margin-bottom: 3px; flex-wrap: wrap;">
-                                    <span style="font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 4px; ${badgeClass}">
-                                        ${item.urgency}
-                                    </span>
-                                    ${item.userTag ? `
-                                        <span style="font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
-                                            ${item.userTag}
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        ${unreadDot}
+                                        <span style="font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 4px; ${badgeClass}">
+                                            ${item.urgency}
                                         </span>
-                                    ` : ''}
-                                    <span style="font-size: 10px; font-weight: 700; color: #0284c7;">${item.progress}%</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 5px;">
+                                        ${item.userTag ? `
+                                            <span style="font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                                ${item.userTag}
+                                            </span>
+                                        ` : ''}
+                                        <span style="font-size: 10px; font-weight: 700; color: #0284c7;">${item.progress}%</span>
+                                    </div>
                                 </div>
                                 <strong style="font-size: 12.5px; color: var(--text-color); display: block; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.title}">
                                     ${item.title}
@@ -4780,7 +4873,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                 </div>
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; font-size: 10.5px; color: #94a3b8;">
                                     <span><i class="fas fa-user-circle"></i> PIC: <strong>${item.pic}</strong></span>
-                                    <span style="color: #0284c7; font-weight: 600;"><i class="fas fa-external-link-alt"></i> Buka Alur</span>
+                                    <span style="color: ${item.isRead ? '#94a3b8' : '#0284c7'}; font-weight: 600;">
+                                        ${item.isRead ? '<i class="fas fa-check"></i> Dibaca' : '<i class="fas fa-external-link-alt"></i> Buka'}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -4793,7 +4888,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             // Footer tindakan cepat
             html += `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; margin-top: 6px; border-top: 1px solid var(--border-color); font-size: 11px;">
-                    <span style="color: #64748b; font-size: 10.5px;"><i class="fas fa-mouse-pointer"></i> Klik untuk checklist</span>
+                    <span style="color: #64748b; font-size: 10.5px;"><i class="fas fa-mouse-pointer"></i> Klik untuk buka & baca</span>
                     <button type="button" class="btn btn-sm" style="background: #0284c7; font-size: 10.5px; padding: 3px 9px;" onclick="showPage('proyek', document.querySelectorAll('.menu-item')[1]); toggleDropdown('notif-dropdown');">
                         Lihat Proyek (${activeProjects.length})
                     </button>
