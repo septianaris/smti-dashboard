@@ -4653,7 +4653,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 renderCustomChartLegend();
 
             } else if (currentMainChartMode === 'pic') {
-                // ================= MODE 2: BEBAN KERJA 12 PERSONIL SMTI & MAGANG =================
+                // ================= MODE 2: BEBAN KERJA 12 PERSONIL SMTI & MAGANG (STACKED BAR & DEADLINE TOOLTIP) =================
                 const empList = (typeof SMTI_EMPLOYEES !== 'undefined' && SMTI_EMPLOYEES.length > 0) ? SMTI_EMPLOYEES : defaultSMTIEmployees;
                 const internList = (typeof SMTI_INTERNS !== 'undefined' && Array.isArray(SMTI_INTERNS)) ? SMTI_INTERNS : [];
 
@@ -4662,8 +4662,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     workloadMap[e.name] = {
                         role: e.role || 'Personil SMTI',
                         status: e.status || 'TKO',
+                        activeCount: 0,
+                        completedCount: 0,
                         count: 0,
-                        projects: [],
+                        activeProjects: [],
+                        completedProjects: [],
+                        allProjects: [],
                         isIntern: false
                     };
                 });
@@ -4695,10 +4699,28 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         }
                     }
 
+                    const isDone = isProjectCompleted(p);
+                    const projInfo = {
+                        name: p.name,
+                        progress: Number(p.progress) || 0,
+                        category: p.category || 'SMTI',
+                        deadline: p.deadline || 'Tidak ditentukan',
+                        daysLeft: p.daysLeft || '',
+                        isCompleted: isDone
+                    };
+
                     if (matchedEmp) {
-                        if (workloadMap[matchedEmp.name]) {
-                            workloadMap[matchedEmp.name].count += 1;
-                            workloadMap[matchedEmp.name].projects.push(`${p.name} (${p.progress}%)`);
+                        const target = workloadMap[matchedEmp.name];
+                        if (target) {
+                            target.count += 1;
+                            target.allProjects.push(projInfo);
+                            if (isDone) {
+                                target.completedCount += 1;
+                                target.completedProjects.push(projInfo);
+                            } else {
+                                target.activeCount += 1;
+                                target.activeProjects.push(projInfo);
+                            }
                         }
                     } else if (matchedIntern) {
                         if (!internWorkloadMap[matchedIntern.name]) {
@@ -4706,50 +4728,72 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                 role: matchedIntern.role || 'Mahasiswa Magang',
                                 status: 'Magang',
                                 campus: matchedIntern.campus || 'Magang SMTI',
+                                activeCount: 0,
+                                completedCount: 0,
                                 count: 0,
-                                projects: [],
+                                activeProjects: [],
+                                completedProjects: [],
+                                allProjects: [],
                                 isIntern: true
                             };
                         }
-                        internWorkloadMap[matchedIntern.name].count += 1;
-                        internWorkloadMap[matchedIntern.name].projects.push(`${p.name} (${p.progress}%)`);
+                        const target = internWorkloadMap[matchedIntern.name];
+                        target.count += 1;
+                        target.allProjects.push(projInfo);
+                        if (isDone) {
+                            target.completedCount += 1;
+                            target.completedProjects.push(projInfo);
+                        } else {
+                            target.activeCount += 1;
+                            target.activeProjects.push(projInfo);
+                        }
                     } else {
                         const cleanName = picRaw.split('/')[0].trim() || 'Lainnya';
-                        if (!otherContributors[cleanName]) otherContributors[cleanName] = { count: 0, projects: [], status: 'Mitra', role: 'Kontributor SMTI' };
-                        otherContributors[cleanName].count += 1;
-                        otherContributors[cleanName].projects.push(`${p.name} (${p.progress}%)`);
+                        if (!otherContributors[cleanName]) {
+                            otherContributors[cleanName] = {
+                                role: 'Kontributor SMTI',
+                                status: 'Mitra',
+                                activeCount: 0,
+                                completedCount: 0,
+                                count: 0,
+                                activeProjects: [],
+                                completedProjects: [],
+                                allProjects: [],
+                                isIntern: false
+                            };
+                        }
+                        const target = otherContributors[cleanName];
+                        target.count += 1;
+                        target.allProjects.push(projInfo);
+                        if (isDone) {
+                            target.completedCount += 1;
+                            target.completedProjects.push(projInfo);
+                        } else {
+                            target.activeCount += 1;
+                            target.activeProjects.push(projInfo);
+                        }
                     }
                 });
 
-                // Urutkan personil SMTI dari beban tertinggi ke terendah
-                const sorted = Object.entries(workloadMap).sort((a, b) => b[1].count - a[1].count);
+                // Urutkan personil SMTI dari total beban tertinggi ke terendah, lalu prioritas proyek aktif
+                const sorted = Object.entries(workloadMap).sort((a, b) => {
+                    if (b[1].count !== a[1].count) return b[1].count - a[1].count;
+                    return b[1].activeCount - a[1].activeCount;
+                });
 
                 // Tambahkan peserta magang yang menjadi PIC proyek
                 Object.entries(internWorkloadMap).forEach(([k, v]) => {
                     sorted.push([k + ' (Magang)', v]);
                 });
 
-                // Tambahkan mitra di akhir jika ada
+                // Tambahkan mitra jika ada
                 Object.entries(otherContributors).forEach(([k, v]) => {
                     sorted.push([k + ' (Mitra)', v]);
                 });
 
                 const labels = sorted.map(([name, d]) => `${name} (${d.status})`);
-                const dataValues = sorted.map(([, d]) => d.count);
-                const bgColors = sorted.map(([, d]) => {
-                    if (d.status === 'Magang') return 'rgba(16, 185, 129, 0.85)'; // Emerald green untuk anak magang
-                    if (d.status === 'Mitra') return 'rgba(245, 158, 11, 0.85)';
-                    if (d.count >= 2) return '#0284c7';
-                    if (d.count === 1) return '#06b6d4';
-                    return 'rgba(148, 163, 184, 0.35)'; // Abu-abu jika 0
-                });
-                const borderColors = sorted.map(([, d]) => {
-                    if (d.status === 'Magang') return '#10b981';
-                    if (d.status === 'Mitra') return '#f59e0b';
-                    if (d.count >= 2) return '#0284c7';
-                    if (d.count === 1) return '#0891b2';
-                    return '#94a3b8';
-                });
+                const activeDataValues = sorted.map(([, d]) => d.activeCount);
+                const completedDataValues = sorted.map(([, d]) => d.completedCount);
 
                 if (mainDashboardChartInstance) {
                     mainDashboardChartInstance.destroy();
@@ -4759,55 +4803,106 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: [{
-                            label: 'Jumlah Proyek yang Dikawal',
-                            data: dataValues,
-                            backgroundColor: bgColors,
-                            borderColor: borderColors,
-                            borderWidth: 1.5,
-                            borderRadius: 6,
-                            maxBarThickness: 38
-                        }]
+                        datasets: [
+                            {
+                                label: 'Proyek Sedang Berjalan (Aktif)',
+                                data: activeDataValues,
+                                backgroundColor: '#0284c7',
+                                borderColor: '#0369a1',
+                                borderWidth: 1.5,
+                                borderRadius: { topLeft: 0, topRight: 0, bottomLeft: 6, bottomRight: 6 },
+                                maxBarThickness: 42
+                            },
+                            {
+                                label: 'Proyek Sukses Selesai (100%)',
+                                data: completedDataValues,
+                                backgroundColor: '#10b981',
+                                borderColor: '#059669',
+                                borderWidth: 1.5,
+                                borderRadius: { topLeft: 6, topRight: 6, bottomLeft: 0, bottomRight: 0 },
+                                maxBarThickness: 42
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
                         scales: {
+                            x: {
+                                stacked: true,
+                                grid: { display: false },
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 25,
+                                    font: { size: 11, weight: '600' }
+                                }
+                            },
                             y: {
+                                stacked: true,
                                 beginAtZero: true,
                                 ticks: { 
                                     stepSize: 1,
                                     precision: 0
                                 },
                                 grid: { color: 'rgba(100, 116, 139, 0.12)' }
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: {
-                                    maxRotation: 45,
-                                    minRotation: 25,
-                                    font: { size: 10.5 }
-                                }
                             }
                         },
                         plugins: {
-                            legend: { display: false },
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                align: 'end',
+                                labels: {
+                                    boxWidth: 14,
+                                    font: { size: 12, weight: '700' },
+                                    padding: 16,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            },
                             tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.96)',
+                                titleColor: '#38bdf8',
+                                titleFont: { size: 13, weight: '800' },
+                                bodyColor: '#f1f5f9',
+                                bodyFont: { size: 12 },
+                                borderColor: 'rgba(56, 189, 248, 0.35)',
+                                borderWidth: 1,
+                                padding: 14,
+                                cornerRadius: 10,
+                                boxPadding: 6,
                                 callbacks: {
                                     title: function(items) {
                                         const idx = items[0].dataIndex;
-                                        return sorted[idx][0];
+                                        const [nameWithStatus, d] = sorted[idx];
+                                        return `👤 ${nameWithStatus} • ${d.role}`;
                                     },
-                                    label: function(context) {
-                                        const d = sorted[context.dataIndex][1];
-                                        return ` Jabatan: ${d.role} [${d.status}] • Mengawal: ${context.raw} Proyek`;
+                                    beforeBody: function(items) {
+                                        const idx = items[0].dataIndex;
+                                        const [, d] = sorted[idx];
+                                        return `Total Tugas: ${d.count} Proyek (${d.activeCount} Aktif • ${d.completedCount} Selesai)\n────────────────────────────────────────`;
                                     },
-                                    afterLabel: function(context) {
-                                        const d = sorted[context.dataIndex][1];
-                                        if (d.projects.length === 0) {
-                                            return '\nStatus: Siap Menerima Penugasan Proyek Baru (0 Proyek)';
+                                    afterBody: function(items) {
+                                        const idx = items[0].dataIndex;
+                                        const [, d] = sorted[idx];
+                                        if (d.allProjects.length === 0) {
+                                            return `\nStatus: Kapasitas Tersedia (Siap Menerima Penugasan Baru)`;
                                         }
-                                        return '\nProyek yang Sedang Dikawal:\n' + d.projects.map(p => ' • ' + p).join('\n');
+
+                                        let str = '\nRincian Proyek & Target Deadline:\n';
+                                        d.allProjects.forEach((proj, i) => {
+                                            const statusBadge = proj.isCompleted 
+                                                ? '✅ TUNTAS SELESAI (100%)' 
+                                                : `⏳ ${proj.progress}% BERJALAN`;
+                                            const dl = proj.deadline ? `Target: ${proj.deadline}` : 'Target: Belum ditentukan';
+                                            const days = (!proj.isCompleted && proj.daysLeft && proj.daysLeft !== 'Selesai') ? ` [${proj.daysLeft}]` : '';
+                                            str += `\n${i + 1}. ${proj.name}\n   • Kategori: ${proj.category}\n   • Status: ${statusBadge}\n   • ${dl}${days}`;
+                                        });
+                                        return str;
                                     }
                                 }
                             }
