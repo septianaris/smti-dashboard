@@ -2271,7 +2271,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             <i class="fas fa-users"></i> Beban Kerja 12 Personil
                         </button>
                         <button id="btn-chart-category" class="btn btn-sm" style="background: transparent; color: var(--text-color); padding: 5px 12px; font-size: 12px; border-radius: 6px;" onclick="setMainChartMode('category')">
-                            <i class="fas fa-layer-group"></i> Capaian per Rumpun
+                            <i class="fas fa-sitemap"></i> Capaian per Bagian
                         </button>
                     </div>
                 </div>
@@ -4441,12 +4441,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     btnCat.style.color = '#fff';
                     btnCat.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
                 }
-                if (titleEl) titleEl.innerText = 'Capaian Progres Riil per Rumpun Kerja SMTI';
-                if (subEl) subEl.innerText = 'Rata-rata progres proyek berjalan & tuntas berdasarkan kategori';
-                if (iconEl) iconEl.className = 'fas fa-layer-group';
-                if (legendWrap) legendWrap.style.display = 'none';
-                const summaryEl = document.getElementById('chart-pic-date-summary');
-                if (summaryEl) summaryEl.style.display = 'none';
+                if (titleEl) titleEl.innerText = 'Capaian Progres Riil per Bagian Dept SMTI';
+                if (subEl) subEl.innerHTML = '<i class="far fa-calendar-alt" style="color: #0284c7; margin-right: 4px;"></i><strong>Periode Capaian:</strong> Tahun 2026 (Maret – Agustus 2026) • <strong>Update:</strong> 22 September 2026 • Rata-rata capaian progres per bagian unit kerja';
+                if (iconEl) iconEl.className = 'fas fa-sitemap';
+                if (legendWrap) legendWrap.style.display = 'block';
             }
             updateMainDashboardChart();
         }
@@ -4454,13 +4452,51 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         function renderCustomChartLegend() {
             const wrap = document.getElementById('main-chart-legend');
             if (!wrap || !mainDashboardChartInstance) return;
-            if (currentMainChartMode !== 'line' && currentMainChartMode !== 'pic') return;
+            if (currentMainChartMode !== 'line' && currentMainChartMode !== 'pic' && currentMainChartMode !== 'category') return;
 
             const datasets = mainDashboardChartInstance.data.datasets;
             if (!datasets || datasets.length === 0) return;
 
             const labelEl = document.getElementById('main-chart-legend-label');
             const hintEl = document.getElementById('main-chart-legend-hint');
+
+            if (currentMainChartMode === 'category') {
+                if (labelEl) labelEl.innerHTML = '<i class="fas fa-sitemap" style="color: #0284c7;"></i> Bagian Unit Kerja Dept SMTI:';
+                if (hintEl) hintEl.innerHTML = '<i class="far fa-calendar-alt" style="color: #0284c7;"></i> Target Waktu Capaian 2026';
+
+                const mikuP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
+                const pmsmtP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
+                const sisdurP = projectDataSMTI.filter(p => {
+                    const c = (p.category || '').toLowerCase();
+                    return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
+                });
+
+                const mikuAvg = mikuP.length ? Math.round((mikuP.reduce((s, p) => s + (Number(p.progress)||0), 0) / mikuP.length)*10)/10 : 0;
+                const pmsmtAvg = pmsmtP.length ? Math.round((pmsmtP.reduce((s, p) => s + (Number(p.progress)||0), 0) / pmsmtP.length)*10)/10 : 0;
+                const sisdurAvg = sisdurP.length ? Math.round((sisdurP.reduce((s, p) => s + (Number(p.progress)||0), 0) / sisdurP.length)*10)/10 : 0;
+
+                wrap.innerHTML = `
+                    <button type="button" class="chart-legend-btn active" style="--legend-color: #0284c7; --legend-bg: rgba(2, 132, 199, 0.12); --legend-shadow: rgba(2, 132, 199, 0.25);" title="Bagian Manajemen Inovasi & Kemitraan Usaha">
+                        <span class="chart-legend-indicator"></span>
+                        <i class="fas fa-lightbulb" style="color: #0284c7; font-size: 13.5px;"></i>
+                        <span class="chart-legend-text">Bagian MIKU</span>
+                        <span class="chart-legend-badge">${mikuAvg}% • Target Mei–Jun 2026</span>
+                    </button>
+                    <button type="button" class="chart-legend-btn active" style="--legend-color: #10b981; --legend-bg: rgba(16, 185, 129, 0.12); --legend-shadow: rgba(16, 185, 129, 0.25);" title="Bagian Pengembangan Manajemen Sistem Mutu Terpadu">
+                        <span class="chart-legend-indicator"></span>
+                        <i class="fas fa-award" style="color: #10b981; font-size: 13.5px;"></i>
+                        <span class="chart-legend-text">Bagian PMSMT</span>
+                        <span class="chart-legend-badge">${pmsmtAvg}% • Target Mar–Agu 2026</span>
+                    </button>
+                    <button type="button" class="chart-legend-btn active" style="--legend-color: #6366f1; --legend-bg: rgba(99, 102, 241, 0.12); --legend-shadow: rgba(99, 102, 241, 0.25);" title="Bagian Pengembangan Sistem dan Prosedur">
+                        <span class="chart-legend-indicator"></span>
+                        <i class="fas fa-file-invoice" style="color: #6366f1; font-size: 13.5px;"></i>
+                        <span class="chart-legend-text">Bagian BangSisdur</span>
+                        <span class="chart-legend-badge">${sisdurAvg}% • Target Mar–Agu 2026</span>
+                    </button>
+                `;
+                return;
+            }
 
             let metaConfigs = [];
             if (currentMainChartMode === 'line') {
@@ -4470,9 +4506,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 metaConfigs = [
                     { label: 'Realisasi Seluruh Dept SMTI', color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-chart-line' },
                     { label: 'Target RKAP Tahunan', color: '#10b981', rgb: '16, 185, 129', icon: 'fa-bullseye' },
-                    { label: 'Rumpun MIKU', color: '#f59e0b', rgb: '245, 158, 11', icon: 'fa-lightbulb' },
-                    { label: 'Rumpun PMSMT', color: '#8b5cf6', rgb: '139, 92, 246', icon: 'fa-award' },
-                    { label: 'BangSisdur', color: '#6366f1', rgb: '99, 102, 241', icon: 'fa-file-invoice' }
+                    { label: 'Bagian MIKU', color: '#f59e0b', rgb: '245, 158, 11', icon: 'fa-lightbulb' },
+                    { label: 'Bagian PMSMT', color: '#8b5cf6', rgb: '139, 92, 246', icon: 'fa-award' },
+                    { label: 'Bagian BangSisdur', color: '#6366f1', rgb: '99, 102, 241', icon: 'fa-file-invoice' }
                 ];
             } else if (currentMainChartMode === 'pic') {
                 if (labelEl) labelEl.innerHTML = '<i class="fas fa-filter" style="color: #0284c7;"></i> Kategori Proyek Beban Kerja (Klik tombol untuk munculkan / sembunyikan batang):';
@@ -4570,6 +4606,56 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; background: rgba(16, 185, 129, 0.08); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.22);">
                             <i class="fas fa-check-circle" style="color: #10b981;"></i>
                             <span>Tuntas Terakhir: <strong style="color: #10b981;">10 April 2026</strong> (ISO - Dion)</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            summaryEl.style.display = 'block';
+        }
+
+        function renderBagianDateSummary() {
+            const summaryEl = document.getElementById('chart-pic-date-summary');
+            if (!summaryEl) return;
+            if (currentMainChartMode !== 'category') {
+                return;
+            }
+
+            const mikuP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
+            const pmsmtP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
+            const sisdurP = projectDataSMTI.filter(p => {
+                const c = (p.category || '').toLowerCase();
+                return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
+            });
+
+            const mikuAvg = mikuP.length ? Math.round((mikuP.reduce((s, p) => s + (Number(p.progress)||0), 0) / mikuP.length)*10)/10 : 0;
+            const pmsmtAvg = pmsmtP.length ? Math.round((pmsmtP.reduce((s, p) => s + (Number(p.progress)||0), 0) / pmsmtP.length)*10)/10 : 0;
+            const sisdurAvg = sisdurP.length ? Math.round((sisdurP.reduce((s, p) => s + (Number(p.progress)||0), 0) / sisdurP.length)*10)/10 : 0;
+
+            summaryEl.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #0284c7; color: #fff; font-size: 14px; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                        <div>
+                            <strong style="color: #0284c7; font-size: 13px;">Timeline Target & Tanggal Waktu Capaian per Bagian SMTI</strong>
+                            <div style="color: #64748b; font-size: 11.5px; margin-top: 1px;">
+                                Periode Evaluasi Capaian: <strong>Maret s/d Agustus 2026</strong> • Total: <strong>3 Bagian Unit Kerja SMTI</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; background: rgba(2, 132, 199, 0.08); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(2, 132, 199, 0.22);">
+                            <i class="fas fa-lightbulb" style="color: #0284c7;"></i>
+                            <span>MIKU: <strong style="color: #0284c7;">15 Mei – 30 Jun 2026</strong> (${mikuAvg}%)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; background: rgba(16, 185, 129, 0.08); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.22);">
+                            <i class="fas fa-award" style="color: #10b981;"></i>
+                            <span>PMSMT: <strong style="color: #10b981;">Mar – 31 Agu 2026</strong> (${pmsmtAvg}%)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; background: rgba(99, 102, 241, 0.08); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(99, 102, 241, 0.22);">
+                            <i class="fas fa-file-invoice" style="color: #6366f1;"></i>
+                            <span>BangSisdur: <strong style="color: #6366f1;">Mar – 31 Agu 2026</strong> (${sisdurAvg}%)</span>
                         </div>
                     </div>
                 </div>
@@ -4996,38 +5082,69 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 renderPicDateSummary(sorted);
 
             } else if (currentMainChartMode === 'category') {
-                // ================= MODE 3: CAPAIAN PER RUMPUN KERJA =================
-                const catMap = {};
-                projectDataSMTI.forEach(p => {
-                    const cat = p.category || 'Lainnya';
-                    if (!catMap[cat]) catMap[cat] = { totalProgress: 0, count: 0, projects: [] };
-                    catMap[cat].totalProgress += (Number(p.progress) || 0);
-                    catMap[cat].count += 1;
-                    catMap[cat].projects.push(`${p.name} (${p.progress}%)`);
-                });
-
-                const colorMap = {
-                    'MIKU': { bg: 'rgba(2, 132, 199, 0.85)', border: '#0284c7' },
-                    'PMSMT': { bg: 'rgba(16, 185, 129, 0.85)', border: '#10b981' },
-                    'Pengembangan Sistem dan Prosedur': { bg: 'rgba(99, 102, 241, 0.85)', border: '#6366f1' }
-                };
+                // ================= MODE 3: CAPAIAN PER BAGIAN DEPT SMTI =================
+                const bagianDefs = [
+                    {
+                        key: 'MIKU',
+                        name: 'Bagian MIKU',
+                        fullName: 'Manajemen Inovasi & Kemitraan Usaha',
+                        dateRange: '15 Mei – 30 Jun 2026',
+                        icon: 'fa-lightbulb',
+                        bg: 'rgba(2, 132, 199, 0.85)',
+                        border: '#0284c7',
+                        match: (cat) => (cat || '').toUpperCase().includes('MIKU')
+                    },
+                    {
+                        key: 'PMSMT',
+                        name: 'Bagian PMSMT',
+                        fullName: 'Pengembangan Manajemen Sistem Mutu Terpadu',
+                        dateRange: '10 Apr – 31 Agu 2026',
+                        icon: 'fa-award',
+                        bg: 'rgba(16, 185, 129, 0.85)',
+                        border: '#10b981',
+                        match: (cat) => (cat || '').toUpperCase().includes('PMSMT')
+                    },
+                    {
+                        key: 'BangSisdur',
+                        name: 'Bagian BangSisdur',
+                        fullName: 'Pengembangan Sistem & Prosedur',
+                        dateRange: '25 Mar – 31 Agu 2026',
+                        icon: 'fa-file-invoice',
+                        bg: 'rgba(99, 102, 241, 0.85)',
+                        border: '#6366f1',
+                        match: (cat) => {
+                            const c = (cat || '').toLowerCase();
+                            return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
+                        }
+                    }
+                ];
 
                 const labels = [];
                 const dataValues = [];
                 const bgColors = [];
                 const borderColors = [];
-                const tooltipProjectMap = [];
+                const tooltipData = [];
 
-                Object.keys(catMap).forEach((catName) => {
-                    const item = catMap[catName];
-                    const avg = Math.round((item.totalProgress / item.count) * 10) / 10;
-                    labels.push(`${catName} (${item.count} Proyek)`);
+                bagianDefs.forEach(b => {
+                    const projs = projectDataSMTI.filter(p => b.match(p.category));
+                    const count = projs.length;
+                    const totalProg = projs.reduce((s, p) => s + (Number(p.progress) || 0), 0);
+                    const avg = count > 0 ? Math.round((totalProg / count) * 10) / 10 : 0;
+
+                    // Multiline label: Nama Bagian + Tanggal Target Waktu
+                    labels.push([
+                        `${b.name} (${count} Proyek)`,
+                        `📅 Target: ${b.dateRange}`
+                    ]);
                     dataValues.push(avg);
-                    tooltipProjectMap.push(item.projects);
-
-                    const conf = colorMap[catName] || { bg: 'rgba(245, 158, 11, 0.85)', border: '#f59e0b' };
-                    bgColors.push(conf.bg);
-                    borderColors.push(conf.border);
+                    bgColors.push(b.bg);
+                    borderColors.push(b.border);
+                    tooltipData.push({
+                        bagian: b,
+                        count: count,
+                        avg: avg,
+                        projects: projs
+                    });
                 });
 
                 if (mainDashboardChartInstance) {
@@ -5045,7 +5162,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             borderColor: borderColors,
                             borderWidth: 1.5,
                             borderRadius: 8,
-                            maxBarThickness: 55
+                            maxBarThickness: 58
                         }]
                     },
                     options: {
@@ -5056,30 +5173,65 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                 beginAtZero: true,
                                 max: 100,
                                 ticks: {
+                                    stepSize: 20,
                                     callback: function(value) { return value + '%'; }
                                 },
                                 grid: { color: 'rgba(100, 116, 139, 0.12)' }
                             },
                             x: {
-                                grid: { display: false }
+                                grid: { display: false },
+                                ticks: {
+                                    maxRotation: 0,
+                                    padding: 8,
+                                    font: { size: 11, weight: '600' }
+                                }
                             }
                         },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.96)',
+                                titleColor: '#38bdf8',
+                                titleFont: { size: 13, weight: '800' },
+                                bodyColor: '#f1f5f9',
+                                bodyFont: { size: 12 },
+                                borderColor: 'rgba(56, 189, 248, 0.35)',
+                                borderWidth: 1,
+                                padding: 14,
+                                cornerRadius: 10,
+                                boxPadding: 6,
                                 callbacks: {
-                                    label: function(context) {
-                                        return ` Rata-rata Capaian: ${context.raw}%`;
+                                    title: function(items) {
+                                        const idx = items[0].dataIndex;
+                                        const item = tooltipData[idx];
+                                        return `🏢 ${item.bagian.name} • ${item.bagian.fullName}`;
                                     },
-                                    afterLabel: function(context) {
-                                        const projs = tooltipProjectMap[context.dataIndex] || [];
-                                        return '\nProyek di Rumpun Ini:\n' + projs.map(p => ' • ' + p).join('\n');
+                                    beforeBody: function(items) {
+                                        const idx = items[0].dataIndex;
+                                        const item = tooltipData[idx];
+                                        return `Rata-rata Capaian: ${item.avg}%\nTotal Penugasan: ${item.count} Proyek\n📅 Rentang Target Waktu: ${item.bagian.dateRange}\n────────────────────────────────────────`;
+                                    },
+                                    afterBody: function(items) {
+                                        const idx = items[0].dataIndex;
+                                        const item = tooltipData[idx];
+                                        let str = '\nRincian Proyek & Target Tanggal:\n';
+                                        item.projects.forEach((p, i) => {
+                                            const statusBadge = isProjectCompleted(p) ? '✅ Tuntas 100%' : `⏳ ${p.progress}%`;
+                                            const dl = p.deadline ? `Target: ${p.deadline}` : 'Target: Belum ditentukan';
+                                            const days = (!isProjectCompleted(p) && p.daysLeft && p.daysLeft !== 'Selesai') ? ` [${p.daysLeft}]` : (isProjectCompleted(p) ? ' [Selesai]' : '');
+                                            str += `\n${i + 1}. ${p.name} (${statusBadge})\n   • 📅 ${dl}${days}`;
+                                        });
+                                        return str;
                                     }
                                 }
                             }
                         }
                     }
                 });
+
+                // Render tombol legenda kustom dan ringkasan tanggal per bagian
+                renderCustomChartLegend();
+                renderBagianDateSummary();
             }
         }
 
