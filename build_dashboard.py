@@ -2104,7 +2104,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 <span class="menu-badge" id="side-karyawan-count">10</span>
             </div>
             <div class="menu-item" id="menu-item-magang" onclick="showPage('magang', this)">
-                <div class="menu-item-left"><i class="fas fa-user-graduate"></i> <span>Anak Magang / PKL</span></div>
+                <div class="menu-item-left"><i class="fas fa-user-graduate"></i> <span>Magang / PKL</span></div>
                 <span class="menu-badge" id="side-magang-count" style="background: rgba(16, 185, 129, 0.25); color: #10b981; font-weight: 700;">4</span>
             </div>
 
@@ -2496,7 +2496,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             </div>
         </div>
 
-        <!-- ================= PAGE ANAK MAGANG / PKL ================= -->
+        <!-- ================= PAGE MAGANG / PKL ================= -->
         <div id="magang" class="page-section">
             <div class="header" style="margin-bottom: 16px;">
                 <div class="header-left">
@@ -2507,7 +2507,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button class="btn" style="background: #10b981;" onclick="openAddInternModal()">
-                        <i class="fas fa-user-plus"></i> + Tambah Anak Magang
+                        <i class="fas fa-user-plus"></i> + Tambah Magang
                     </button>
                     <button class="btn" style="background: #0284c7;" onclick="openAddProjectModal()">
                         <i class="fas fa-project-diagram"></i> Buat Proyek Baru
@@ -2518,7 +2518,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             <!-- KPI Cards Magang -->
             <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
                 <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #10b981;">
-                    <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Total Anak Magang</div>
+                    <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Total Magang</div>
                     <div style="font-size: 26px; font-weight: 800; color: var(--text-color); margin-top: 4px;" id="dash-magang-total">4</div>
                     <small style="color: #10b981; font-size: 11px;"><i class="fas fa-users"></i> Terdaftar di SMTI</small>
                 </div>
@@ -2559,7 +2559,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     </div>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn btn-sm super-admin-only" id="btn-tambah-magang" style="background: #10b981;" onclick="openAddInternModal()">
-                            <i class="fas fa-plus"></i> Tambah Anak Magang
+                            <i class="fas fa-plus"></i> Tambah Magang
                         </button>
                         <button class="btn btn-sm" style="background: #64748b;" onclick="exportInternsToCSV()">
                             <i class="fas fa-file-csv"></i> Export CSV
@@ -3294,11 +3294,11 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- Modal Form Tambah / Edit Anak Magang -->
+    <!-- Modal Form Tambah / Edit Magang -->
     <div id="modalMagang" class="modal">
         <div class="modal-content" style="width: 520px; max-width: 95%;">
             <div class="modal-header">
-                <h3 id="modal-magang-title"><i class="fas fa-user-graduate" style="color: #10b981;"></i> Tambah Data Anak Magang / PKL</h3>
+                <h3 id="modal-magang-title"><i class="fas fa-user-graduate" style="color: #10b981;"></i> Tambah Data Magang / PKL</h3>
                 <span class="close-modal" onclick="closeAddInternModal()">&times;</span>
             </div>
             <form id="form-magang" onsubmit="saveIntern(event)" style="padding: 16px 20px;">
@@ -3365,7 +3365,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
     <!-- JAVASCRIPT LOGIC -->
     <script>
         /* =========================================================
-           DATA MASTER ANAK MAGANG / PKL SMTI (PERSISTENSI LOCALSTORAGE & CLOUD)
+           DATA MASTER MAGANG / PKL SMTI (PERSISTENSI LOCALSTORAGE & CLOUD)
            ========================================================= */
         const defaultSMTIInterns = [
             {
@@ -3497,7 +3497,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 });
                 if (res.ok) {
                     updateCloudSyncBadge('synced');
-                    console.log("Data anak magang berhasil disinkronkan ke Vercel Cloud.");
+                    console.log("Data magang berhasil disinkronkan ke Vercel Cloud.");
                 } else {
                     updateCloudSyncBadge('error');
                 }
@@ -3595,8 +3595,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <td><span class="status" style="background: ${statusColor}; color: ${statusTextColor}; font-weight: 700;">${intern.status || 'Aktif'}</span></td>
                         <td style="text-align: center; white-space: nowrap;">
                             ${isCurrentUserSuperAdmin() ? `
-                                <button class="action-btn btn-edit" title="Edit anak magang" onclick="editInternById(${intern.id})"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn btn-delete" title="Hapus anak magang" onclick="deleteInternById(${intern.id})"><i class="fas fa-trash"></i></button>
+                                <button class="action-btn btn-edit" title="Edit data magang" onclick="editInternById(${intern.id})"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn btn-delete" title="Hapus data magang" onclick="deleteInternById(${intern.id})"><i class="fas fa-trash"></i></button>
                             ` : `
                                 <span style="font-size: 11px; color: #94a3b8; font-style: italic;"><i class="fas fa-lock"></i> Terkunci</span>
                             `}
@@ -3623,7 +3623,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         function openAddInternModal(editId = null) {
             if (!isCurrentUserSuperAdmin()) {
-                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menambah atau mengedit data anak magang.");
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menambah atau mengedit data magang.");
                 return;
             }
             document.getElementById('form-magang').reset();
@@ -3640,7 +3640,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             if (editId) {
                 const intern = SMTI_INTERNS.find(i => i.id == editId);
                 if (intern) {
-                    document.getElementById('modal-magang-title').innerHTML = `<i class="fas fa-edit" style="color: #10b981;"></i> Edit Data Anak Magang / PKL`;
+                    document.getElementById('modal-magang-title').innerHTML = `<i class="fas fa-edit" style="color: #10b981;"></i> Edit Data Magang / PKL`;
                     document.getElementById('input-magang-nama').value = intern.name;
                     document.getElementById('input-magang-type').value = intern.type || 'Magang Mandiri';
                     document.getElementById('input-magang-campus').value = intern.campus;
@@ -3651,7 +3651,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     if (mentorSelect) mentorSelect.value = intern.mentor;
                 }
             } else {
-                document.getElementById('modal-magang-title').innerHTML = `<i class="fas fa-user-graduate" style="color: #10b981;"></i> Tambah Data Anak Magang / PKL`;
+                document.getElementById('modal-magang-title').innerHTML = `<i class="fas fa-user-graduate" style="color: #10b981;"></i> Tambah Data Magang / PKL`;
                 document.getElementById('input-magang-type').value = 'Magang Mandiri';
             }
 
@@ -3665,7 +3665,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         function saveIntern(e) {
             e.preventDefault();
             if (!isCurrentUserSuperAdmin()) {
-                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menyimpan data anak magang.");
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menyimpan data magang.");
                 return;
             }
             const editId = document.getElementById('magang-edit-id').value;
@@ -3735,19 +3735,19 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         async function deleteInternById(id) {
             if (!isCurrentUserSuperAdmin()) {
-                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menghapus data anak magang.");
+                alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menghapus data magang.");
                 return;
             }
             const intern = SMTI_INTERNS.find(i => i.id == id);
             if (!intern) return;
 
-            if (confirm(`Hapus data anak magang "${intern.name}" (${intern.campus})? Data akan terhapus secara permanen dari sistem dan Vercel Cloud.`)) {
+            if (confirm(`Hapus data magang "${intern.name}" (${intern.campus})? Data akan terhapus secara permanen dari sistem dan Vercel Cloud.`)) {
                 lastInternMutationTime = Date.now();
                 SMTI_INTERNS = SMTI_INTERNS.filter(i => i.id != id);
                 saveInternsData(false);
                 filterInterns();
                 await syncInternsToCloud();
-                alert(`Data anak magang "${intern.name}" berhasil dihapus secara permanen.`);
+                alert(`Data magang "${intern.name}" berhasil dihapus secara permanen.`);
             }
         }
 
@@ -3760,7 +3760,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'daftar_anak_magang_SMTI.csv';
+            a.download = 'daftar_magang_SMTI.csv';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -4179,7 +4179,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         async function syncFromCloud(showNotification = false) {
             if (isSyncingToCloud || (Date.now() - lastProjectMutationTime < 4000)) return;
             try {
-                // Tarik data karyawan dan anak magang terbaru dari cloud
+                // Tarik data karyawan dan magang terbaru dari cloud
                 fetchEmployeesFromCloud();
                 fetchInternsFromCloud();
                 const res = await fetch(`${VERCEL_API_ENDPOINT}?_t=${Date.now()}`, { cache: 'no-store' });
@@ -4271,7 +4271,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             } else if (picLower.includes('anugrah') || picLower.includes('wilfan')) {
                 project.pic = 'Anugrah Wilfan Harnanditya';
             } else {
-                // Periksa apakah cocok dengan salah satu nama anak magang aktif
+                // Periksa apakah cocok dengan salah satu nama magang aktif
                 if (typeof SMTI_INTERNS !== 'undefined' && Array.isArray(SMTI_INTERNS)) {
                     const matchIntern = SMTI_INTERNS.find(i => picLower.includes(i.name.toLowerCase()));
                     if (matchIntern) {
@@ -6961,7 +6961,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             }).join('');
 
             if (SMTI_INTERNS && SMTI_INTERNS.length > 0) {
-                html += `<div style="font-size: 11.5px; font-weight: 700; color: #10b981; margin: 14px 0 6px 0; display: flex; align-items: center; gap: 6px;"><i class="fas fa-user-graduate"></i> Mahasiswa / Anak Magang SMTI:</div>`;
+                html += `<div style="font-size: 11.5px; font-weight: 700; color: #10b981; margin: 14px 0 6px 0; display: flex; align-items: center; gap: 6px;"><i class="fas fa-user-graduate"></i> Mahasiswa / Magang SMTI:</div>`;
                 html += SMTI_INTERNS.map(intern => {
                     const isInvited = project.teamMembers.some(m => m.toLowerCase() === intern.name.toLowerCase());
                     return `
@@ -7064,7 +7064,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             `).join('');
 
             if (SMTI_INTERNS && SMTI_INTERNS.length > 0) {
-                html += `<div style="width: 100%; font-size: 11px; font-weight: 700; color: #10b981; margin: 8px 0 4px 0;"><i class="fas fa-user-graduate"></i> Mahasiswa / Anak Magang:</div>`;
+                html += `<div style="width: 100%; font-size: 11px; font-weight: 700; color: #10b981; margin: 8px 0 4px 0;"><i class="fas fa-user-graduate"></i> Mahasiswa / Magang:</div>`;
                 html += SMTI_INTERNS.map(intern => {
                     const tInfo = getInternTypeBadgeInfo(intern.type);
                     return `
@@ -7834,7 +7834,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const newPic = select ? select.value.trim() : '';
 
             if (!newPic) {
-                alert("Harap pilih salah satu personil atau anak magang sebagai PIC!");
+                alert("Harap pilih salah satu personil atau magang sebagai PIC!");
                 return;
             }
 
@@ -8308,7 +8308,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 saveEmployeesData(false);
                 renderAdminPinsList();
                 await syncEmployeesToCloud();
-                alert("Sukses! Semua akun karyawan & anak magang telah disetel ke PIN default: 1234 dan tersimpan di Vercel Cloud.");
+                alert("Sukses! Semua akun karyawan & magang telah disetel ke PIN default: 1234 dan tersimpan di Vercel Cloud.");
             }
         }
 
@@ -8550,20 +8550,46 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const select = document.getElementById('pin-user-select');
             if (!select) return;
 
-            const superAdmin = SMTI_EMPLOYEES.find(e => e.isSuperAdmin || e.name.toLowerCase().includes('septian')) || { name: 'Septian', role: 'Super Admin & Officer Digitalisasi', initials: 'SP', color: '#06b6d4', pin: '1234' };
+            const superAdmin = SMTI_EMPLOYEES.find(e => e.isSuperAdmin || e.name.toLowerCase().includes('septian')) || { name: 'Septian', role: 'Super Admin SMTI', initials: 'SE', color: '#06b6d4', pin: '1234' };
             const manager = SMTI_EMPLOYEES.find(e => e.isManager || e.name.toLowerCase().includes('henisya')) || { name: 'Henisya Permata Sari', role: 'Manager Dept SMTI', initials: 'HP', color: '#8b5cf6', pin: '1234' };
 
-            let html = `<optgroup label="⭐ Pimpinan & Administrator">`;
-            html += `<option value="${superAdmin.name}">⚡ ${superAdmin.name} — Super Admin</option>`;
-            html += `<option value="${manager.name}">👑 ${manager.name} — Manager Dept SMTI</option>`;
+            let html = '';
+
+            // Group 1 (PALING ATAS): Pimpinan Departemen SMTI
+            html += `<optgroup label="👑 Pimpinan Departemen SMTI">`;
+            const leaders = SMTI_EMPLOYEES.filter(e => e.isManager || e.name.toLowerCase().includes('henisya') || (e.role && (e.role.toLowerCase().includes('manager') || e.role.toLowerCase().includes('vp'))));
+            if (leaders.length > 0) {
+                leaders.forEach(m => {
+                    html += `<option value="${m.name}">👑 ${m.name} — ${m.role || 'Manager Dept SMTI'}</option>`;
+                });
+            } else {
+                html += `<option value="${manager.name}">👑 ${manager.name} — Manager Dept SMTI</option>`;
+            }
             html += `</optgroup>`;
 
+            // Group 2: Administrator Sistem (Dipisahkan dari Pimpinan)
+            html += `<optgroup label="⚡ Administrator Sistem">`;
+            const admins = SMTI_EMPLOYEES.filter(e => e.isSuperAdmin || e.name.toLowerCase().includes('septian'));
+            if (admins.length > 0) {
+                admins.forEach(adm => {
+                    html += `<option value="${adm.name}">⚡ ${adm.name} — Super Admin</option>`;
+                });
+            } else {
+                html += `<option value="${superAdmin.name}">⚡ ${superAdmin.name} — Super Admin</option>`;
+            }
+            html += `</optgroup>`;
+
+            // Group 3: Karyawan SMTI
+            const leaderNames = (leaders.length > 0 ? leaders : [manager]).map(l => l.name);
+            const adminNames = (admins.length > 0 ? admins : [superAdmin]).map(a => a.name);
+
             html += `<optgroup label="👔 Karyawan SMTI">`;
-            SMTI_EMPLOYEES.filter(e => e.name !== superAdmin.name && e.name !== manager.name).forEach(emp => {
+            SMTI_EMPLOYEES.filter(e => !leaderNames.includes(e.name) && !adminNames.includes(e.name)).forEach(emp => {
                 html += `<option value="${emp.name}">👤 ${emp.name} — ${emp.role}</option>`;
             });
             html += `</optgroup>`;
 
+            // Group 4: Mahasiswa / Siswa Magang
             if (SMTI_INTERNS && SMTI_INTERNS.length > 0) {
                 html += `<optgroup label="🎓 Mahasiswa / Siswa Magang">`;
                 SMTI_INTERNS.forEach(intern => {
@@ -8803,7 +8829,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             // 4. Update author in project chat
             updateChatAuthorDisplay();
 
-            // 5. Update batasan hak akses (Sembunyikan menu Karyawan, Anak Magang, Pengaturan, Bantuan jika bukan Super Admin)
+            // 5. Update batasan hak akses (Sembunyikan menu Karyawan, Magang, Pengaturan, Bantuan jika bukan Super Admin)
             updateUIPermissions(user);
             renderNotifications();
 
