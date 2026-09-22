@@ -140,6 +140,7 @@
         .icon-btn .badge { position: absolute; top: -4px; right: -4px; background: var(--accent-color); color: white; font-size: 10px; border-radius: 10px; padding: 2px 6px; font-weight: 700; }
 
         .dropdown-menu { display: none; position: absolute; top: 60px; right: 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); width: 270px; z-index: 150; padding: 10px; }
+        #notif-dropdown { width: 340px; max-width: 92vw; padding: 12px; }
         .dropdown-menu.active { display: block; animation: fadeIn 0.2s ease; }
         .dropdown-item { padding: 9px 12px; font-size: 13px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; cursor: pointer; border-radius: 6px; }
         .dropdown-item:hover { background: var(--hover-color); }
@@ -1870,30 +1871,9 @@
                 </div>
             </div>
 
-            <!-- Notif Dropdown -->
+            <!-- Notif Dropdown (Disinkronkan dinamis dengan proyek berjalan) -->
             <div id="notif-dropdown" class="dropdown-menu">
-                <div style="font-weight: 700; margin-bottom: 8px; font-size: 13px; color: var(--text-color);">Pengingat Proyek & Sistem</div>
-                <div class="dropdown-item" onclick="openFlowModal(1)">
-                    <i class="fas fa-exclamation-triangle" style="color: #dc2626;"></i>
-                    <div>
-                        <strong>KIX Prototyping (Urgensi Tinggi)</strong>
-                        <div style="font-size: 11px; opacity: 0.7;">72.8% peserta belum mengisi form</div>
-                    </div>
-                </div>
-                <div class="dropdown-item" onclick="openFlowModal(3)">
-                    <i class="fas fa-shield-alt" style="color: #dc2626;"></i>
-                    <div>
-                        <strong>Audit Eksternal ISO 27001</strong>
-                        <div style="font-size: 11px; opacity: 0.7;">Roadshow tindak lanjut audit berjalan</div>
-                    </div>
-                </div>
-                <div class="dropdown-item" onclick="openFlowModal(4)">
-                    <i class="fas fa-award" style="color: #d97706;"></i>
-                    <div>
-                        <strong>ICCOSH Yogyakarta</strong>
-                        <div style="font-size: 11px; opacity: 0.7;">Menunggu kelengkapan dokumen 3 gugus</div>
-                    </div>
-                </div>
+                <!-- Rendered dynamically by renderNotifications() -->
             </div>
 
             <!-- Profile Dropdown -->
@@ -3867,6 +3847,7 @@
                         localStorage.setItem('smti_projects_data_v2', JSON.stringify(projectDataSMTI));
                         renderProjectsList();
                         renderMonitorBoard();
+                        renderNotifications();
                         if (document.getElementById('flowModal') && document.getElementById('flowModal').classList.contains('active')) {
                             openFlowModal(currentActiveProjectId);
                         }
@@ -4033,6 +4014,7 @@
             renderProjectsList();
             renderMonitorBoard();
             initMainDashboardChart();
+            renderNotifications();
 
             // Inisialisasi Sistem PIN & Auto-login di browser
             initAuthPinSystem();
@@ -4629,6 +4611,188 @@
             return (p.status === 'Completed' || p.status === 'Finished' || p.progress >= 100);
         }
 
+        /* =========================================================
+           SISTEM NOTIFIKASI DINAMIS & TERINTEGRASI PROYEK SMTI
+           ========================================================= */
+        function renderNotifications() {
+            const dropdown = document.getElementById('notif-dropdown');
+            const badgeCount = document.getElementById('notif-badge-count');
+            if (!dropdown) return;
+
+            // 1. Ambil proyek yang aktif berjalan (belum 100% tuntas)
+            const activeProjects = projectDataSMTI.filter(p => !isProjectCompleted(p));
+            
+            // Pengguna saat ini jika sedang login via PIN
+            const currentUserName = (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) 
+                ? currentAuthUser.name.toLowerCase() 
+                : '';
+
+            const notifications = [];
+
+            // Evaluasi setiap proyek aktif
+            activeProjects.forEach(p => {
+                const picLower = (p.pic || '').toLowerCase();
+                const isUserPic = currentUserName && (picLower.includes(currentUserName) || currentUserName.includes(picLower.split(' ')[0]));
+                const isUserTeam = currentUserName && (p.teamMembers || []).some(m => m.toLowerCase().includes(currentUserName));
+                const userTag = isUserPic ? '👑 PIC Anda' : (isUserTeam ? '👥 Tim Anda' : '');
+
+                const stageIndex = p.flow.findIndex(s => s.status === 'active');
+                const activeStage = stageIndex >= 0 ? p.flow[stageIndex].title : 'Tahap Berjalan';
+
+                // Format pesan ringkas & jelas
+                let alertMsg = '';
+                if (p.alertNote) {
+                    alertMsg = p.alertNote;
+                } else {
+                    alertMsg = `Tahap: ${activeStage} • Target: ${p.deadline} (${p.daysLeft || 'Berjalan'})`;
+                }
+
+                // Tentukan ikon & level urgensi
+                if (p.urgency === 'Tinggi') {
+                    notifications.push({
+                        id: p.id,
+                        type: 'urgent',
+                        icon: 'fa-exclamation-triangle',
+                        iconColor: '#dc2626',
+                        title: p.name,
+                        category: p.category,
+                        urgency: 'Urgensi Tinggi',
+                        userTag: userTag,
+                        message: alertMsg,
+                        pic: p.pic,
+                        progress: p.progress,
+                        daysLeft: p.daysLeft || p.deadline,
+                        priorityScore: 10 + (isUserPic ? 5 : (isUserTeam ? 2 : 0))
+                    });
+                } else if (p.urgency === 'Sedang') {
+                    notifications.push({
+                        id: p.id,
+                        type: 'warning',
+                        icon: 'fa-hourglass-half',
+                        iconColor: '#d97706',
+                        title: p.name,
+                        category: p.category,
+                        urgency: 'Urgensi Sedang',
+                        userTag: userTag,
+                        message: alertMsg,
+                        pic: p.pic,
+                        progress: p.progress,
+                        daysLeft: p.daysLeft || p.deadline,
+                        priorityScore: 5 + (isUserPic ? 5 : (isUserTeam ? 2 : 0))
+                    });
+                } else {
+                    notifications.push({
+                        id: p.id,
+                        type: 'info',
+                        icon: 'fa-check-circle',
+                        iconColor: '#16a34a',
+                        title: p.name,
+                        category: p.category,
+                        urgency: 'Rutin',
+                        userTag: userTag,
+                        message: alertMsg,
+                        pic: p.pic,
+                        progress: p.progress,
+                        daysLeft: p.daysLeft || p.deadline,
+                        priorityScore: 2 + (isUserPic ? 5 : (isUserTeam ? 2 : 0))
+                    });
+                }
+            });
+
+            // Urutkan notifikasi: Prioritas tertinggi dan proyek yang melibatkan akun pengguna berada paling atas
+            notifications.sort((a, b) => b.priorityScore - a.priorityScore);
+
+            const totalNotifs = notifications.length;
+
+            // Update badge counter lonceng di navbar header
+            if (badgeCount) {
+                if (totalNotifs > 0) {
+                    badgeCount.style.display = 'inline-block';
+                    badgeCount.innerText = totalNotifs > 99 ? '99+' : totalNotifs;
+                    badgeCount.title = `${totalNotifs} pengingat proyek aktif`;
+                } else {
+                    badgeCount.style.display = 'none';
+                }
+            }
+
+            // Render isi menu dropdown notifikasi
+            let html = `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 2px 10px 2px; border-bottom: 1px solid var(--border-color); margin-bottom: 6px;">
+                    <div>
+                        <div style="font-weight: 800; font-size: 13.5px; color: var(--text-color); display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-bell" style="color: #0284c7;"></i> Pengingat Proyek & Sistem
+                        </div>
+                        <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+                            Disinkronkan langsung dengan proyek aktif
+                        </div>
+                    </div>
+                    <span style="font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; background: rgba(2, 132, 199, 0.12); color: #0284c7;">
+                        ${totalNotifs} Berjalan
+                    </span>
+                </div>
+            `;
+
+            if (totalNotifs === 0) {
+                html += `
+                    <div style="padding: 24px 12px; text-align: center; color: #64748b; font-size: 12px;">
+                        <i class="fas fa-check-circle" style="font-size: 26px; color: #16a34a; margin-bottom: 8px; display: block;"></i>
+                        Semua proyek tuntas 100%. Tidak ada pengingat mendesak saat ini.
+                    </div>
+                `;
+            } else {
+                html += `<div style="max-height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 2px;">`;
+                
+                notifications.forEach(item => {
+                    const badgeClass = item.urgency === 'Urgensi Tinggi' ? 'background: rgba(220, 38, 38, 0.12); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.3);' : (item.urgency === 'Urgensi Sedang' ? 'background: rgba(217, 119, 6, 0.12); color: #d97706; border: 1px solid rgba(217, 119, 6, 0.3);' : 'background: rgba(22, 163, 74, 0.12); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.3);');
+
+                    html += `
+                        <div class="dropdown-item" onclick="openFlowModal(${item.id}); toggleDropdown('notif-dropdown');" style="align-items: flex-start; padding: 9px 10px; border-radius: 8px; transition: background 0.15s; border-bottom: 1px solid var(--border-color); gap: 10px;">
+                            <div style="margin-top: 2px; width: 22px; height: 22px; border-radius: 50%; background: ${item.urgency === 'Urgensi Tinggi' ? 'rgba(220, 38, 38, 0.12)' : (item.urgency === 'Urgensi Sedang' ? 'rgba(217, 119, 6, 0.12)' : 'rgba(2, 132, 199, 0.12)')}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas ${item.icon}" style="color: ${item.iconColor}; font-size: 11px;"></i>
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; gap: 4px; margin-bottom: 3px; flex-wrap: wrap;">
+                                    <span style="font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 4px; ${badgeClass}">
+                                        ${item.urgency}
+                                    </span>
+                                    ${item.userTag ? `
+                                        <span style="font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                            ${item.userTag}
+                                        </span>
+                                    ` : ''}
+                                    <span style="font-size: 10px; font-weight: 700; color: #0284c7;">${item.progress}%</span>
+                                </div>
+                                <strong style="font-size: 12.5px; color: var(--text-color); display: block; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.title}">
+                                    ${item.title}
+                                </strong>
+                                <div style="font-size: 11px; color: #64748b; margin-top: 3px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    ${item.message}
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; font-size: 10.5px; color: #94a3b8;">
+                                    <span><i class="fas fa-user-circle"></i> PIC: <strong>${item.pic}</strong></span>
+                                    <span style="color: #0284c7; font-weight: 600;"><i class="fas fa-external-link-alt"></i> Buka Alur</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+            }
+
+            // Footer tindakan cepat
+            html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; margin-top: 6px; border-top: 1px solid var(--border-color); font-size: 11px;">
+                    <span style="color: #64748b; font-size: 10.5px;"><i class="fas fa-mouse-pointer"></i> Klik untuk checklist</span>
+                    <button type="button" class="btn btn-sm" style="background: #0284c7; font-size: 10.5px; padding: 3px 9px;" onclick="showPage('proyek', document.querySelectorAll('.menu-item')[1]); toggleDropdown('notif-dropdown');">
+                        Lihat Proyek (${activeProjects.length})
+                    </button>
+                </div>
+            `;
+
+            dropdown.innerHTML = html;
+        }
+
         function renderDashboardUrgentBanner() {
             const banner = document.getElementById('dash-urgent-banner');
             if (!banner) return;
@@ -4803,6 +4967,7 @@
             renderDashboardUrgentBanner();
             renderDashboardRunningProjects();
             updateMainDashboardChart();
+            renderNotifications();
 
             if (filtered.length === 0) {
                 container.innerHTML = `
@@ -7518,6 +7683,7 @@
 
             // 5. Update batasan hak akses (Sembunyikan menu Karyawan, Anak Magang, Pengaturan, Bantuan jika bukan Super Admin)
             updateUIPermissions(user);
+            renderNotifications();
         }
 
         function updateUIPermissions(user) {
@@ -7556,6 +7722,7 @@
                 localStorage.removeItem('smti_auth_user');
                 sessionStorage.removeItem('smti_auth_user');
                 currentAuthUser = null;
+                renderNotifications();
                 showPinOverlay();
             }
         }
