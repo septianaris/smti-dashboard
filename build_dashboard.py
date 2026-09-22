@@ -2656,22 +2656,26 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <!-- Rendered by JS -->
                     </div>
 
-                    <!-- Form Tambah Chat / Keterangan Progres -->
-                    <form class="progress-chat-form" onsubmit="event.preventDefault(); addNewComment();">
+                    <!-- Form Tambah Chat / Keterangan Progres (Hanya untuk PIC & Tim) -->
+                    <form class="progress-chat-form" id="modal-chat-form" onsubmit="event.preventDefault(); addNewComment();">
                         <div style="display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
                             <div style="flex: 1; min-width: 180px;">
                                 <label style="font-size: 11px; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">
-                                    <i class="fas fa-user-check"></i> Kirim Sebagai (Karyawan SMTI):
+                                    <i class="fas fa-user-check"></i> Pengirim (Otomatis Akun Login):
                                 </label>
-                                <select id="comment-author-select" class="chat-select" style="width: 100%; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); color: var(--text-color); font-size: 12px; font-weight: 600; outline: none;">
-                                    <!-- Populated dynamically -->
-                                </select>
+                                <div id="comment-author-display" style="display: flex; align-items: center; gap: 8px; padding: 6px 11px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--hover-color); min-height: 36px;">
+                                    <div id="comment-author-avatar" class="team-avatar-circle" style="width: 24px; height: 24px; font-size: 10px; background: #0284c7; flex-shrink: 0;">SE</div>
+                                    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        <strong id="comment-author-name" style="font-size: 12.5px; color: var(--text-color);">Septian</strong>
+                                        <span id="comment-author-role" style="font-size: 11px; color: #64748b; margin-left: 4px;">(Super Admin)</span>
+                                    </div>
+                                </div>
                             </div>
                             <div style="flex: 1; min-width: 180px;">
                                 <label style="font-size: 11px; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">
                                     <i class="fas fa-tag"></i> Jenis Keterangan:
                                 </label>
-                                <select id="comment-tag-select" class="chat-select" style="width: 100%; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); color: var(--text-color); font-size: 12px; font-weight: 600; outline: none;">
+                                <select id="comment-tag-select" class="chat-select" style="width: 100%; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); color: var(--text-color); font-size: 12px; font-weight: 600; outline: none; min-height: 36px;">
                                     <option value="progress">🚀 Update Progres Kerja</option>
                                     <option value="done">✅ Tahap / Checklist Selesai</option>
                                     <option value="issue">⚠️ Kendala / Hambatan</option>
@@ -2686,6 +2690,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             </button>
                         </div>
                     </form>
+                    <div id="modal-chat-locked-notice" style="display: none; padding: 12px 16px; background: rgba(148, 163, 184, 0.08); border: 1px dashed var(--border-color); border-radius: 8px; text-align: center; color: #64748b; font-size: 12px; margin-top: 8px;">
+                        <i class="fas fa-lock" style="color: #94a3b8; margin-right: 6px;"></i> Pengiriman chat dan update progres kerja dikunci (khusus PIC & anggota tim ter-invite).
+                    </div>
                 </div>
 
                 <div class="flow-modal-actions">
@@ -5613,6 +5620,41 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             if (btnAdvance) {
                 btnAdvance.style.display = canEdit ? 'inline-flex' : 'none';
             }
+
+            // 7. Form Chat & Update Progres Kerja (Khusus PIC & Tim)
+            const chatForm = document.getElementById('modal-chat-form');
+            if (chatForm) {
+                chatForm.style.display = canEdit ? 'block' : 'none';
+            }
+            const chatLockedNotice = document.getElementById('modal-chat-locked-notice');
+            if (chatLockedNotice) {
+                chatLockedNotice.style.display = canEdit ? 'none' : 'block';
+            }
+            updateChatAuthorDisplay();
+        }
+
+        function updateChatAuthorDisplay() {
+            const user = (typeof currentAuthUser !== 'undefined' && currentAuthUser) ? currentAuthUser : null;
+            const nameEl = document.getElementById('comment-author-name');
+            const roleEl = document.getElementById('comment-author-role');
+            const avatarEl = document.getElementById('comment-author-avatar');
+            if (!nameEl) return;
+
+            if (user) {
+                nameEl.innerText = user.name;
+                if (roleEl) roleEl.innerText = `(${user.role || 'Officer SMTI'})`;
+                if (avatarEl) {
+                    avatarEl.innerText = user.initials || user.name.slice(0, 2).toUpperCase();
+                    avatarEl.style.background = user.color || '#0284c7';
+                }
+            } else {
+                nameEl.innerText = "Tamu / Pengguna";
+                if (roleEl) roleEl.innerText = "";
+                if (avatarEl) {
+                    avatarEl.innerText = "??";
+                    avatarEl.style.background = '#64748b';
+                }
+            }
         }
 
         /* =========================================================
@@ -6002,7 +6044,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 });
                 
                 if (!project.comments) project.comments = [];
-                const author = (document.getElementById('comment-author-select') && document.getElementById('comment-author-select').value) || 'Admin SMTI';
+                const author = (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) ? currentAuthUser.name : 'Admin SMTI';
+                const authorRole = (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.role) ? currentAuthUser.role : 'PIC / Admin SMTI';
                 const now = new Date();
                 const timeStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' + 
                                 now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
@@ -6253,52 +6296,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         function populateChatAuthorSelect(project) {
-            const select = document.getElementById('comment-author-select');
-            if (!select) return;
-
-            const invited = project.teamMembers || [];
-            let optionsHtml = '';
-
-            if (invited.length > 0) {
-                optionsHtml += `<optgroup label="🌟 Anggota Ter-invite ke Proyek">`;
-                invited.forEach(mName => {
-                    const person = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === mName.toLowerCase())
-                        || (SMTI_INTERNS && SMTI_INTERNS.find(i => i.name.toLowerCase() === mName.toLowerCase()))
-                        || { name: mName, role: "Anggota Tim" };
-                    optionsHtml += `<option value="${person.name}">${person.name} (${person.role})</option>`;
-                });
-                optionsHtml += `</optgroup>`;
-            }
-
-            const otherEmployees = SMTI_EMPLOYEES.filter(e => !invited.some(m => m.toLowerCase() === e.name.toLowerCase()));
-            if (otherEmployees.length > 0) {
-                optionsHtml += `<optgroup label="Karyawan SMTI">`;
-                otherEmployees.forEach(emp => {
-                    optionsHtml += `<option value="${emp.name}">${emp.name} (${emp.role})</option>`;
-                });
-                optionsHtml += `</optgroup>`;
-            }
-
-            if (SMTI_INTERNS && SMTI_INTERNS.length > 0) {
-                const otherInterns = SMTI_INTERNS.filter(i => !invited.some(m => m.toLowerCase() === i.name.toLowerCase()));
-                if (otherInterns.length > 0) {
-                    optionsHtml += `<optgroup label="🎓 Mahasiswa / Siswa Magang SMTI">`;
-                    otherInterns.forEach(intern => {
-                        optionsHtml += `<option value="${intern.name}">🎓 ${intern.name} (${intern.role} • ${intern.campus.split(' ')[0]})</option>`;
-                    });
-                    optionsHtml += `</optgroup>`;
-                }
-            }
-
-            select.innerHTML = optionsHtml;
-
-            // Otomatis pilih akun yang sedang login saat ini
-            if (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) {
-                const hasMatch = Array.from(select.options).some(opt => opt.value.toLowerCase() === currentAuthUser.name.toLowerCase());
-                if (hasMatch) {
-                    select.value = currentAuthUser.name;
-                }
-            }
+            updateChatAuthorDisplay();
         }
 
         function populateNewProjectMemberCheckboxes() {
@@ -6389,8 +6387,15 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         function addNewComment() {
+            const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
+            if (!project) return;
+
+            if (!canUserEditProject(project)) {
+                showPermissionDeniedAlert(project, "mengirim chat atau update keterangan progres proyek");
+                return;
+            }
+
             const input = document.getElementById('new-comment-input');
-            const authorSelect = document.getElementById('comment-author-select');
             const tagSelect = document.getElementById('comment-tag-select');
 
             const text = input.value.trim();
@@ -6399,13 +6404,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 return;
             }
 
-            const project = projectDataSMTI.find(p => p.id === currentActiveProjectId);
-            if (!project) return;
-
             if (!project.comments) project.comments = [];
 
-            const authorName = authorSelect ? authorSelect.value : "Karyawan SMTI";
-            const emp = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === authorName.toLowerCase()) || { name: authorName, role: "Officer SMTI", color: "#0284c7", initials: "SM" };
+            const user = (typeof currentAuthUser !== 'undefined' && currentAuthUser) ? currentAuthUser : null;
+            const authorName = user ? user.name : "Karyawan SMTI";
+            const emp = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === authorName.toLowerCase()) 
+                     || (SMTI_INTERNS && SMTI_INTERNS.find(i => i.name.toLowerCase() === authorName.toLowerCase()))
+                     || user 
+                     || { name: authorName, role: "Officer SMTI", color: "#0284c7", initials: "SM" };
             const tag = tagSelect ? tagSelect.value : "progress";
 
             const tagLabels = {
@@ -6421,9 +6427,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             project.comments.push({
                 id: Date.now(),
                 author: emp.name,
-                role: emp.role,
-                color: emp.color,
-                initials: emp.initials,
+                role: emp.role || (user && user.role) || "Officer SMTI",
+                color: emp.color || (user && user.color) || "#0284c7",
+                initials: emp.initials || (user && user.initials) || emp.name.slice(0, 2).toUpperCase(),
                 tag: tag,
                 tagLabel: tagLabels[tag] || "Update Progres",
                 time: timeStr,
@@ -8029,11 +8035,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 }
             }
 
-            // 4. Default author in project chat
-            const chatAuthorSelect = document.getElementById('comment-author-select');
-            if (chatAuthorSelect) {
-                chatAuthorSelect.value = user.name;
-            }
+            // 4. Update author in project chat
+            updateChatAuthorDisplay();
 
             // 5. Update batasan hak akses (Sembunyikan menu Karyawan, Anak Magang, Pengaturan, Bantuan jika bukan Super Admin)
             updateUIPermissions(user);
