@@ -90,7 +90,7 @@
         .time-display { font-size: 13px; font-weight: 600; color: var(--text-color); background: var(--hover-color); padding: 6px 12px; border-radius: 6px; }
 
         .cloud-sync-badge {
-            display: flex;
+            display: none !important; /* Disembunyikan sesuai permintaan */
             align-items: center;
             gap: 6px;
             padding: 6px 12px;
@@ -1845,7 +1845,7 @@
                     <input type="text" placeholder="Cari proyek / karyawan..." onkeyup="handleGlobalSearch(event)">
                 </div>
 
-                <div class="cloud-sync-badge" id="cloud-sync-badge" onclick="syncFromCloud(true)" title="Data tersimpan di Vercel Cloud Storage. Klik untuk menyegarkan data.">
+                <div class="cloud-sync-badge" id="cloud-sync-badge" style="display: none !important;" onclick="syncFromCloud(true)" title="Data tersimpan di Vercel Cloud Storage. Klik untuk menyegarkan data.">
                     <i class="fas fa-cloud"></i> <span id="cloud-sync-text">Vercel Terhubung</span>
                 </div>
 
