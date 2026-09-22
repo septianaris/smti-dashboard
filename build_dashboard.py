@@ -2279,18 +2279,22 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     <canvas id="mainChart"></canvas>
                 </div>
 
-                <!-- Tombol Interaktif Garis Grafik (Besar, Jelas, & Nyaman Dilihat) -->
+                <!-- Tombol Interaktif Garis & Kategori Grafik (Besar, Jelas, & Nyaman Dilihat) -->
                 <div id="main-chart-legend-wrap" style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-color);">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
-                        <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 6px;">
+                        <span id="main-chart-legend-label" style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 6px;">
                             <i class="fas fa-layer-group" style="color: #0284c7;"></i> Garis Data Grafik (Klik tombol untuk munculkan / sembunyikan):
                         </span>
-                        <span style="font-size: 11.5px; color: #94a3b8; font-weight: 600;">
+                        <span id="main-chart-legend-hint" style="font-size: 11.5px; color: #94a3b8; font-weight: 600;">
                             <i class="fas fa-info-circle" style="color: #0284c7;"></i> Tombol Interaktif
                         </span>
                     </div>
                     <div id="main-chart-legend" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
                         <!-- Rendered dynamically by renderCustomChartLegend() -->
+                    </div>
+                    <!-- Strip Ringkasan Tanggal & Timeline Beban Kerja Personil -->
+                    <div id="chart-pic-date-summary" style="display: none; margin-top: 14px; padding: 12px 16px; background: rgba(2, 132, 199, 0.04); border: 1px solid rgba(2, 132, 199, 0.18); border-radius: 10px; font-size: 12.5px; color: var(--text-color);">
+                        <!-- Rendered dynamically by renderPicDateSummary() -->
                     </div>
                 </div>
             </div>
@@ -4419,6 +4423,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 if (subEl) subEl.innerText = 'Realisasi capaian departemen vs target tahunan RKAP sepanjang 2026';
                 if (iconEl) iconEl.className = 'fas fa-chart-line';
                 if (legendWrap) legendWrap.style.display = 'block';
+                const summaryEl = document.getElementById('chart-pic-date-summary');
+                if (summaryEl) summaryEl.style.display = 'none';
             } else if (mode === 'pic') {
                 if (btnPic) {
                     btnPic.style.background = '#0284c7';
@@ -4426,9 +4432,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     btnPic.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
                 }
                 if (titleEl) titleEl.innerText = 'Distribusi Beban Kerja 12 Personil Dept SMTI';
-                if (subEl) subEl.innerText = 'Disinkronkan langsung dengan data Personil SMTI (TKO & TKNO) & Proyek Aktif';
+                if (subEl) subEl.innerHTML = '<i class="far fa-calendar-alt" style="color: #0284c7; margin-right: 4px;"></i><strong>Target Deadline:</strong> Mei – Agustus 2026 • <strong>Terdekat:</strong> 15 Mei 2026 (H-3) • Disinkronkan dengan Personil & Proyek Aktif SMTI';
                 if (iconEl) iconEl.className = 'fas fa-users';
-                if (legendWrap) legendWrap.style.display = 'none';
+                if (legendWrap) legendWrap.style.display = 'block';
             } else if (mode === 'category') {
                 if (btnCat) {
                     btnCat.style.background = '#0284c7';
@@ -4439,6 +4445,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 if (subEl) subEl.innerText = 'Rata-rata progres proyek berjalan & tuntas berdasarkan kategori';
                 if (iconEl) iconEl.className = 'fas fa-layer-group';
                 if (legendWrap) legendWrap.style.display = 'none';
+                const summaryEl = document.getElementById('chart-pic-date-summary');
+                if (summaryEl) summaryEl.style.display = 'none';
             }
             updateMainDashboardChart();
         }
@@ -4446,18 +4454,38 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         function renderCustomChartLegend() {
             const wrap = document.getElementById('main-chart-legend');
             if (!wrap || !mainDashboardChartInstance) return;
-            if (currentMainChartMode !== 'line') return;
+            if (currentMainChartMode !== 'line' && currentMainChartMode !== 'pic') return;
 
             const datasets = mainDashboardChartInstance.data.datasets;
             if (!datasets || datasets.length === 0) return;
 
-            const metaConfigs = [
-                { label: 'Realisasi Seluruh Dept SMTI', color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-chart-line' },
-                { label: 'Target RKAP Tahunan', color: '#10b981', rgb: '16, 185, 129', icon: 'fa-bullseye' },
-                { label: 'Rumpun MIKU', color: '#f59e0b', rgb: '245, 158, 11', icon: 'fa-lightbulb' },
-                { label: 'Rumpun PMSMT', color: '#8b5cf6', rgb: '139, 92, 246', icon: 'fa-award' },
-                { label: 'BangSisdur', color: '#6366f1', rgb: '99, 102, 241', icon: 'fa-file-invoice' }
-            ];
+            const labelEl = document.getElementById('main-chart-legend-label');
+            const hintEl = document.getElementById('main-chart-legend-hint');
+
+            let metaConfigs = [];
+            if (currentMainChartMode === 'line') {
+                if (labelEl) labelEl.innerHTML = '<i class="fas fa-layer-group" style="color: #0284c7;"></i> Garis Data Grafik (Klik tombol untuk munculkan / sembunyikan):';
+                if (hintEl) hintEl.innerHTML = '<i class="fas fa-info-circle" style="color: #0284c7;"></i> Tombol Interaktif';
+
+                metaConfigs = [
+                    { label: 'Realisasi Seluruh Dept SMTI', color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-chart-line' },
+                    { label: 'Target RKAP Tahunan', color: '#10b981', rgb: '16, 185, 129', icon: 'fa-bullseye' },
+                    { label: 'Rumpun MIKU', color: '#f59e0b', rgb: '245, 158, 11', icon: 'fa-lightbulb' },
+                    { label: 'Rumpun PMSMT', color: '#8b5cf6', rgb: '139, 92, 246', icon: 'fa-award' },
+                    { label: 'BangSisdur', color: '#6366f1', rgb: '99, 102, 241', icon: 'fa-file-invoice' }
+                ];
+            } else if (currentMainChartMode === 'pic') {
+                if (labelEl) labelEl.innerHTML = '<i class="fas fa-filter" style="color: #0284c7;"></i> Kategori Proyek Beban Kerja (Klik tombol untuk munculkan / sembunyikan batang):';
+                if (hintEl) hintEl.innerHTML = '<i class="far fa-calendar-check" style="color: #10b981;"></i> Target Deadline Mei – Agu 2026';
+
+                const totalActive = projectDataSMTI.filter(p => !isProjectCompleted(p)).length;
+                const totalDone = projectDataSMTI.filter(p => isProjectCompleted(p)).length;
+
+                metaConfigs = [
+                    { label: 'Proyek Sedang Berjalan (Aktif)', color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-hourglass-half', defaultBadge: `${totalActive} Proyek • DL s/d Agu 2026` },
+                    { label: 'Proyek Sukses Selesai (100%)', color: '#10b981', rgb: '16, 185, 129', icon: 'fa-check-circle', defaultBadge: `${totalDone} Proyek • Tuntas Mar-Apr 2026` }
+                ];
+            }
 
             let html = '';
             datasets.forEach((ds, idx) => {
@@ -4468,13 +4496,16 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     ? mainDashboardChartInstance.isDatasetVisible(idx)
                     : !mainDashboardChartInstance.getDatasetMeta(idx).hidden;
 
-                // Ambil nilai persen dari label jika ada (misal: "(79.2%)")
+                // Ambil nilai persen dari label jika ada (misal: "(79.2%)") atau defaultBadge
                 const valMatch = (ds.label || '').match(/\(([^)]+)\)/);
-                const valBadge = valMatch ? valMatch[1] : '';
+                let valBadge = valMatch ? valMatch[1] : '';
+                if (!valBadge && conf.defaultBadge) {
+                    valBadge = conf.defaultBadge;
+                }
 
                 const activeClass = isVisible ? 'active' : 'inactive';
                 const eyeIcon = isVisible ? 'fa-eye' : 'fa-eye-slash';
-                const titleText = isVisible ? `Klik untuk menyembunyikan garis "${conf.label}" dari grafik` : `Klik untuk memunculkan kembali garis "${conf.label}" di grafik`;
+                const titleText = isVisible ? `Klik untuk menyembunyikan "${conf.label}" dari grafik` : `Klik untuk memunculkan kembali "${conf.label}" di grafik`;
 
                 html += `
                     <button type="button" class="chart-legend-btn ${activeClass}" onclick="toggleMainChartDataset(${idx})" 
@@ -4505,6 +4536,45 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             }
             mainDashboardChartInstance.update();
             renderCustomChartLegend();
+        }
+
+        function renderPicDateSummary(sortedData) {
+            const summaryEl = document.getElementById('chart-pic-date-summary');
+            if (!summaryEl) return;
+            if (currentMainChartMode !== 'pic') {
+                summaryEl.style.display = 'none';
+                return;
+            }
+
+            const activeProjs = projectDataSMTI.filter(p => !isProjectCompleted(p));
+            const doneProjs = projectDataSMTI.filter(p => isProjectCompleted(p));
+
+            summaryEl.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #0284c7; color: #fff; font-size: 14px; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                        <div>
+                            <strong style="color: #0284c7; font-size: 13px;">Timeline Target & Tanggal Deadline Proyek SMTI</strong>
+                            <div style="color: #64748b; font-size: 11.5px; margin-top: 1px;">
+                                Rentang Waktu Penugasan: <strong>Maret s/d Agustus 2026</strong> • Total: <strong>${projectDataSMTI.length} Proyek</strong> (${activeProjs.length} Berjalan Aktif • ${doneProjs.length} Sukses Selesai)
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; background: rgba(2, 132, 199, 0.08); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(2, 132, 199, 0.22);">
+                            <i class="fas fa-hourglass-half" style="color: #0284c7;"></i>
+                            <span>Target Terdekat: <strong style="color: #0284c7;">15 Mei 2026</strong> (KIX - Januardi, H-3)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; background: rgba(16, 185, 129, 0.08); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.22);">
+                            <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                            <span>Tuntas Terakhir: <strong style="color: #10b981;">10 April 2026</strong> (ISO - Dion)</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            summaryEl.style.display = 'block';
         }
 
         function updateMainDashboardChart() {
@@ -4791,7 +4861,26 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     sorted.push([k + ' (Mitra)', v]);
                 });
 
-                const labels = sorted.map(([name, d]) => `${name} (${d.status})`);
+                const labels = sorted.map(([name, d]) => {
+                    const line1 = `${name} (${d.status})`;
+                    let line2 = '';
+                    if (d.activeProjects && d.activeProjects.length > 0) {
+                        const dls = d.activeProjects.map(p => (p.deadline || '').replace(' 2026', '').trim()).filter(Boolean);
+                        if (dls.length === 1) {
+                            line2 = `📅 DL: ${dls[0]}`;
+                        } else if (dls.length > 1) {
+                            line2 = `📅 DL: ${dls.slice(0, 2).join(' & ')}`;
+                        } else {
+                            line2 = '📅 DL: Aktif 2026';
+                        }
+                    } else if (d.completedProjects && d.completedProjects.length > 0) {
+                        const dls = d.completedProjects.map(p => (p.deadline || '').replace(' 2026', '').trim()).filter(Boolean);
+                        line2 = `✅ Tuntas (${dls[0] || '100%'})`;
+                    } else {
+                        line2 = '⚡ Beban 0 (Standby)';
+                    }
+                    return [line1, line2];
+                });
                 const activeDataValues = sorted.map(([, d]) => d.activeCount);
                 const completedDataValues = sorted.map(([, d]) => d.completedCount);
 
@@ -4836,9 +4925,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                 stacked: true,
                                 grid: { display: false },
                                 ticks: {
-                                    maxRotation: 45,
-                                    minRotation: 25,
-                                    font: { size: 11, weight: '600' }
+                                    maxRotation: 35,
+                                    minRotation: 15,
+                                    padding: 6,
+                                    font: { size: 10.5, weight: '600' }
                                 }
                             },
                             y: {
@@ -4853,16 +4943,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         },
                         plugins: {
                             legend: {
-                                display: true,
-                                position: 'top',
-                                align: 'end',
-                                labels: {
-                                    boxWidth: 14,
-                                    font: { size: 12, weight: '700' },
-                                    padding: 16,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle'
-                                }
+                                display: false
                             },
                             tooltip: {
                                 backgroundColor: 'rgba(15, 23, 42, 0.96)',
@@ -4893,13 +4974,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                             return `\nStatus: Kapasitas Tersedia (Siap Menerima Penugasan Baru)`;
                                         }
 
-                                        let str = '\nRincian Proyek & Target Deadline:\n';
+                                        let str = '\nRincian Proyek & Target Tanggal:\n';
                                         d.allProjects.forEach((proj, i) => {
                                             const statusBadge = proj.isCompleted 
                                                 ? '✅ TUNTAS SELESAI (100%)' 
                                                 : `⏳ ${proj.progress}% BERJALAN`;
-                                            const dl = proj.deadline ? `Target: ${proj.deadline}` : 'Target: Belum ditentukan';
-                                            const days = (!proj.isCompleted && proj.daysLeft && proj.daysLeft !== 'Selesai') ? ` [${proj.daysLeft}]` : '';
+                                            const dl = proj.deadline ? `📅 Target Deadline: ${proj.deadline}` : '📅 Target: Belum ditentukan';
+                                            const days = (!proj.isCompleted && proj.daysLeft && proj.daysLeft !== 'Selesai') ? ` [${proj.daysLeft}]` : (proj.isCompleted ? ' [Tuntas 100%]' : '');
                                             str += `\n${i + 1}. ${proj.name}\n   • Kategori: ${proj.category}\n   • Status: ${statusBadge}\n   • ${dl}${days}`;
                                         });
                                         return str;
@@ -4909,6 +4990,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         }
                     }
                 });
+
+                // Render tombol legenda kustom (Sama persis dengan model tren garis)
+                renderCustomChartLegend();
+                renderPicDateSummary(sorted);
 
             } else if (currentMainChartMode === 'category') {
                 // ================= MODE 3: CAPAIAN PER RUMPUN KERJA =================
