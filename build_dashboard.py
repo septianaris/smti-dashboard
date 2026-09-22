@@ -1052,6 +1052,224 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         /* =========================================================
+           MODE MONITOR TV: LIGHT THEME STYLING
+           ========================================================= */
+        #monitor-overlay.light-mode {
+            background: #f1f5f9;
+            color: #0f172a;
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+
+        #monitor-overlay.light-mode .monitor-topbar {
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        #monitor-overlay.light-mode .monitor-brand-text h1 {
+            color: #0f172a;
+        }
+
+        #monitor-overlay.light-mode .monitor-brand-text p {
+            color: #64748b;
+        }
+
+        #monitor-overlay.light-mode .monitor-clock-box {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        }
+
+        #monitor-overlay.light-mode .monitor-clock-time {
+            color: #0284c7;
+        }
+
+        #monitor-overlay.light-mode .monitor-clock-date {
+            color: #64748b;
+        }
+
+        #monitor-overlay.light-mode .monitor-btn {
+            background: #ffffff;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+        }
+
+        #monitor-overlay.light-mode .monitor-btn:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+            color: #0f172a;
+        }
+
+        #monitor-overlay.light-mode .monitor-btn.btn-close-monitor {
+            background: #fee2e2;
+            border-color: #fca5a5;
+            color: #dc2626;
+        }
+
+        #monitor-overlay.light-mode .monitor-btn.btn-close-monitor:hover {
+            background: #dc2626;
+            color: #ffffff;
+        }
+
+        #monitor-overlay.light-mode .monitor-filter-bar {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        #monitor-overlay.light-mode .monitor-filter-title {
+            color: #475569;
+        }
+
+        #monitor-overlay.light-mode .mon-pill-btn {
+            background: #f8fafc;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+
+        #monitor-overlay.light-mode .mon-pill-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        #monitor-overlay.light-mode .mon-pill-btn .mon-pill-count {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        #monitor-overlay.light-mode .mon-pill-btn.active {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #0284c7;
+            box-shadow: 0 2px 10px rgba(2, 132, 199, 0.35);
+        }
+
+        #monitor-overlay.light-mode .mon-pill-btn.active .mon-pill-count {
+            background: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+        }
+
+        #monitor-overlay.light-mode .mon-pill-btn.mon-pill-high.active {
+            background: #dc2626;
+            border-color: #dc2626;
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(220, 38, 38, 0.35);
+        }
+
+        #monitor-overlay.light-mode .mon-pill-btn.mon-pill-med.active {
+            background: #d97706;
+            border-color: #d97706;
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(217, 119, 6, 0.35);
+        }
+
+        #monitor-overlay.light-mode .mon-pill-btn.mon-pill-low.active {
+            background: #16a34a;
+            border-color: #16a34a;
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(22, 163, 74, 0.35);
+        }
+
+        #monitor-overlay.light-mode .mon-pill-btn.mon-pill-completed.active {
+            background: #10b981;
+            border-color: #10b981;
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
+        }
+
+        #monitor-overlay.light-mode .mon-cat-select {
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+        }
+
+        #monitor-overlay.light-mode .monitor-column {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        #monitor-overlay.light-mode .monitor-col-high {
+            border-top: 4px solid #dc2626;
+            background: #fef2f2;
+        }
+
+        #monitor-overlay.light-mode .monitor-col-med {
+            border-top: 4px solid #d97706;
+            background: #fffbeb;
+        }
+
+        #monitor-overlay.light-mode .monitor-col-low {
+            border-top: 4px solid #16a34a;
+            background: #f0fdf4;
+        }
+
+        #monitor-overlay.light-mode .monitor-col-completed {
+            border-top: 4px solid #10b981;
+            background: #ecfdf5;
+        }
+
+        #monitor-overlay.light-mode .monitor-col-header {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        #monitor-overlay.light-mode .monitor-col-high .monitor-col-header h3 { color: #dc2626; }
+        #monitor-overlay.light-mode .monitor-col-med .monitor-col-header h3 { color: #d97706; }
+        #monitor-overlay.light-mode .monitor-col-low .monitor-col-header h3 { color: #16a34a; }
+        #monitor-overlay.light-mode .monitor-col-completed .monitor-col-header h3 { color: #059669; }
+
+        #monitor-overlay.light-mode .monitor-col-badge {
+            background: rgba(0, 0, 0, 0.06);
+            color: #475569;
+        }
+
+        #monitor-overlay.light-mode .monitor-project-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        #monitor-overlay.light-mode .monitor-project-card:hover {
+            background: #ffffff;
+            border-color: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        #monitor-overlay.light-mode .monitor-card-completed {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), #ffffff);
+            border-left: 4px solid #10b981;
+        }
+
+        #monitor-overlay.light-mode .monitor-card-title {
+            color: #0f172a;
+        }
+
+        #monitor-overlay.light-mode .monitor-card-stage {
+            color: #64748b;
+        }
+
+        #monitor-overlay.light-mode .monitor-stage-highlight {
+            color: #0284c7;
+        }
+
+        #monitor-overlay.light-mode .monitor-progress-label {
+            color: #475569;
+        }
+
+        #monitor-overlay.light-mode .monitor-progress-track {
+            background: #e2e8f0;
+        }
+
+        #monitor-overlay.light-mode .monitor-card-footer {
+            color: #64748b;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        #monitor-overlay.light-mode .monitor-click-hint {
+            color: #0284c7;
+        }
+
+        /* =========================================================
            MODAL FLOW PROGRES INTERAKTIF (ENHANCED)
            ========================================================= */
         #flowModal {
@@ -2396,8 +2614,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 <button class="monitor-btn" onclick="toggleFullscreen()" title="Layar Penuh (F11)">
                     <i class="fas fa-expand"></i> Fullscreen
                 </button>
-                <button class="monitor-btn" onclick="toggleDarkMode()" title="Ganti Mode Gelap/Terang">
-                    <i class="fas fa-adjust"></i> Tema
+                <button class="monitor-btn" onclick="toggleMonitorTheme()" id="monitor-theme-btn" title="Ganti Mode Gelap / Terang">
+                    <i class="fas fa-sun" id="monitor-theme-icon" style="color: #f59e0b;"></i> <span id="monitor-theme-text">Mode Terang</span>
                 </button>
                 <button class="monitor-btn btn-close-monitor" onclick="closeMonitorMode()">
                     <i class="fas fa-times-circle"></i> Tutup Monitor
@@ -2425,14 +2643,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     <button class="mon-pill-btn active" onclick="setMonitorUrgencyFilter('semua', this)" id="mon-btn-all" title="Tampilkan seluruh kolom proyek aktif berjalan (Tekan 1)">
                         <i class="fas fa-th-large"></i> Semua Berjalan <span class="mon-pill-count" id="mon-pill-count-all">0</span>
                     </button>
-                    <button class="mon-pill-btn mon-pill-high" onclick="setMonitorUrgencyFilter('Tinggi', this)" id="mon-btn-high" title="Hanya tampilkan Prioritas Utama Aktif (Tekan 2)">
-                        <i class="fas fa-fire"></i> Urgensi Tinggi Saja <span class="mon-pill-count" id="mon-pill-count-high">0</span>
+                    <button class="mon-pill-btn mon-pill-high" onclick="setMonitorUrgencyFilter('Tinggi', this)" id="mon-btn-high" title="Tampilkan Prioritas Utama Aktif (Tekan 2)">
+                        <i class="fas fa-fire"></i> Urgensi Tinggi <span class="mon-pill-count" id="mon-pill-count-high">0</span>
                     </button>
-                    <button class="mon-pill-btn mon-pill-med" onclick="setMonitorUrgencyFilter('Sedang', this)" id="mon-btn-med" title="Hanya tampilkan Dalam Pengawalan Aktif (Tekan 3)">
-                        <i class="fas fa-hourglass-half"></i> Urgensi Sedang Saja <span class="mon-pill-count" id="mon-pill-count-med">0</span>
+                    <button class="mon-pill-btn mon-pill-med" onclick="setMonitorUrgencyFilter('Sedang', this)" id="mon-btn-med" title="Tampilkan Dalam Pengawalan Aktif (Tekan 3)">
+                        <i class="fas fa-hourglass-half"></i> Urgensi Sedang <span class="mon-pill-count" id="mon-pill-count-med">0</span>
                     </button>
-                    <button class="mon-pill-btn mon-pill-low" onclick="setMonitorUrgencyFilter('Rendah', this)" id="mon-btn-low" title="Hanya tampilkan Rutin Aktif (Tekan 4)">
-                        <i class="fas fa-check-circle"></i> Rutin Saja <span class="mon-pill-count" id="mon-pill-count-low">0</span>
+                    <button class="mon-pill-btn mon-pill-low" onclick="setMonitorUrgencyFilter('Rendah', this)" id="mon-btn-low" title="Tampilkan Rutin Aktif (Tekan 4)">
+                        <i class="fas fa-check-circle"></i> Rutin <span class="mon-pill-count" id="mon-pill-count-low">0</span>
                     </button>
                     <button class="mon-pill-btn mon-pill-completed" onclick="setMonitorUrgencyFilter('Selesai', this)" id="mon-btn-completed" title="Tampilkan Proyek yang Sudah Selesai 100% (Tekan 5)">
                         <i class="fas fa-check-double"></i> Sudah Selesai <span class="mon-pill-count" id="mon-pill-count-completed">0</span>
@@ -5212,8 +5430,44 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         let currentMonitorCategoryFilter = 'semua';
 
         function openMonitorMode() {
-            document.getElementById('monitor-overlay').classList.add('active');
+            const overlay = document.getElementById('monitor-overlay');
+            overlay.classList.add('active');
+
+            // Inisialisasi tema monitor sesuai preferensi tersimpan (default dark kiosk)
+            const savedMonitorTheme = localStorage.getItem('smti_monitor_theme') || 'dark';
+            if (savedMonitorTheme === 'light') {
+                overlay.classList.add('light-mode');
+            } else {
+                overlay.classList.remove('light-mode');
+            }
+            updateMonitorThemeButton();
             renderMonitorBoard();
+        }
+
+        function toggleMonitorTheme() {
+            const overlay = document.getElementById('monitor-overlay');
+            if (!overlay) return;
+            const isLight = overlay.classList.toggle('light-mode');
+            localStorage.setItem('smti_monitor_theme', isLight ? 'light' : 'dark');
+            updateMonitorThemeButton();
+        }
+
+        function updateMonitorThemeButton() {
+            const overlay = document.getElementById('monitor-overlay');
+            const icon = document.getElementById('monitor-theme-icon');
+            const text = document.getElementById('monitor-theme-text');
+            if (!overlay || !icon || !text) return;
+
+            const isLight = overlay.classList.contains('light-mode');
+            if (isLight) {
+                icon.className = 'fas fa-moon';
+                icon.style.color = '#475569';
+                text.innerText = 'Mode Gelap';
+            } else {
+                icon.className = 'fas fa-sun';
+                icon.style.color = '#f59e0b';
+                text.innerText = 'Mode Terang';
+            }
         }
 
         function closeMonitorMode() {
@@ -7341,7 +7595,20 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('smti_theme', isDark ? 'dark' : 'light');
+            updateDashboardThemeIcon();
+
+            // Jika monitor overlay sedang aktif dibuka, sinkronkan juga tema monitornya
+            const overlay = document.getElementById('monitor-overlay');
+            if (overlay && overlay.classList.contains('active')) {
+                toggleMonitorTheme();
+            }
+        }
+
+        function updateDashboardThemeIcon() {
             const icon = document.getElementById('theme-icon');
+            if (!icon) return;
             if (document.body.classList.contains('dark-mode')) {
                 icon.classList.replace('fa-moon', 'fa-sun');
             } else {
@@ -8140,6 +8407,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             closeChangePinModal();
             alert(`Sukses! PIN keamanan untuk akun "${currentAuthUser.name}" berhasil diubah.`);
         }
+
+        // Inisialisasi pemulihan tema tersimpan saat startup
+        try {
+            if (localStorage.getItem('smti_theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                updateDashboardThemeIcon();
+            }
+        } catch (err) {}
     </script>
     <!-- =========================================================
          MODAL UNDANG ANGGOTA TIM KARYAWAN SMTI KE PROYEK
