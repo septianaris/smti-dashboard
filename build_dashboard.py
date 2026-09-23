@@ -13,7 +13,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>Dashboard Dept SMTI - PT Pupuk Kujang</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -52,8 +52,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             --border-color: #334155;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); display: flex; min-height: 100vh; transition: background-color 0.3s, color 0.3s; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        body { background-color: var(--bg-color); color: var(--text-color); display: flex; min-height: 100vh; min-height: 100dvh; transition: background-color 0.3s, color 0.3s; overflow-x: hidden; min-width: 320px; }
 
         /* --- SIDEBAR --- */
         .sidebar { width: 260px; background-color: #0f172a; color: #ffffff; display: flex; flex-direction: column; padding: 20px; position: fixed; height: 100%; z-index: 100; justify-content: space-between; border-right: 1px solid rgba(255,255,255,0.08); }
@@ -1988,13 +1989,581 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             margin-top: 20px;
         }
 
-        @media (max-width: 900px) {
+        /* =========================================================
+           RESPONSIVE & MOBILE / DESKTOP-SITE OPTIMIZATIONS
+           ========================================================= */
+        .mobile-toggle-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            background: var(--hover-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .mobile-toggle-btn:hover {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .sidebar-close-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .sidebar-close-btn:hover {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.68);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 9998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-backdrop.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        /* Prevent auto zoom in iOS Safari on focus */
+        @media screen and (max-width: 768px) {
+            input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+                font-size: 16px !important;
+            }
+        }
+
+        /* Mobile & Tablet Styles (< 1024px) */
+        @media (max-width: 1024px) {
+            .mobile-toggle-btn {
+                display: inline-flex;
+            }
+            .sidebar-close-btn {
+                display: inline-flex;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 280px;
+                max-width: 86vw;
+                height: 100vh;
+                height: 100dvh;
+                z-index: 9999;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 0 35px rgba(0, 0, 0, 0.55);
+                border-right: 1px solid rgba(255, 255, 255, 0.12);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 16px 14px;
+            }
+        }
+
+        /* Phone & Narrow Screens (< 768px) */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 14px;
+                gap: 12px;
+            }
+            .header-left {
+                width: 100%;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .header-title h1 {
+                font-size: 16px;
+            }
+            .header-title small {
+                font-size: 11px;
+            }
+            .status-badge {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
+                gap: 8px;
+                flex-wrap: wrap;
+                border-top: 1px solid var(--border-color);
+                padding-top: 10px;
+                margin-top: 2px;
+            }
+            .btn-monitor-mode {
+                padding: 6px 10px;
+                font-size: 11.5px;
+            }
+            .global-search {
+                flex: 1;
+                min-width: 140px;
+                width: auto;
+            }
+            .global-search input {
+                padding: 7px 10px 7px 30px;
+                font-size: 12px;
+            }
+            .time-display {
+                display: none;
+            }
+            .desktop-only {
+                display: none !important;
+            }
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                margin-bottom: 14px;
+            }
+            .card {
+                padding: 14px;
+                margin-bottom: 14px;
+                border-radius: 10px;
+            }
+            .card-header {
+                font-size: 14.5px;
+                margin-bottom: 12px;
+            }
+            .project-kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .project-kpi-card {
+                padding: 12px;
+            }
+            .project-kpi-info h3 {
+                font-size: 20px;
+            }
+            .project-card-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .project-toolbar {
+                padding: 12px;
+                gap: 12px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .project-tabs {
+                width: 100%;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 4px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .tab-btn {
+                white-space: nowrap;
+                flex-shrink: 0;
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            .chart-container {
+                height: 270px;
+            }
+            .chart-legend-btn {
+                padding: 6px 12px;
+                font-size: 11.5px;
+                gap: 6px;
+            }
+            .chart-legend-indicator {
+                width: 9px;
+                height: 9px;
+            }
+            .chart-legend-badge {
+                font-size: 10px;
+                padding: 1.5px 6px;
+            }
+            #notif-dropdown, #profile-dropdown {
+                right: 6px;
+                left: 6px;
+                width: auto !important;
+                max-width: calc(100vw - 12px) !important;
+            }
             .monitor-board { grid-template-columns: 1fr; }
             .flow-meta-grid { grid-template-columns: repeat(2, 1fr); }
             .stepper-pipeline { flex-direction: column; gap: 15px; }
             .stepper-pipeline::before { display: none; }
             .step-item { flex-direction: row; gap: 12px; }
             .step-name { text-align: left; }
+            .modal-content, .flow-modal-box {
+                padding: 16px 14px;
+                border-radius: 12px;
+                width: 96%;
+                max-height: 90vh;
+            }
+            .pin-auth-card {
+                width: 96%;
+                border-radius: 14px;
+            }
+            .pin-auth-header {
+                padding: 20px 16px 16px;
+            }
+            .pin-auth-body {
+                padding: 18px 16px;
+            }
+        }
+
+        /* Small Phones (< 440px) */
+        @media (max-width: 440px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-title small {
+                display: none;
+            }
+            .status-text {
+                display: none;
+            }
+            .flow-meta-grid {
+                grid-template-columns: 1fr;
+            }
+        /* =========================================================
+           EXECUTIVE ANALYTICS MULTI-CHART & REPORT PRINT STYLES
+           ========================================================= */
+        .analytics-grid-2x2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .analytics-chart-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .analytics-chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .analytics-chart-header small {
+            font-size: 11.5px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .analytics-chart-canvas-wrap {
+            position: relative;
+            height: 250px;
+            width: 100%;
+            flex: 1;
+        }
+
+        @media (max-width: 840px) {
+            .analytics-grid-2x2 {
+                grid-template-columns: 1fr;
+            }
+            .analytics-chart-canvas-wrap {
+                height: 230px;
+            }
+        }
+
+        /* Printable Executive Report Modal */
+        #modalPrintReport {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 200000;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #modalPrintReport.active {
+            display: flex;
+        }
+
+        .report-preview-container {
+            background: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 900px;
+            max-width: 96%;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .report-preview-topbar {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--hover-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .report-preview-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+            background: #cbd5e1;
+        }
+
+        .report-sheet {
+            background: #ffffff;
+            color: #0f172a;
+            padding: 36px 40px;
+            border-radius: 6px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+            margin: 0 auto;
+            max-width: 820px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .report-kop {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 3px double #1e3a8a;
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+        }
+
+        .report-kop-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #0284c7, #10b981);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #ffffff;
+        }
+
+        .report-kop-text h2 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1e3a8a;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .report-kop-text h3 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 2px 0;
+        }
+
+        .report-kop-text p {
+            font-size: 11px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .report-title-block {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .report-title-block h1 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .report-title-block p {
+            font-size: 12px;
+            color: #475569;
+            margin-top: 4px;
+        }
+
+        .report-kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .report-kpi-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            text-align: center;
+        }
+
+        .report-kpi-item small {
+            font-size: 10.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #64748b;
+            display: block;
+        }
+
+        .report-kpi-item strong {
+            font-size: 17px;
+            color: #0284c7;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .report-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            font-size: 11.5px;
+        }
+
+        .report-data-table th {
+            background: #1e3a8a;
+            color: #ffffff;
+            padding: 7px 8px;
+            border: 1px solid #1e3a8a;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .report-data-table td {
+            padding: 6px 8px;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+        }
+
+        .report-data-table tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .report-sign-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            page-break-inside: avoid;
+        }
+
+        .report-sign-box {
+            width: 220px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .report-sign-box .sign-role {
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 60px;
+        }
+
+        .report-sign-box .sign-name {
+            font-weight: 800;
+            color: #0f172a;
+            text-decoration: underline;
+        }
+
+        .report-sign-box .sign-title {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* --- PRINT CSS: HANYA TAMPILKAN LAPORAN RESMI --- */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                display: block !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .sidebar, #sidebar-backdrop, .header, .page-section, .pin-auth-overlay, #monitor-overlay, .report-preview-topbar, .no-print {
+                display: none !important;
+            }
+            #modalPrintReport {
+                position: static !important;
+                display: block !important;
+                background: transparent !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+            .report-preview-container {
+                box-shadow: none !important;
+                border: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                max-height: none !important;
+                overflow: visible !important;
+                border-radius: 0 !important;
+                background: transparent !important;
+            }
+            .report-preview-body {
+                background: transparent !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+            .report-sheet {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 10mm 12mm !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                border-radius: 0 !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 8mm;
+            }
         }
     </style>
 </head>
@@ -2074,17 +2643,25 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         </div>
     </div>
 
+    <!-- BACKDROP MOBILE SIDEBAR -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
+
     <!-- SIDEBAR -->
-    <div class="sidebar">
+    <div class="sidebar" id="app-sidebar">
         <div class="sidebar-top">
-            <div class="sidebar-brand">
-                <div class="sidebar-brand-icon">
-                    <i class="fas fa-cubes"></i>
+            <div class="sidebar-brand" style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                    <div class="sidebar-brand-icon">
+                        <i class="fas fa-cubes"></i>
+                    </div>
+                    <div class="sidebar-brand-text">
+                        <h2>DEPT. SMTI</h2>
+                        <small>PT PUPUK KUJANG</small>
+                    </div>
                 </div>
-                <div class="sidebar-brand-text">
-                    <h2>DEPT. SMTI</h2>
-                    <small>PT PUPUK KUJANG</small>
-                </div>
+                <button class="sidebar-close-btn" onclick="closeMobileSidebar()" title="Tutup Menu">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             
             <div class="menu-category">Menu Utama</div>
@@ -2139,13 +2716,16 @@ HTML_CONTENT = r'''<!DOCTYPE html>
     <div class="main-content">
         <div class="header">
             <div class="header-left">
+                <button class="mobile-toggle-btn" onclick="toggleMobileSidebar()" title="Buka Menu Navigasi">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div class="header-title">
                     <h1 id="current-title">Ringkasan Performa SMTI</h1>
                     <small>Sistem Manajemen Terpadu & Inovasi • PT Pupuk Kujang</small>
                 </div>
                 
                 <div class="status-badge">
-                    <span class="status-dot"></span> System Live
+                    <span class="status-dot"></span> <span class="status-text">System Live</span>
                 </div>
             </div>
             
@@ -2408,6 +2988,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         </select>
                     </div>
 
+                    <div class="table-responsive">
                     <table>
                         <thead>
                             <tr><th>Nama Karyawan</th><th>Jabatan</th><th>Status</th><th>Aksi</th></tr>
@@ -2463,6 +3044,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
 
@@ -2590,28 +3172,110 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         <!-- ================= PAGE LAPORAN ANALYTICS ================= -->
         <div id="laporan" class="page-section">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-chart-pie"></i> Laporan & Analytics Departemen SMTI</h2>
-                    <button class="btn" onclick="alert('Laporan PDF berhasil di-generate!')"><i class="fas fa-download"></i> Unduh Laporan PDF</button>
+            <div class="card" style="margin-bottom: 16px;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h2 style="font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-chart-pie" style="color: #0284c7;"></i> Laporan & Analytics Departemen SMTI
+                        </h2>
+                        <small style="color: #64748b; font-size: 12px; margin-top: 2px; display: block;">
+                            Rekapitulasi Kinerja Strategis, Evaluasi Portofolio Proyek, dan Analitik Kinerja Departemen SMTI
+                        </small>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); font-weight: 700; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);" onclick="openPrintReportModal()">
+                            <i class="fas fa-file-pdf"></i> Unduh Laporan PDF Resmi
+                        </button>
+                        <button class="btn" style="background: #10b981; font-weight: 600;" onclick="exportAllProjectsCSV()">
+                            <i class="fas fa-file-excel"></i> Export Rekap CSV
+                        </button>
+                    </div>
                 </div>
-                <div class="dashboard-grid" style="margin-top: 15px;">
-                    <div style="background: var(--hover-color); padding: 15px; border-radius: 8px;">
-                        <h4>Rasio Status Karyawan</h4>
-                        <p style="font-size: 20px; font-weight: bold; color: #0284c7; margin-top: 5px;" id="stat-tko-ratio">60% TKO / 40% TKNO</p>
+
+                <!-- 4 Live Dynamic KPI Cards -->
+                <div class="dashboard-grid" style="margin-top: 18px; margin-bottom: 0;">
+                    <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #10b981;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Tingkat Ketuntasan</span>
+                            <i class="fas fa-check-double" style="color: #10b981; font-size: 16px;"></i>
+                        </div>
+                        <h2 id="report-kpi-completion" style="font-size: 26px; font-weight: 800; color: var(--text-color); margin-top: 4px;">--%</h2>
+                        <small id="report-kpi-completion-sub" style="color: #10b981; font-weight: 600; font-size: 11px;">Memuat data...</small>
                     </div>
-                    <div style="background: var(--hover-color); padding: 15px; border-radius: 8px;">
-                        <h4>Penyelesaian Proyek Inovasi</h4>
-                        <p style="font-size: 22px; font-weight: bold; color: #16a34a; margin-top: 5px;">85.4% Target Triwulan</p>
+
+                    <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #0284c7;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Rata-rata Progres SMTI</span>
+                            <i class="fas fa-chart-line" style="color: #0284c7; font-size: 16px;"></i>
+                        </div>
+                        <h2 id="report-kpi-avg" style="font-size: 26px; font-weight: 800; color: #0284c7; margin-top: 4px;">--%</h2>
+                        <small id="report-kpi-avg-sub" style="color: #64748b; font-size: 11px;">Evaluasi Realisasi 2026</small>
                     </div>
-                    <div style="background: var(--hover-color); padding: 15px; border-radius: 8px;">
-                        <h4>Prosedur & IK Terbit</h4>
-                        <p style="font-size: 22px; font-weight: bold; color: #d97706; margin-top: 5px;">36 Dokumen Resmi</p>
+
+                    <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #dc2626;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #dc2626;">Proyek Kritis / Berjalan</span>
+                            <i class="fas fa-fire" style="color: #dc2626; font-size: 16px;"></i>
+                        </div>
+                        <h2 id="report-kpi-urgent" style="font-size: 26px; font-weight: 800; color: #dc2626; margin-top: 4px;">--</h2>
+                        <small id="report-kpi-urgent-sub" style="color: #dc2626; font-weight: 600; font-size: 11px;">Urgensi Tinggi Aktif</small>
+                    </div>
+
+                    <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #8b5cf6;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Kontributor Terlibat</span>
+                            <i class="fas fa-users-cog" style="color: #8b5cf6; font-size: 16px;"></i>
+                        </div>
+                        <h2 id="report-kpi-team" style="font-size: 26px; font-weight: 800; color: #8b5cf6; margin-top: 4px;">--</h2>
+                        <small id="report-kpi-team-sub" style="color: #64748b; font-size: 11px;">Personil & Magang PIC</small>
                     </div>
                 </div>
-                <div class="card-header" style="margin-top: 20px;"><span>Grafik Distribusi Beban Kerja & Evaluasi Inovasi</span></div>
-                <div class="chart-container">
-                    <canvas id="analyticsChart"></canvas>
+            </div>
+
+            <!-- Multi-Chart Analytics Grid (2x2) -->
+            <div class="analytics-grid-2x2">
+                <!-- Chart 1: Donut Status Portofolio -->
+                <div class="analytics-chart-box">
+                    <div class="analytics-chart-header">
+                        <span><i class="fas fa-chart-pie" style="color: #0284c7;"></i> Komposisi Status Portofolio Proyek</span>
+                        <small>Persentase & Jumlah</small>
+                    </div>
+                    <div class="analytics-chart-canvas-wrap">
+                        <canvas id="chartReportStatus"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Horizontal Bar Capaian per Bagian -->
+                <div class="analytics-chart-box">
+                    <div class="analytics-chart-header">
+                        <span><i class="fas fa-sitemap" style="color: #10b981;"></i> Pencapaian Rata-rata per Bagian SMTI</span>
+                        <small>Target vs Realisasi</small>
+                    </div>
+                    <div class="analytics-chart-canvas-wrap">
+                        <canvas id="chartReportBagian"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 3: Distribusi Urgensi Proyek -->
+                <div class="analytics-chart-box">
+                    <div class="analytics-chart-header">
+                        <span><i class="fas fa-layer-group" style="color: #f59e0b;"></i> Distribusi Tingkat Urgensi Proyek</span>
+                        <small>Tinggi • Sedang • Rutin</small>
+                    </div>
+                    <div class="analytics-chart-canvas-wrap">
+                        <canvas id="chartReportUrgensi"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 4: Overview Evaluasi Seluruh Proyek -->
+                <div class="analytics-chart-box">
+                    <div class="analytics-chart-header">
+                        <span><i class="fas fa-tasks" style="color: #6366f1;"></i> Sebaran Capaian Progres Tiap Proyek</span>
+                        <small>Hover bar untuk detail</small>
+                    </div>
+                    <div class="analytics-chart-canvas-wrap">
+                        <canvas id="chartReportOverview"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3359,6 +4023,118 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         MODAL PRATINJAU & CETAK LAPORAN RESMI EKSEKUTIF SMTI
+         ========================================================= -->
+    <div id="modalPrintReport" class="modal" onclick="if(event.target===this)closePrintReportModal()">
+        <div class="report-preview-container">
+            <!-- Topbar Kontrol Pratinjau (Disembunyikan saat cetak) -->
+            <div class="report-preview-topbar no-print">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #0284c7; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                        <i class="fas fa-print"></i>
+                    </div>
+                    <div>
+                        <strong style="font-size: 14px; color: var(--text-color);">Pratinjau Dokumen Laporan Resmi SMTI</strong>
+                        <div style="font-size: 11px; color: #64748b;">Standar Format PT Pupuk Kujang • Siap Cetak A4 / Simpan PDF</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); font-weight: 700; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);" onclick="executePrintReport()">
+                        <i class="fas fa-print"></i> Cetak / Simpan PDF
+                    </button>
+                    <button class="btn" style="background: #64748b;" onclick="closePrintReportModal()">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lembar Kertas Formal Laporan (Dicetak) -->
+            <div class="report-preview-body">
+                <div class="report-sheet" id="printable-report-area">
+                    <!-- KOP SURAT FORMAL PUPUK KUJANG SMTI -->
+                    <div class="report-kop">
+                        <div class="report-kop-logo">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <div class="report-kop-text" style="flex: 1;">
+                            <h2>PT PUPUK KUJANG CIKAMPEK</h2>
+                            <h3>DEPARTEMEN SISTEM MANAJEMEN TERPADU & INOVASI (SMTI)</h3>
+                            <p>Kawasan Industri Kujang Cikampek, Jl. Jend. A. Yani No. 39, Dawuan, Cikampek 41373 - Jawa Barat</p>
+                        </div>
+                        <div style="text-align: right; font-size: 11px; color: #64748b; line-height: 1.3;">
+                            <strong>No. Dok:</strong> SMTI-REP-2026/09<br>
+                            <strong>Status:</strong> Dokumen Resmi<br>
+                            <strong>Tahun Anggaran:</strong> 2026
+                        </div>
+                    </div>
+
+                    <!-- JUDUL LAPORAN -->
+                    <div class="report-title-block">
+                        <h1>Laporan Rekapitulasi Kinerja & Portofolio Proyek SMTI</h1>
+                        <p id="report-print-date">Periode Evaluasi: s/d September 2026 • Status: Realisasi Berjalan</p>
+                    </div>
+
+                    <!-- RINGKASAN EKSEKUTIF KPI (PRINT MATRIX) -->
+                    <div class="report-kpi-row">
+                        <div class="report-kpi-item">
+                            <small>Total Portofolio</small>
+                            <strong id="print-kpi-total">0 Proyek</strong>
+                        </div>
+                        <div class="report-kpi-item">
+                            <small>Tuntas Selesai</small>
+                            <strong id="print-kpi-completed" style="color: #16a34a;">0 Proyek</strong>
+                        </div>
+                        <div class="report-kpi-item">
+                            <small>Realisasi Dept SMTI</small>
+                            <strong id="print-kpi-progress" style="color: #0284c7;">0%</strong>
+                        </div>
+                        <div class="report-kpi-item">
+                            <small>Target Akhir RKAP</small>
+                            <strong style="color: #10b981;">100%</strong>
+                        </div>
+                    </div>
+
+                    <!-- TABEL DAFTAR REKAPITULASI PROYEK -->
+                    <table class="report-data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 28px; text-align: center;">No</th>
+                                <th>Nama Inisiatif / Proyek SMTI</th>
+                                <th style="width: 110px;">Bagian Unit</th>
+                                <th style="width: 120px;">PIC Proyek</th>
+                                <th style="width: 75px; text-align: center;">Urgensi</th>
+                                <th style="width: 85px; text-align: center;">Status</th>
+                                <th style="width: 90px;">Deadline</th>
+                                <th style="width: 60px; text-align: center;">Progres</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-print-table-body">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+
+                    <!-- LEMBAR PENGESAHAN LAPORAN -->
+                    <div class="report-sign-grid">
+                        <div class="report-sign-box">
+                            <div>Cikampek, <span id="report-sign-date">22 September 2026</span></div>
+                            <div class="sign-role">Disusun Oleh,</div>
+                            <div class="sign-name">Septian</div>
+                            <div class="sign-title">Super Admin & Officer Digitalisasi SMTI</div>
+                        </div>
+
+                        <div class="report-sign-box">
+                            <div>Mengetahui & Menyetujui,</div>
+                            <div class="sign-role">Manager Departemen SMTI,</div>
+                            <div class="sign-name">Henisya Permata Sari</div>
+                            <div class="sign-title">Manager Dept. SMTI PT Pupuk Kujang</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -4196,6 +4972,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         if (document.getElementById('flowModal') && document.getElementById('flowModal').classList.contains('active')) {
                             openFlowModal(currentActiveProjectId);
                         }
+                        if (document.getElementById('laporan') && document.getElementById('laporan').classList.contains('active')) {
+                            initAnalyticsChart();
+                        }
                         updateCloudSyncBadge('synced');
                         if (showNotification) {
                             alert("Data berhasil disinkronisasi langsung dari Vercel Cloud Storage!");
@@ -4319,6 +5098,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 localStorage.setItem('smti_projects_data_v2', JSON.stringify(projectDataSMTI));
             } catch (e) {
                 console.error("Gagal menyimpan ke localStorage:", e);
+            }
+
+            if (document.getElementById('laporan') && document.getElementById('laporan').classList.contains('active')) {
+                initAnalyticsChart();
             }
 
             // Otomatis sinkronisasi ke Vercel Cloud Storage (debounced 700ms)
@@ -5239,69 +6022,399 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             updateMainDashboardChart();
         }
 
+        /* --- MULTI-CHART ANALYTICS & EXECUTIVE REPORT SMTI --- */
+        let chartReportStatusInstance = null;
+        let chartReportBagianInstance = null;
+        let chartReportUrgensiInstance = null;
+        let chartReportOverviewInstance = null;
+
         function initAnalyticsChart() {
-            const ctx2 = document.getElementById('analyticsChart');
-            if (!ctx2) return;
-            if (analyticsChartInstance) analyticsChartInstance.destroy();
+            if (!projectDataSMTI || projectDataSMTI.length === 0) return;
 
-            const labels = projectDataSMTI.map(p => p.name.length > 25 ? p.name.substring(0, 23) + '...' : p.name);
-            const dataValues = projectDataSMTI.map(p => Number(p.progress) || 0);
-            const bgColors = projectDataSMTI.map(p => {
-                const prog = Number(p.progress) || 0;
-                if (prog === 100) return '#16a34a'; // Hijau tuntas
-                if (prog >= 70) return '#0284c7';   // Biru progres baik
-                if (prog >= 40) return '#d97706';   // Amber berjalan
-                return '#dc2626';                   // Merah awal
+            // 1. UPDATE 4 LIVE DYNAMIC KPI CARDS
+            const totalCount = projectDataSMTI.length;
+            const completedCount = projectDataSMTI.filter(p => isProjectCompleted(p)).length;
+            const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 1000) / 10 : 0;
+            const totalProgress = projectDataSMTI.reduce((sum, p) => sum + (Number(p.progress) || 0), 0);
+            const avgProgress = totalCount > 0 ? Math.round((totalProgress / totalCount) * 10) / 10 : 0;
+            const urgentActiveCount = projectDataSMTI.filter(p => {
+                const urg = (p.urgency || '').toLowerCase();
+                return (urg === 'tinggi' || urg === 'high') && !isProjectCompleted(p);
+            }).length;
+
+            const activePics = new Set();
+            projectDataSMTI.forEach(p => {
+                if (p.pic && p.pic.trim()) activePics.add(p.pic.trim());
             });
+            const teamCount = activePics.size;
 
-            analyticsChartInstance = new Chart(ctx2.getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Progres Penyelesaian (%)',
-                        data: dataValues,
-                        backgroundColor: bgColors,
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            max: 100, 
-                            ticks: { callback: v => v + '%' },
-                            grid: { color: 'rgba(100, 116, 139, 0.12)' }
-                        },
-                        x: { 
-                            ticks: { 
-                                autoSkip: false, 
-                                maxRotation: 45, 
-                                minRotation: 20,
-                                font: { size: 11 }
-                            },
-                            grid: { display: false }
-                        }
+            const kpiCompEl = document.getElementById('report-kpi-completion');
+            if (kpiCompEl) kpiCompEl.innerText = `${completionRate}%`;
+            const kpiCompSub = document.getElementById('report-kpi-completion-sub');
+            if (kpiCompSub) kpiCompSub.innerText = `${completedCount} dari ${totalCount} Proyek Selesai`;
+
+            const kpiAvgEl = document.getElementById('report-kpi-avg');
+            if (kpiAvgEl) kpiAvgEl.innerText = `${avgProgress}%`;
+            const kpiAvgSub = document.getElementById('report-kpi-avg-sub');
+            if (kpiAvgSub) kpiAvgSub.innerText = `Target RKAP 100% (Gap: ${Math.round((100 - avgProgress) * 10) / 10}%)`;
+
+            const kpiUrgentEl = document.getElementById('report-kpi-urgent');
+            if (kpiUrgentEl) kpiUrgentEl.innerText = `${urgentActiveCount} Proyek`;
+            const kpiUrgentSub = document.getElementById('report-kpi-urgent-sub');
+            if (kpiUrgentSub) kpiUrgentSub.innerText = urgentActiveCount > 0 ? 'Perlu Eskalasi & Prioritas' : 'Semua Terkendali Aman';
+
+            const kpiTeamEl = document.getElementById('report-kpi-team');
+            if (kpiTeamEl) kpiTeamEl.innerText = `${teamCount} Personil`;
+            const kpiTeamSub = document.getElementById('report-kpi-team-sub');
+            if (kpiTeamSub) kpiTeamSub.innerText = `${totalCount} Inisiatif Terdistribusi`;
+
+            // 2. CHART 1: DONUT STATUS PORTOFOLIO
+            const canvasStatus = document.getElementById('chartReportStatus');
+            if (canvasStatus) {
+                if (chartReportStatusInstance) chartReportStatusInstance.destroy();
+                const doneCount = completedCount;
+                const ongoingCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && (Number(p.progress) || 0) >= 40).length;
+                const earlyCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && (Number(p.progress) || 0) < 40).length;
+
+                chartReportStatusInstance = new Chart(canvasStatus.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: [
+                            `Tuntas 100% (${doneCount})`,
+                            `Berjalan 40-99% (${ongoingCount})`,
+                            `Tahap Awal <40% (${earlyCount})`
+                        ],
+                        datasets: [{
+                            data: [doneCount, ongoingCount, earlyCount],
+                            backgroundColor: ['#10b981', '#0284c7', '#f59e0b'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
                     },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                title: (items) => {
-                                    const idx = items[0].dataIndex;
-                                    return projectDataSMTI[idx] ? projectDataSMTI[idx].name : '';
-                                },
-                                label: (ctx) => {
-                                    const p = projectDataSMTI[ctx.dataIndex];
-                                    return ` Capaian: ${ctx.raw}% | Kategori: ${p ? p.category : '-'} | PIC: ${p ? p.pic : '-'}`;
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '62%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 10,
+                                    font: { size: 11, weight: '600' }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(ctx) {
+                                        const total = doneCount + ongoingCount + earlyCount;
+                                        const pct = total > 0 ? Math.round((ctx.raw / total) * 100) : 0;
+                                        return ` ${ctx.label}: ${ctx.raw} Proyek (${pct}%)`;
+                                    }
                                 }
                             }
                         }
                     }
-                }
+                });
+            }
+
+            // 3. CHART 2: HORIZONTAL BAR CAPAIAN PER BAGIAN SMTI
+            const canvasBagian = document.getElementById('chartReportBagian');
+            if (canvasBagian) {
+                if (chartReportBagianInstance) chartReportBagianInstance.destroy();
+
+                const mikuP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
+                const pmsmtP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
+                const sisdurP = projectDataSMTI.filter(p => {
+                    const c = (p.category || '').toLowerCase();
+                    return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
+                });
+
+                const mikuAvg = mikuP.length ? Math.round((mikuP.reduce((s, p) => s + (Number(p.progress) || 0), 0) / mikuP.length) * 10) / 10 : 0;
+                const pmsmtAvg = pmsmtP.length ? Math.round((pmsmtP.reduce((s, p) => s + (Number(p.progress) || 0), 0) / pmsmtP.length) * 10) / 10 : 0;
+                const sisdurAvg = sisdurP.length ? Math.round((sisdurP.reduce((s, p) => s + (Number(p.progress) || 0), 0) / sisdurP.length) * 10) / 10 : 0;
+
+                chartReportBagianInstance = new Chart(canvasBagian.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: [
+                            `Bagian MIKU (${mikuP.length})`,
+                            `Bagian PMSMT (${pmsmtP.length})`,
+                            `BangSisdur (${sisdurP.length})`
+                        ],
+                        datasets: [{
+                            label: 'Rata-rata Capaian Progres (%)',
+                            data: [mikuAvg, pmsmtAvg, sisdurAvg],
+                            backgroundColor: ['#0284c7', '#10b981', '#6366f1'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: { callback: v => v + '%' },
+                                grid: { color: 'rgba(100, 116, 139, 0.12)' }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { font: { size: 11, weight: '600' } }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => ` Capaian Bagian: ${ctx.raw}%`
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 4. CHART 3: DISTRIBUSI URGENSI PROYEK
+            const canvasUrgensi = document.getElementById('chartReportUrgensi');
+            if (canvasUrgensi) {
+                if (chartReportUrgensiInstance) chartReportUrgensiInstance.destroy();
+
+                const urgentHigh = projectDataSMTI.filter(p => {
+                    const u = (p.urgency || '').toLowerCase();
+                    return u === 'tinggi' || u === 'high';
+                }).length;
+                const urgentMed = projectDataSMTI.filter(p => {
+                    const u = (p.urgency || '').toLowerCase();
+                    return u === 'sedang' || u === 'medium';
+                }).length;
+                const urgentLow = projectDataSMTI.filter(p => {
+                    const u = (p.urgency || '').toLowerCase();
+                    return u === 'rendah' || u === 'low' || u === 'rutin';
+                }).length;
+
+                chartReportUrgensiInstance = new Chart(canvasUrgensi.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Tinggi / Kritis', 'Sedang / Menengah', 'Rendah / Rutin'],
+                        datasets: [{
+                            label: 'Jumlah Proyek',
+                            data: [urgentHigh, urgentMed, urgentLow],
+                            backgroundColor: ['#dc2626', '#d97706', '#16a34a'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, precision: 0 },
+                                grid: { color: 'rgba(100, 116, 139, 0.12)' }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { size: 11, weight: '600' } }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => ` ${ctx.raw} Proyek Terdaftar`
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 5. CHART 4: SEBARAN CAPAIAN TIAP PROYEK SMTI
+            const canvasOverview = document.getElementById('chartReportOverview');
+            if (canvasOverview) {
+                if (chartReportOverviewInstance) chartReportOverviewInstance.destroy();
+
+                const labels = projectDataSMTI.map(p => p.name.length > 22 ? p.name.substring(0, 20) + '...' : p.name);
+                const dataValues = projectDataSMTI.map(p => Number(p.progress) || 0);
+                const bgColors = projectDataSMTI.map(p => {
+                    const prog = Number(p.progress) || 0;
+                    if (prog === 100) return '#10b981';
+                    if (prog >= 70) return '#0284c7';
+                    if (prog >= 40) return '#f59e0b';
+                    return '#dc2626';
+                });
+
+                chartReportOverviewInstance = new Chart(canvasOverview.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Progres (%)',
+                            data: dataValues,
+                            backgroundColor: bgColors,
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: { callback: v => v + '%' },
+                                grid: { color: 'rgba(100, 116, 139, 0.12)' }
+                            },
+                            x: {
+                                ticks: {
+                                    autoSkip: false,
+                                    maxRotation: 45,
+                                    minRotation: 20,
+                                    font: { size: 10.5 }
+                                },
+                                grid: { display: false }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    title: (items) => {
+                                        const idx = items[0].dataIndex;
+                                        return projectDataSMTI[idx] ? projectDataSMTI[idx].name : '';
+                                    },
+                                    label: (ctx) => {
+                                        const p = projectDataSMTI[ctx.dataIndex];
+                                        return ` Capaian: ${ctx.raw}% | ${p ? p.category : '-'} | PIC: ${p ? p.pic : '-'}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        /* --- PRINT EXECUTIVE REPORT MODAL HANDLERS --- */
+        function openPrintReportModal() {
+            const modal = document.getElementById('modalPrintReport');
+            if (!modal) return;
+
+            const now = new Date();
+            const optionsDate = { day: 'numeric', month: 'long', year: 'numeric' };
+            const dateStr = now.toLocaleDateString('id-ID', optionsDate);
+            const printDateEl = document.getElementById('report-print-date');
+            if (printDateEl) {
+                printDateEl.innerText = `Periode Evaluasi: s/d ${dateStr} • Status: Realisasi Berjalan`;
+            }
+            const signDateEl = document.getElementById('report-sign-date');
+            if (signDateEl) {
+                signDateEl.innerText = dateStr;
+            }
+
+            const totalCount = projectDataSMTI.length;
+            const completedCount = projectDataSMTI.filter(p => isProjectCompleted(p)).length;
+            const totalProgress = projectDataSMTI.reduce((sum, p) => sum + (Number(p.progress) || 0), 0);
+            const avgProgress = totalCount > 0 ? Math.round((totalProgress / totalCount) * 10) / 10 : 0;
+
+            const totalEl = document.getElementById('print-kpi-total');
+            if (totalEl) totalEl.innerText = `${totalCount} Proyek`;
+            const compEl = document.getElementById('print-kpi-completed');
+            if (compEl) compEl.innerText = `${completedCount} Proyek (${Math.round((completedCount / totalCount) * 100)}%)`;
+            const progEl = document.getElementById('print-kpi-progress');
+            if (progEl) progEl.innerText = `${avgProgress}%`;
+
+            const tbody = document.getElementById('report-print-table-body');
+            if (tbody) {
+                let html = '';
+                projectDataSMTI.forEach((p, idx) => {
+                    const isDone = isProjectCompleted(p);
+                    const statusLabel = isDone ? 'Tuntas' : 'Berjalan';
+                    const statusBg = isDone ? '#dcfce7; color: #15803d;' : '#e0f2fe; color: #0369a1;';
+                    const urg = p.urgency || 'Sedang';
+                    const urgColor = urg === 'Tinggi' ? '#b91c1c' : (urg === 'Sedang' ? '#b45309' : '#15803d');
+                    const prog = Number(p.progress) || 0;
+                    const deadline = p.deadline || '-';
+
+                    html += `
+                        <tr>
+                            <td style="text-align: center; font-weight: 600;">${idx + 1}</td>
+                            <td>
+                                <strong style="color: #0f172a;">${p.name}</strong>
+                                <div style="font-size: 10px; color: #64748b;">${p.desc ? p.desc.substring(0, 75) + '...' : ''}</div>
+                            </td>
+                            <td><span style="font-size: 11px;">${p.category || 'SMTI'}</span></td>
+                            <td><strong>${p.pic || '-'}</strong></td>
+                            <td style="text-align: center;"><span style="font-weight: 700; font-size: 11px; color: ${urgColor};">${urg}</span></td>
+                            <td style="text-align: center;">
+                                <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10.5px; font-weight: 700; background: ${statusBg}">${statusLabel}</span>
+                            </td>
+                            <td style="font-size: 11px;">${deadline}</td>
+                            <td style="text-align: center;">
+                                <strong style="color: ${prog === 100 ? '#15803d' : '#0284c7'}; font-size: 12px;">${prog}%</strong>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePrintReportModal() {
+            const modal = document.getElementById('modalPrintReport');
+            if (modal) modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function executePrintReport() {
+            window.print();
+        }
+
+        function exportAllProjectsCSV() {
+            if (!projectDataSMTI || projectDataSMTI.length === 0) {
+                alert('Tidak ada data proyek untuk diekspor.');
+                return;
+            }
+
+            const headers = ['No', 'Nama Proyek', 'Kategori', 'PIC', 'Tim', 'Urgensi', 'Target Selesai', 'Sisa Waktu', 'Progres (%)', 'Status'];
+            const rows = projectDataSMTI.map((p, idx) => {
+                const teamStr = Array.isArray(p.teamMembers) ? p.teamMembers.join('; ') : '';
+                const isDone = isProjectCompleted(p);
+                const statusStr = isDone ? 'Tuntas Selesai' : 'Sedang Berjalan';
+                const prog = Number(p.progress) || 0;
+
+                return [
+                    idx + 1,
+                    `"${(p.name || '').replace(/"/g, '""')}"`,
+                    `"${(p.category || '').replace(/"/g, '""')}"`,
+                    `"${(p.pic || '').replace(/"/g, '""')}"`,
+                    `"${teamStr.replace(/"/g, '""')}"`,
+                    `"${(p.urgency || '').replace(/"/g, '""')}"`,
+                    `"${(p.deadline || '').replace(/"/g, '""')}"`,
+                    `"${(p.daysLeft || '').replace(/"/g, '""')}"`,
+                    prog,
+                    `"${statusStr}"`
+                ].join(',');
             });
+
+            const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const now = new Date();
+            const dateFormatted = now.toISOString().slice(0, 10);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Rekap_Kinerja_Proyek_SMTI_${dateFormatted}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
 
         /* --- NAVIGATION --- */
@@ -5310,7 +6423,41 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             return !!(currentAuthUser.isSuperAdmin || (currentAuthUser.name && currentAuthUser.name.toLowerCase().includes('septian')));
         }
 
+        /* --- MOBILE SIDEBAR HANDLERS --- */
+        function toggleMobileSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            if (sidebar.classList.contains('open')) {
+                closeMobileSidebar();
+            } else {
+                openMobileSidebar();
+            }
+        }
+
+        function openMobileSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            if (sidebar) sidebar.classList.add('open');
+            if (backdrop) backdrop.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            if (sidebar) sidebar.classList.remove('open');
+            if (backdrop) backdrop.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                closeMobileSidebar();
+            }
+        });
+
         function showPage(pageId, element) {
+            closeMobileSidebar();
             const restrictedPages = ['karyawan', 'magang', 'pengaturan'];
             if (restrictedPages.includes(pageId) && !isCurrentUserSuperAdmin()) {
                 alert("Akses Terbatas: Menu ini dikhususkan untuk Super Admin (Septian).");
