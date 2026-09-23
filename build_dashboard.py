@@ -6502,6 +6502,53 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             }
         }
 
+        function getProjectBagianInfo(p) {
+            const cat = (p.category || '').toUpperCase();
+            const catLower = (p.category || '').toLowerCase();
+            if (cat.includes('MIKU')) {
+                return {
+                    key: 'miku',
+                    order: 1,
+                    name: 'BAGIAN MANAJEMEN INOVASI & KEMITRAAN USAHA (MIKU)',
+                    shortName: 'MIKU',
+                    color: '#0284c7',
+                    bg: '#f0f9ff',
+                    borderColor: '#0284c7'
+                };
+            }
+            if (cat.includes('PMSMT')) {
+                return {
+                    key: 'pmsmt',
+                    order: 2,
+                    name: 'BAGIAN PENGEMBANGAN SISTEM MANAJEMEN MUTU TERPADU (PMSMT)',
+                    shortName: 'PMSMT',
+                    color: '#059669',
+                    bg: '#ecfdf5',
+                    borderColor: '#10b981'
+                };
+            }
+            if (catLower.includes('sisdur') || catLower.includes('sistem') || catLower.includes('prosedur')) {
+                return {
+                    key: 'sisdur',
+                    order: 3,
+                    name: 'BAGIAN PENGEMBANGAN SISTEM DAN PROSEDUR (BANGSISDUR)',
+                    shortName: 'BangSisdur',
+                    color: '#6366f1',
+                    bg: '#eef2ff',
+                    borderColor: '#6366f1'
+                };
+            }
+            return {
+                key: 'lainnya',
+                order: 4,
+                name: 'INISIATIF & PORTOFOLIO LAINNYA DEPARTEMEN SMTI',
+                shortName: 'Lainnya',
+                color: '#475569',
+                bg: '#f8fafc',
+                borderColor: '#94a3b8'
+            };
+        }
+
         /* --- PRINT EXECUTIVE REPORT MODAL HANDLERS --- */
         function openPrintReportModal() {
             const modal = document.getElementById('modalPrintReport');
@@ -6533,36 +6580,102 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
             const tbody = document.getElementById('report-print-table-body');
             if (tbody) {
-                let html = '';
-                projectDataSMTI.forEach((p, idx) => {
-                    const isDone = isProjectCompleted(p);
-                    const statusLabel = isDone ? 'Tuntas' : 'Berjalan';
-                    const statusBg = isDone ? '#dcfce7; color: #15803d;' : '#e0f2fe; color: #0369a1;';
-                    const urg = p.urgency || 'Sedang';
-                    const urgColor = urg === 'Tinggi' ? '#b91c1c' : (urg === 'Sedang' ? '#b45309' : '#15803d');
-                    const prog = Number(p.progress) || 0;
-                    const deadline = p.deadline || '-';
+                const groups = [
+                    {
+                        key: 'miku',
+                        name: 'BAGIAN MANAJEMEN INOVASI & KEMITRAAN USAHA (MIKU)',
+                        shortName: 'MIKU',
+                        color: '#0284c7',
+                        bg: '#f0f9ff',
+                        borderColor: '#0284c7'
+                    },
+                    {
+                        key: 'pmsmt',
+                        name: 'BAGIAN PENGEMBANGAN SISTEM MANAJEMEN MUTU TERPADU (PMSMT)',
+                        shortName: 'PMSMT',
+                        color: '#059669',
+                        bg: '#ecfdf5',
+                        borderColor: '#10b981'
+                    },
+                    {
+                        key: 'sisdur',
+                        name: 'BAGIAN PENGEMBANGAN SISTEM DAN PROSEDUR (BANGSISDUR)',
+                        shortName: 'BangSisdur',
+                        color: '#6366f1',
+                        bg: '#eef2ff',
+                        borderColor: '#6366f1'
+                    },
+                    {
+                        key: 'lainnya',
+                        name: 'INISIATIF & PORTOFOLIO LAINNYA DEPARTEMEN SMTI',
+                        shortName: 'Lainnya',
+                        color: '#475569',
+                        bg: '#f8fafc',
+                        borderColor: '#94a3b8'
+                    }
+                ];
 
+                let html = '';
+                let globalIdx = 0;
+
+                groups.forEach(grp => {
+                    const projs = projectDataSMTI.filter(p => getProjectBagianInfo(p).key === grp.key);
+                    if (projs.length === 0) return;
+
+                    const secDone = projs.filter(p => isProjectCompleted(p)).length;
+                    const secProgressSum = projs.reduce((s, p) => s + (Number(p.progress) || 0), 0);
+                    const secAvg = Math.round((secProgressSum / projs.length) * 10) / 10;
+
+                    // Baris Subheader Bagian
                     html += `
-                        <tr>
-                            <td style="text-align: center; font-weight: 600;">${idx + 1}</td>
-                            <td>
-                                <strong style="color: #0f172a;">${p.name}</strong>
-                                <div style="font-size: 10px; color: #64748b;">${p.desc ? p.desc.substring(0, 75) + '...' : ''}</div>
-                            </td>
-                            <td><span style="font-size: 11px;">${p.category || 'SMTI'}</span></td>
-                            <td><strong>${p.pic || '-'}</strong></td>
-                            <td style="text-align: center;"><span style="font-weight: 700; font-size: 11px; color: ${urgColor};">${urg}</span></td>
-                            <td style="text-align: center;">
-                                <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10.5px; font-weight: 700; background: ${statusBg}">${statusLabel}</span>
-                            </td>
-                            <td style="font-size: 11px;">${deadline}</td>
-                            <td style="text-align: center;">
-                                <strong style="color: ${prog === 100 ? '#15803d' : '#0284c7'}; font-size: 12px;">${prog}%</strong>
+                        <tr style="background: ${grp.bg}; border-top: 2px solid ${grp.borderColor}; border-bottom: 1.5px solid #cbd5e1;">
+                            <td colspan="8" style="padding: 8px 12px; font-weight: 800; font-size: 11.5px; color: ${grp.color}; letter-spacing: 0.3px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: ${grp.borderColor};"></span>
+                                        <span style="font-weight: 800; color: ${grp.color};">${grp.name}</span>
+                                    </div>
+                                    <div style="font-size: 11px; font-weight: 600; color: #334155;">
+                                        Subtotal: <strong>${projs.length} Proyek</strong> (${secDone} Selesai • Rata-rata Capaian: <strong style="color: ${grp.color};">${secAvg}%</strong>)
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     `;
+
+                    // Seluruh proyek di bawah bagian ini
+                    projs.forEach(p => {
+                        globalIdx++;
+                        const isDone = isProjectCompleted(p);
+                        const statusLabel = isDone ? 'Tuntas' : 'Berjalan';
+                        const statusBg = isDone ? '#dcfce7; color: #15803d;' : '#e0f2fe; color: #0369a1;';
+                        const urg = p.urgency || 'Sedang';
+                        const urgColor = urg === 'Tinggi' ? '#b91c1c' : (urg === 'Sedang' ? '#b45309' : '#15803d');
+                        const prog = Number(p.progress) || 0;
+                        const deadline = p.deadline || '-';
+
+                        html += `
+                            <tr>
+                                <td style="text-align: center; font-weight: 600;">${globalIdx}</td>
+                                <td>
+                                    <strong style="color: #0f172a;">${p.name}</strong>
+                                    <div style="font-size: 10px; color: #64748b;">${p.desc ? p.desc.substring(0, 75) + '...' : ''}</div>
+                                </td>
+                                <td><span style="font-size: 11px; font-weight: 700; color: ${grp.color};">${grp.shortName}</span></td>
+                                <td><strong>${p.pic || '-'}</strong></td>
+                                <td style="text-align: center;"><span style="font-weight: 700; font-size: 11px; color: ${urgColor};">${urg}</span></td>
+                                <td style="text-align: center;">
+                                    <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10.5px; font-weight: 700; background: ${statusBg}">${statusLabel}</span>
+                                </td>
+                                <td style="font-size: 11px;">${deadline}</td>
+                                <td style="text-align: center;">
+                                    <strong style="color: ${prog === 100 ? '#15803d' : '#0284c7'}; font-size: 12px;">${prog}%</strong>
+                                </td>
+                            </tr>
+                        `;
+                    });
                 });
+
                 tbody.innerHTML = html;
             }
 
@@ -6590,17 +6703,28 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 return;
             }
 
-            const headers = ['No', 'Nama Proyek', 'Kategori', 'PIC', 'Tim', 'Urgensi', 'Target Selesai', 'Sisa Waktu', 'Progres (%)', 'Status'];
-            const rows = projectDataSMTI.map((p, idx) => {
+            // Urutkan data berdasarkan Bagian (MIKU, PMSMT, BangSisdur, Lainnya)
+            const sortedProjects = [...projectDataSMTI].sort((a, b) => {
+                const infoA = getProjectBagianInfo(a);
+                const infoB = getProjectBagianInfo(b);
+                if (infoA.order !== infoB.order) {
+                    return infoA.order - infoB.order;
+                }
+                return (a.name || '').localeCompare(b.name || '');
+            });
+
+            const headers = ['No', 'Nama Proyek', 'Bagian Unit', 'PIC', 'Tim', 'Urgensi', 'Target Selesai', 'Sisa Waktu', 'Progres (%)', 'Status'];
+            const rows = sortedProjects.map((p, idx) => {
                 const teamStr = Array.isArray(p.teamMembers) ? p.teamMembers.join('; ') : '';
                 const isDone = isProjectCompleted(p);
                 const statusStr = isDone ? 'Tuntas Selesai' : 'Sedang Berjalan';
                 const prog = Number(p.progress) || 0;
+                const bagianInfo = getProjectBagianInfo(p);
 
                 return [
                     idx + 1,
                     `"${(p.name || '').replace(/"/g, '""')}"`,
-                    `"${(p.category || '').replace(/"/g, '""')}"`,
+                    `"${bagianInfo.shortName}"`,
                     `"${(p.pic || '').replace(/"/g, '""')}"`,
                     `"${teamStr.replace(/"/g, '""')}"`,
                     `"${(p.urgency || '').replace(/"/g, '""')}"`,
@@ -6618,7 +6742,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const now = new Date();
             const dateFormatted = now.toISOString().slice(0, 10);
             link.setAttribute('href', url);
-            link.setAttribute('download', `Rekap_Kinerja_Proyek_SMTI_${dateFormatted}.csv`);
+            link.setAttribute('download', `Rekap_Kinerja_Proyek_SMTI_per_Bagian_${dateFormatted}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
