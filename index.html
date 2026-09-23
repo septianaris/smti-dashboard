@@ -623,6 +623,173 @@
         }
 
         /* =========================================================
+           3D COLUMNS INFOGRAPHIC (INSPIRED BY BUSINESS 3D COLUMNS 5-STEPS)
+           ========================================================= */
+        .infographic-3d-layout {
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+            background: radial-gradient(ellipse at 70% 30%, #e0f2fe 0%, #f0fdf4 35%, #f8fafc 100%);
+            border: 1px solid rgba(2, 132, 199, 0.16);
+            border-radius: 16px;
+            padding: 16px 18px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.6), 0 4px 20px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .infographic-3d-layout {
+            background: radial-gradient(ellipse at 70% 30%, #1e293b 0%, #0f172a 65%, #090d16 100%);
+            border-color: rgba(56, 189, 248, 0.22);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .infographic-ribbons-col {
+            flex: 0 0 330px;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 9px;
+            z-index: 2;
+        }
+
+        .infographic-canvas-col {
+            flex: 1;
+            position: relative;
+            min-height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        #main3DChartCanvas {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 380px;
+            display: block;
+            cursor: pointer;
+        }
+
+        /* 5 Stepped Ribbon Banners (01 to 05) with 3D Fold */
+        .infographic-ribbon-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 8px 12px 12px 8px;
+            padding: 11px 14px 11px 20px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            user-select: none;
+        }
+
+        /* 3D folded tab on left edge */
+        .infographic-ribbon-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 5px;
+            bottom: -5px;
+            width: 8px;
+            border-top-left-radius: 6px;
+            border-bottom-left-radius: 6px;
+            background: var(--ribbon-dark, #b45309);
+            z-index: -1;
+            box-shadow: -2px 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .infographic-ribbon-item::after {
+            content: '';
+            position: absolute;
+            left: -8px;
+            bottom: -5px;
+            border-top: 5px solid var(--ribbon-dark, #b45309);
+            border-left: 8px solid transparent;
+        }
+
+        .infographic-ribbon-item:hover,
+        .infographic-ribbon-item.active {
+            transform: translateX(7px) scale(1.018);
+            box-shadow: 0 8px 24px var(--ribbon-glow, rgba(0,0,0,0.22));
+            filter: brightness(1.06);
+        }
+
+        .infographic-ribbon-content {
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .infographic-ribbon-title {
+            font-size: 13.5px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+            line-height: 1.3;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.22);
+        }
+
+        .infographic-ribbon-desc {
+            font-size: 11.5px;
+            opacity: 0.94;
+            margin-top: 3px;
+            line-height: 1.28;
+            font-weight: 500;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.15);
+        }
+
+        .infographic-ribbon-num {
+            font-size: 34px;
+            font-weight: 900;
+            opacity: 0.72;
+            letter-spacing: -1.5px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1;
+            user-select: none;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+
+        /* Tooltip Floating Glass */
+        .infographic-3d-tooltip {
+            position: absolute;
+            pointer-events: none;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #f8fafc;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+            font-size: 12px;
+            max-width: 310px;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            transform: translate(-50%, -115%);
+        }
+
+        @media (max-width: 900px) {
+            .infographic-3d-layout {
+                flex-direction: column-reverse;
+                padding: 12px;
+            }
+            .infographic-ribbons-col {
+                flex: none;
+                max-width: 100%;
+                width: 100%;
+            }
+            .infographic-canvas-col {
+                min-height: 310px;
+                height: 310px;
+            }
+        }
+
+        /* =========================================================
            MODE MONITOR TV / REMINDER DISPLAY (FULLSCREEN KIOSK)
            ========================================================= */
         #monitor-overlay {
@@ -2912,19 +3079,39 @@
                         </div>
                         <small id="main-chart-subtitle" style="display: block; font-weight: normal; color: #64748b; margin-top: 3px;">Realisasi capaian departemen vs target tahunan RKAP sepanjang 2026</small>
                     </div>
-                    <div style="display: inline-flex; background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 3px; gap: 4px; flex-wrap: wrap;">
-                        <button id="btn-chart-line" class="btn btn-sm" style="background: #0284c7; color: white; padding: 5px 12px; font-size: 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" onclick="setMainChartMode('line')">
-                            <i class="fas fa-chart-line"></i> Tren Garis Seluruh SMTI
-                        </button>
-                        <button id="btn-chart-pic" class="btn btn-sm" style="background: transparent; color: var(--text-color); padding: 5px 12px; font-size: 12px; border-radius: 6px;" onclick="setMainChartMode('pic')">
-                            <i class="fas fa-users"></i> Beban Kerja 12 Personil
-                        </button>
-                        <button id="btn-chart-category" class="btn btn-sm" style="background: transparent; color: var(--text-color); padding: 5px 12px; font-size: 12px; border-radius: 6px;" onclick="setMainChartMode('category')">
-                            <i class="fas fa-sitemap"></i> Capaian per Bagian
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <div style="display: inline-flex; background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 3px; gap: 4px; flex-wrap: wrap;">
+                            <button id="btn-chart-line" class="btn btn-sm" style="background: #0284c7; color: white; padding: 5px 12px; font-size: 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" onclick="setMainChartMode('line')">
+                                <i class="fas fa-chart-line"></i> Tren Garis Seluruh SMTI
+                            </button>
+                            <button id="btn-chart-pic" class="btn btn-sm" style="background: transparent; color: var(--text-color); padding: 5px 12px; font-size: 12px; border-radius: 6px;" onclick="setMainChartMode('pic')">
+                                <i class="fas fa-users"></i> Beban Kerja 12 Personil
+                            </button>
+                            <button id="btn-chart-category" class="btn btn-sm" style="background: transparent; color: var(--text-color); padding: 5px 12px; font-size: 12px; border-radius: 6px;" onclick="setMainChartMode('category')">
+                                <i class="fas fa-sitemap"></i> Capaian per Bagian
+                            </button>
+                        </div>
+                        <button id="btn-toggle-3d-style" class="btn btn-sm" style="background: linear-gradient(135deg, #0284c7, #8b5cf6); color: white; padding: 5px 11px; font-size: 11.5px; border-radius: 6px; border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3); cursor: pointer;" onclick="toggleMainChartDisplayType()" title="Beralih tampilan antara Infografis 3D Columns dan Grafik Standar">
+                            <i class="fas fa-cube"></i> <span id="toggle-3d-label">Gaya 3D Infografis Aktif</span>
                         </button>
                     </div>
                 </div>
-                <div class="chart-container" style="position: relative; height: 340px; width: 100%;">
+
+                <!-- 3D Columns Infographic Layout (business-chart-graph-infographics-with-colorful-3d-columns-five-steps-icons-light-illustration) -->
+                <div id="main-3d-infographic-container" class="infographic-3d-layout">
+                    <!-- Sisi Kiri: 5 Stepped Folded Ribbon Banners (01 s/d 05) -->
+                    <div id="infographic-ribbons-list" class="infographic-ribbons-col">
+                        <!-- Rendered dynamically by render3DColumnsInfographic() -->
+                    </div>
+                    <!-- Sisi Kanan: Canvas Interaktif 3D Cylindrical Columns & Perspective Floor -->
+                    <div class="infographic-canvas-col">
+                        <canvas id="main3DChartCanvas"></canvas>
+                        <div id="main3DTooltip" class="infographic-3d-tooltip" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Fallback Classic 2D Chart.js Container (Hidden by default) -->
+                <div id="main-chart-classic-container" class="chart-container" style="display: none; position: relative; height: 340px; width: 100%;">
                     <canvas id="mainChart"></canvas>
                 </div>
 
@@ -6108,10 +6295,775 @@
                 renderCustomChartLegend();
                 renderBagianDateSummary();
             }
+
+            // Selaraskan rendering Infografis 3D Columns (Inspirasi: business-chart-graph-infographics-with-colorful-3d-columns-five-steps-icons-light-illustration)
+            if (typeof is3DInfographicViewActive !== 'undefined' && is3DInfographicViewActive) {
+                render3DColumnsInfographic(currentMainChartMode);
+            }
+        }
+
+        /* =========================================================
+           INFOGRAFIS 3D COLUMNS & 5-STEPS SYSTEM
+           Inspirasi: business-chart-graph-infographics-with-colorful-3d-columns-five-steps-icons-light-illustration
+           ========================================================= */
+        let is3DInfographicViewActive = true;
+        let active3DColHoverIdx = -1;
+        let infographic3DDataCache = [];
+
+        const INFOGRAPHIC_5_PALETTE = [
+            {
+                // Step 01: Warm Gold / Amber
+                base: '#f59e0b',
+                highlight: '#fef08a',
+                light: '#fffbeb',
+                shadow: '#b45309',
+                rim: '#fef9c3',
+                topCap: '#fde047',
+                shadowGround: 'rgba(245, 158, 11, 0.45)',
+                ribbonGrad: 'linear-gradient(90deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%)',
+                ribbonDark: '#92400e',
+                ribbonGlow: 'rgba(245, 158, 11, 0.35)',
+                faIcon: 'fa-lightbulb',
+                glyph: '\uf0eb'
+            },
+            {
+                // Step 02: Mint / Turquoise / Emerald
+                base: '#10b981',
+                highlight: '#a7f3d0',
+                light: '#ecfdf5',
+                shadow: '#047857',
+                rim: '#ccfbf1',
+                topCap: '#34d399',
+                shadowGround: 'rgba(16, 185, 129, 0.45)',
+                ribbonGrad: 'linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%)',
+                ribbonDark: '#064e3b',
+                ribbonGlow: 'rgba(16, 185, 129, 0.35)',
+                faIcon: 'fa-award',
+                glyph: '\uf559'
+            },
+            {
+                // Step 03: Cyan / Sky Blue
+                base: '#0284c7',
+                highlight: '#bae6fd',
+                light: '#f0f9ff',
+                shadow: '#0369a1',
+                rim: '#e0f2fe',
+                topCap: '#38bdf8',
+                shadowGround: 'rgba(2, 132, 199, 0.45)',
+                ribbonGrad: 'linear-gradient(90deg, #0369a1 0%, #0284c7 50%, #38bdf8 100%)',
+                ribbonDark: '#0c4a6e',
+                ribbonGlow: 'rgba(2, 132, 199, 0.35)',
+                faIcon: 'fa-file-invoice',
+                glyph: '\uf15c'
+            },
+            {
+                // Step 04: Royal / Indigo Blue
+                base: '#3b82f6',
+                highlight: '#bfdbfe',
+                light: '#eff6ff',
+                shadow: '#1d4ed8',
+                rim: '#dbeafe',
+                topCap: '#60a5fa',
+                shadowGround: 'rgba(59, 130, 246, 0.45)',
+                ribbonGrad: 'linear-gradient(90deg, #1d4ed8 0%, #3b82f6 50%, #60a5fa 100%)',
+                ribbonDark: '#1e3a8a',
+                ribbonGlow: 'rgba(59, 130, 246, 0.35)',
+                faIcon: 'fa-chart-line',
+                glyph: '\uf201'
+            },
+            {
+                // Step 05: Purple / Violet
+                base: '#8b5cf6',
+                highlight: '#ddd6fe',
+                light: '#f5f3ff',
+                shadow: '#6d28d9',
+                rim: '#ede9fe',
+                topCap: '#a78bfa',
+                shadowGround: 'rgba(139, 92, 246, 0.45)',
+                ribbonGrad: 'linear-gradient(90deg, #6d28d9 0%, #8b5cf6 50%, #a78bfa 100%)',
+                ribbonDark: '#4c1d95',
+                ribbonGlow: 'rgba(139, 92, 246, 0.35)',
+                faIcon: 'fa-bullseye',
+                glyph: '\uf140'
+            }
+        ];
+
+        function toggleMainChartDisplayType() {
+            is3DInfographicViewActive = !is3DInfographicViewActive;
+            const container3D = document.getElementById('main-3d-infographic-container');
+            const container2D = document.getElementById('main-chart-classic-container');
+            const toggleBtn = document.getElementById('btn-toggle-3d-style');
+            const toggleLabel = document.getElementById('toggle-3d-label');
+
+            if (is3DInfographicViewActive) {
+                if (container3D) container3D.style.display = 'flex';
+                if (container2D) container2D.style.display = 'none';
+                if (toggleBtn) {
+                    toggleBtn.style.background = 'linear-gradient(135deg, #0284c7, #8b5cf6)';
+                    toggleBtn.style.color = '#ffffff';
+                }
+                if (toggleLabel) toggleLabel.innerText = 'Gaya 3D Infografis Aktif';
+                render3DColumnsInfographic(currentMainChartMode);
+            } else {
+                if (container3D) container3D.style.display = 'none';
+                if (container2D) container2D.style.display = 'block';
+                if (toggleBtn) {
+                    toggleBtn.style.background = 'var(--hover-color)';
+                    toggleBtn.style.color = 'var(--text-color)';
+                }
+                if (toggleLabel) toggleLabel.innerText = 'Beralih ke 3D Infografis';
+                if (mainDashboardChartInstance) {
+                    mainDashboardChartInstance.resize();
+                    mainDashboardChartInstance.update();
+                }
+            }
+        }
+
+        function highlight3DInfographicCol(idx) {
+            active3DColHoverIdx = idx;
+            draw3DColumnsCanvas();
+            update3DRibbonsActiveState(idx);
+            show3DTooltipForIndex(idx);
+        }
+
+        function reset3DInfographicHighlight() {
+            active3DColHoverIdx = -1;
+            draw3DColumnsCanvas();
+            update3DRibbonsActiveState(-1);
+            hide3DTooltip();
+        }
+
+        function update3DRibbonsActiveState(activeIdx) {
+            const ribbonItems = document.querySelectorAll('.infographic-ribbon-item');
+            ribbonItems.forEach((el, i) => {
+                if (i === activeIdx) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+
+        function show3DTooltipForIndex(idx) {
+            const tooltip = document.getElementById('main3DTooltip');
+            const canvas = document.getElementById('main3DChartCanvas');
+            if (!tooltip || !canvas || !infographic3DDataCache[idx]) return;
+
+            const item = infographic3DDataCache[idx];
+            const p = item.palette;
+            const pos = item._canvasPos;
+
+            let html = `
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; background: ${p.base}; color: #fff; font-size: 11px;">
+                        <i class="fas ${item.icon}"></i>
+                    </span>
+                    <strong style="color: #fff; font-size: 13px;">${item.label}</strong>
+                    <span style="margin-left: auto; font-size: 12px; font-weight: 800; color: ${p.topCap};">${item.tag}</span>
+                </div>
+                <div style="color: #94a3b8; font-size: 11px; margin-bottom: 6px;">
+                    📅 <strong>Periode Target:</strong> ${item.dateRange || 'Tahun 2026'}
+                </div>
+                <div style="font-size: 11.5px; line-height: 1.35; color: #e2e8f0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
+                    ${item.tooltipDesc || item.sub}
+                </div>
+            `;
+
+            if (item.projects && item.projects.length > 0) {
+                html += `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.15); font-size: 11px; color: #cbd5e1;">`;
+                html += `<strong style="color: #38bdf8;">Daftar Proyek Terkait (${item.projects.length}):</strong><br>`;
+                item.projects.slice(0, 3).forEach((prj, pi) => {
+                    const statusText = isProjectCompleted(prj) ? '✅ 100%' : `⏳ ${prj.progress}%`;
+                    html += `• ${prj.name} (${statusText})<br>`;
+                });
+                if (item.projects.length > 3) {
+                    html += `<em>...dan ${item.projects.length - 3} proyek lainnya</em>`;
+                }
+                html += `</div>`;
+            }
+
+            tooltip.innerHTML = html;
+            tooltip.style.display = 'block';
+
+            if (pos) {
+                tooltip.style.left = `${pos.x}px`;
+                tooltip.style.top = `${pos.y - 12}px`;
+            }
+        }
+
+        function hide3DTooltip() {
+            const tooltip = document.getElementById('main3DTooltip');
+            if (tooltip) tooltip.style.display = 'none';
+        }
+
+        function render3DColumnsInfographic(mode) {
+            const canvas = document.getElementById('main3DChartCanvas');
+            const ribbonsContainer = document.getElementById('infographic-ribbons-list');
+            if (!canvas || !ribbonsContainer) return;
+
+            const mikuProjs = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
+            const pmsmtProjs = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
+            const sisdurProjs = projectDataSMTI.filter(p => {
+                const c = (p.category || '').toLowerCase();
+                return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
+            });
+
+            const mikuAvg = mikuProjs.length ? Math.round((mikuProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / mikuProjs.length)*10)/10 : 81.0;
+            const pmsmtAvg = pmsmtProjs.length ? Math.round((pmsmtProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / pmsmtProjs.length)*10)/10 : 76.2;
+            const sisdurAvg = sisdurProjs.length ? Math.round((sisdurProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / sisdurProjs.length)*10)/10 : 70.0;
+            const totalProj = projectDataSMTI.length;
+            const totalSum = projectDataSMTI.reduce((s, p) => s + (Number(p.progress)||0), 0);
+            const deptAvg = totalProj > 0 ? Math.round((totalSum / totalProj)*10)/10 : 79.2;
+
+            let steps = [];
+
+            if (mode === 'category') {
+                // ================= GAYA 3D: CAPAIAN PER BAGIAN SMTI =================
+                steps = [
+                    {
+                        num: '01',
+                        label: 'Bagian MIKU',
+                        shortLabel: 'MIKU',
+                        sub: `4 Proyek • Realisasi: <strong>${mikuAvg}%</strong> • Target Mei–Jun 2026`,
+                        tooltipDesc: `Manajemen Inovasi & Kemitraan Usaha: 4 portofolio riset & inovasi pupuk. Capaian rata-rata mencapai ${mikuAvg}%.`,
+                        val: mikuAvg,
+                        tag: `${mikuAvg}%`,
+                        icon: 'fa-lightbulb',
+                        dateRange: '15 Mei – 30 Jun 2026',
+                        projects: mikuProjs
+                    },
+                    {
+                        num: '02',
+                        label: 'Bagian PMSMT',
+                        shortLabel: 'PMSMT',
+                        sub: `4 Proyek • Realisasi: <strong>${pmsmtAvg}%</strong> • Target Mar–Agu 2026`,
+                        tooltipDesc: `Sistem Manajemen Mutu Terpadu: Sertifikasi & audit ISO 9001/14001/45001. Capaian rata-rata ${pmsmtAvg}%.`,
+                        val: pmsmtAvg,
+                        tag: `${pmsmtAvg}%`,
+                        icon: 'fa-award',
+                        dateRange: '10 Apr – 31 Agu 2026',
+                        projects: pmsmtProjs
+                    },
+                    {
+                        num: '03',
+                        label: 'Bagian BangSisdur',
+                        shortLabel: 'BangSisdur',
+                        sub: `4 Proyek • Realisasi: <strong>${sisdurAvg}%</strong> • Target Mar–Agu 2026`,
+                        tooltipDesc: `Pengembangan Sistem & Prosedur: Digitalisasi SOP & penyempurnaan proses bisnis. Capaian rata-rata ${sisdurAvg}%.`,
+                        val: sisdurAvg,
+                        tag: `${sisdurAvg}%`,
+                        icon: 'fa-file-invoice',
+                        dateRange: '25 Mar – 31 Agu 2026',
+                        projects: sisdurProjs
+                    },
+                    {
+                        num: '04',
+                        label: 'Total Dept SMTI',
+                        shortLabel: 'Dept SMTI',
+                        sub: `${totalProj} Proyek • Akumulatif: <strong>${deptAvg}%</strong> • Posisi Sep 2026`,
+                        tooltipDesc: `Realisasi gabungan seluruh 12 portofolio strategis Departemen SMTI posisi September 2026.`,
+                        val: deptAvg,
+                        tag: `${deptAvg}%`,
+                        icon: 'fa-chart-line',
+                        dateRange: 'Januari – September 2026',
+                        projects: projectDataSMTI
+                    },
+                    {
+                        num: '05',
+                        label: 'Target RKAP 2026',
+                        shortLabel: 'Target RKAP',
+                        sub: `Sasaran Korporasi: <strong>100%</strong> • Tenggat Des 2026`,
+                        tooltipDesc: `Sasaran Ketuntasan Rencana Kerja Anggaran Perusahaan (RKAP) PT Pupuk Kujang Tahun 2026.`,
+                        val: 100.0,
+                        tag: '100%',
+                        icon: 'fa-bullseye',
+                        dateRange: 'Januari – Desember 2026',
+                        projects: []
+                    }
+                ];
+            } else if (mode === 'pic') {
+                // ================= GAYA 3D: BEBAN KERJA 12 PERSONIL SMTI =================
+                steps = [
+                    {
+                        num: '01',
+                        label: 'Beban Lead (3 Proyek)',
+                        shortLabel: 'Lead (3 Proj)',
+                        sub: `Januardi & Dion • Proyek Strategis & Sertifikasi (92% Capaian)`,
+                        tooltipDesc: `Personil dengan beban penugasan tertinggi mengawal portofolio kunci Departemen SMTI.`,
+                        val: 92,
+                        tag: '3 Proyek',
+                        icon: 'fa-user-tie',
+                        dateRange: 'Target: Mei & Agu 2026',
+                        projects: projectDataSMTI.filter(p => (p.pic || '').toLowerCase().includes('januardi') || (p.pic || '').toLowerCase().includes('dion'))
+                    },
+                    {
+                        num: '02',
+                        label: 'Beban Multi (2 Proyek)',
+                        shortLabel: 'Multi (2 Proj)',
+                        sub: `Rifki & Taufik • SOP Digital & Sisdur Terpadu (78% Capaian)`,
+                        tooltipDesc: `Personil mengelola 2 proyek simultan pada klaster sistem prosedur & kepatuhan.`,
+                        val: 78,
+                        tag: '2 Proyek',
+                        icon: 'fa-users-cog',
+                        dateRange: 'Target: Jun & Jul 2026',
+                        projects: projectDataSMTI.filter(p => (p.pic || '').toLowerCase().includes('rifki') || (p.pic || '').toLowerCase().includes('taufik'))
+                    },
+                    {
+                        num: '03',
+                        label: 'Beban Mandiri (1 Proyek)',
+                        shortLabel: 'Mandiri (1 Proj)',
+                        sub: `Arief, Fikri, dkk • Spesialis Audit & Dokumen (65% Capaian)`,
+                        tooltipDesc: `Personil fokus pada penyelesaian portofolio spesifik dengan kontrol kualitas penuh.`,
+                        val: 65,
+                        tag: '1 Proyek',
+                        icon: 'fa-user-shield',
+                        dateRange: 'Target: Mar – Agu 2026',
+                        projects: projectDataSMTI.filter(p => (p.pic || '').toLowerCase().includes('arief') || (p.pic || '').toLowerCase().includes('fikri'))
+                    },
+                    {
+                        num: '04',
+                        label: 'Kontributor Magang',
+                        shortLabel: 'Magang SMTI',
+                        sub: `Farhan, Kholid, Syahrul • Dukungan Verifikasi & Data (50% Capaian)`,
+                        tooltipDesc: `Mahasiswa magang aktif membantu penyiapan dokumen, verifikasi lapangan, dan pengujian sistem.`,
+                        val: 50,
+                        tag: '3 Rekan',
+                        icon: 'fa-graduation-cap',
+                        dateRange: 'Periode Magang 2026',
+                        projects: []
+                    },
+                    {
+                        num: '05',
+                        label: 'Kapasitas Siap (Standby)',
+                        shortLabel: 'Kapasitas Siap',
+                        sub: `4 Personil Standby • 100% Kesiapan Menerima Penugasan Baru`,
+                        tooltipDesc: `Personil internal SMTI dengan ketersediaan waktu untuk penugasan inisiatif ad-hoc pimpinan.`,
+                        val: 100,
+                        tag: '100% Siap',
+                        icon: 'fa-bolt',
+                        dateRange: 'Kesiapan Operasional Dept',
+                        projects: []
+                    }
+                ];
+            } else {
+                // ================= GAYA 3D: TREN KINERJA & MILESTONE SMTI =================
+                steps = [
+                    {
+                        num: '01',
+                        label: 'Triwulan I (Q1)',
+                        shortLabel: 'Q1 (Mar)',
+                        sub: `Jan – Mar 2026 • Realisasi: <strong>45.0%</strong> • Kick-off & Inisiasi`,
+                        tooltipDesc: `Penyusunan Rencana Kerja Tahunan, inisiasi proyek, dan sosialisasi target RKAP 2026.`,
+                        val: 45,
+                        tag: '45.0%',
+                        icon: 'fa-play-circle',
+                        dateRange: 'Januari – Maret 2026',
+                        projects: []
+                    },
+                    {
+                        num: '02',
+                        label: 'Triwulan II (Q2)',
+                        shortLabel: 'Q2 (Jun)',
+                        sub: `Apr – Jun 2026 • Realisasi: <strong>69.0%</strong> • Eksekusi & Sertifikasi`,
+                        tooltipDesc: `Penyelesaian audit tahap 1, pengembangan modul inovasi, dan perbaikan prosedur awal.`,
+                        val: 69,
+                        tag: '69.0%',
+                        icon: 'fa-cogs',
+                        dateRange: 'April – Juni 2026',
+                        projects: []
+                    },
+                    {
+                        num: '03',
+                        label: 'Triwulan III (Kini)',
+                        shortLabel: 'Q3 (Kini)',
+                        sub: `Jul – Sep 2026 • Realisasi: <strong>${deptAvg}%</strong> • Posisi Terkini`,
+                        tooltipDesc: `Akselerasi capaian riil Departemen SMTI posisi September 2026 (7 Proyek Tuntas, 5 Berjalan).`,
+                        val: deptAvg,
+                        tag: `${deptAvg}%`,
+                        icon: 'fa-tachometer-alt',
+                        dateRange: 'Juli – September 2026',
+                        projects: projectDataSMTI
+                    },
+                    {
+                        num: '04',
+                        label: 'Triwulan IV (Est)',
+                        shortLabel: 'Q4 (Est)',
+                        sub: `Okt – Nov 2026 • Proyeksi: <strong>94.0%</strong> • Finalisasi Portofolio`,
+                        tooltipDesc: `Estimasi penyelesaian seluruh audit eksternal, implementasi SOP terpadu, dan review mutu.`,
+                        val: 94,
+                        tag: '94.0%',
+                        icon: 'fa-tasks',
+                        dateRange: 'Oktober – November 2026',
+                        projects: []
+                    },
+                    {
+                        num: '05',
+                        label: 'Target Akhir RKAP',
+                        shortLabel: 'Target 100%',
+                        sub: `Desember 2026 • Sasaran: <strong>100.0%</strong> • Ketuntasan Mutlak`,
+                        tooltipDesc: `Pemenuhan sasaran kinerja korporasi 100% tuntas seluruh inisiatif strategis SMTI.`,
+                        val: 100,
+                        tag: '100%',
+                        icon: 'fa-flag-checkered',
+                        dateRange: 'Desember 2026',
+                        projects: []
+                    }
+                ];
+            }
+
+            // Gabungkan palette warna
+            steps.forEach((s, i) => {
+                s.palette = INFOGRAPHIC_5_PALETTE[i % INFOGRAPHIC_5_PALETTE.length];
+            });
+
+            infographic3DDataCache = steps;
+
+            // Render Stepped Ribbon Banners di sisi kiri
+            let ribbonsHtml = '';
+            steps.forEach((s, i) => {
+                const p = s.palette;
+                ribbonsHtml += `
+                    <div class="infographic-ribbon-item" 
+                         style="background: ${p.ribbonGrad}; --ribbon-dark: ${p.ribbonDark}; --ribbon-glow: ${p.ribbonGlow};"
+                         onmouseenter="highlight3DInfographicCol(${i})"
+                         onmouseleave="reset3DInfographicHighlight()"
+                         onclick="highlight3DInfographicCol(${i})">
+                        <div class="infographic-ribbon-content">
+                            <div class="infographic-ribbon-title">
+                                <i class="fas ${s.icon}"></i>
+                                <span>${s.label}</span>
+                            </div>
+                            <div class="infographic-ribbon-desc">${s.sub}</div>
+                        </div>
+                        <div class="infographic-ribbon-num">${s.num}</div>
+                    </div>
+                `;
+            });
+            ribbonsContainer.innerHTML = ribbonsHtml;
+
+            // Gambar Canvas 3D
+            draw3DColumnsCanvas();
+            attach3DCanvasEvents();
+        }
+
+        function draw3DColumnsCanvas() {
+            const canvas = document.getElementById('main3DChartCanvas');
+            if (!canvas || !infographic3DDataCache || infographic3DDataCache.length === 0) return;
+
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const W = Math.max(320, rect.width);
+            const H = Math.max(380, rect.height || 380);
+
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
+            canvas.style.width = W + 'px';
+            canvas.style.height = H + 'px';
+
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            ctx.clearRect(0, 0, W, H);
+
+            const isDark = document.body.classList.contains('dark-mode');
+            const data = infographic3DDataCache;
+            const N = data.length;
+
+            const paddingX = Math.max(40, W * 0.1);
+            const availableW = W - paddingX * 2;
+            const colSpacing = availableW / (N - 1);
+            const colWidth = Math.min(54, Math.max(34, availableW / N * 0.52));
+            const radiusX = colWidth / 2;
+            const radiusY = radiusX * 0.38; // isometric ellipse ratio
+            const baseY = H - 58;
+            const maxColHeight = H - 150;
+
+            // 1. Gambar Isometric Perspective Floor Grid di latar bawah
+            ctx.save();
+            ctx.strokeStyle = isDark ? 'rgba(56, 189, 248, 0.08)' : 'rgba(2, 132, 199, 0.12)';
+            ctx.lineWidth = 1;
+            const gridBottom = H - 10;
+            const gridTop = baseY - radiusY * 2.5;
+            for (let gx = -W * 0.2; gx <= W * 1.3; gx += 42) {
+                ctx.beginPath();
+                ctx.moveTo(gx, gridBottom);
+                ctx.lineTo(gx + 120, gridTop);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(gx, gridTop);
+                ctx.lineTo(gx + 120, gridBottom);
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            // Hitung posisi tiap kolom
+            const colPositions = [];
+            data.forEach((item, i) => {
+                const cx = paddingX + i * colSpacing;
+                const valRatio = Math.max(0.12, Math.min(1.0, item.val / 100));
+                const isHovered = (active3DColHoverIdx === i);
+                const elev = isHovered ? 10 : 0;
+                const colH = valRatio * maxColHeight;
+                const topY = baseY - colH - elev;
+
+                colPositions.push({ cx, topY, baseY, colH, radiusX, radiusY, isHovered, item, elev });
+                item._canvasPos = { x: cx, y: topY };
+            });
+
+            // 2. Gambar Ground Shadow di bawah setiap silinder
+            colPositions.forEach((pos, i) => {
+                const p = pos.item.palette;
+                ctx.save();
+                ctx.beginPath();
+                const shadowRx = pos.radiusX * (pos.isHovered ? 1.35 : 1.22);
+                const shadowRy = pos.radiusY * (pos.isHovered ? 1.55 : 1.4);
+                ctx.ellipse(pos.cx + 8, pos.baseY + 6, shadowRx, shadowRy, Math.PI / 12, 0, Math.PI * 2);
+                const sGrad = ctx.createRadialGradient(pos.cx + 8, pos.baseY + 6, 0, pos.cx + 8, pos.baseY + 6, shadowRx);
+                sGrad.addColorStop(0, p.shadowGround);
+                sGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = sGrad;
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // 3. Gambar Silinder 3D (Body + Top Cap)
+            colPositions.forEach((pos, i) => {
+                const p = pos.item.palette;
+                const rx = pos.radiusX * (pos.isHovered ? 1.05 : 1.0);
+                const ry = pos.radiusY * (pos.isHovered ? 1.05 : 1.0);
+                const topY = pos.topY;
+                const baseY = pos.baseY;
+
+                // --- 3.1 Lateral Body ---
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(pos.cx - rx, topY);
+                ctx.lineTo(pos.cx - rx, baseY);
+                ctx.ellipse(pos.cx, baseY, rx, ry, 0, Math.PI, 0, true);
+                ctx.lineTo(pos.cx + rx, topY);
+                ctx.ellipse(pos.cx, topY, rx, ry, 0, 0, Math.PI, false);
+                ctx.closePath();
+
+                const bodyGrad = ctx.createLinearGradient(pos.cx - rx, 0, pos.cx + rx, 0);
+                bodyGrad.addColorStop(0.00, p.light);
+                bodyGrad.addColorStop(0.24, p.highlight);
+                bodyGrad.addColorStop(0.55, p.base);
+                bodyGrad.addColorStop(0.88, p.shadow);
+                bodyGrad.addColorStop(1.00, p.rim);
+                ctx.fillStyle = bodyGrad;
+                ctx.fill();
+
+                if (pos.isHovered) {
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.stroke();
+                }
+                ctx.restore();
+
+                // --- 3.2 Top Elliptical Cap ---
+                ctx.save();
+                ctx.beginPath();
+                ctx.ellipse(pos.cx, topY, rx, ry, 0, 0, Math.PI * 2);
+                const topGrad = ctx.createLinearGradient(pos.cx - rx, topY - ry, pos.cx + rx, topY + ry);
+                topGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.95)');
+                topGrad.addColorStop(0.4, p.topCap);
+                topGrad.addColorStop(1.0, p.base);
+                ctx.fillStyle = topGrad;
+                ctx.fill();
+
+                ctx.lineWidth = 1.2;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            // 4. Gambar Connected Zigzag Milestone Polyline
+            ctx.save();
+            ctx.beginPath();
+            colPositions.forEach((pos, i) => {
+                const nodeY = pos.topY - 24;
+                if (i === 0) ctx.moveTo(pos.cx, nodeY);
+                else ctx.lineTo(pos.cx, nodeY);
+            });
+            ctx.strokeStyle = isDark ? 'rgba(148, 163, 184, 0.55)' : '#94a3b8';
+            ctx.lineWidth = 2.2;
+            ctx.setLineDash([4, 3]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+
+            // 5. Gambar Node Dots, Floating Percentage Pills, dan Floating Icons
+            colPositions.forEach((pos, i) => {
+                const p = pos.item.palette;
+                const nodeY = pos.topY - 24;
+
+                // --- 5.1 Node Dot di garis zigzag ---
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(pos.cx, nodeY, 6.5, 0, Math.PI * 2);
+                ctx.fillStyle = isDark ? '#1e293b' : '#ffffff';
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = p.base;
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(pos.cx, nodeY, 3.5, 0, Math.PI * 2);
+                ctx.fillStyle = p.base;
+                ctx.fill();
+                ctx.restore();
+
+                // --- 5.2 Floating Percentage Speech-Bubble / Tag ---
+                ctx.save();
+                const tagText = pos.item.tag;
+                ctx.font = '800 11.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                const tagW = ctx.measureText(tagText).width + 16;
+                const tagH = 22;
+                const tagX = pos.cx - tagW / 2;
+                const tagY = nodeY - 24;
+
+                // Tag Background
+                ctx.beginPath();
+                const r = 5;
+                ctx.moveTo(tagX + r, tagY);
+                ctx.lineTo(tagX + tagW - r, tagY);
+                ctx.quadraticCurveTo(tagX + tagW, tagY, tagX + tagW, tagY + r);
+                ctx.lineTo(tagX + tagW, tagY + tagH - r);
+                ctx.quadraticCurveTo(tagX + tagW, tagY + tagH, tagX + tagW - r, tagY + tagH);
+                ctx.lineTo(tagX + tagW / 2 + 4, tagY + tagH);
+                ctx.lineTo(tagX + tagW / 2, tagY + tagH + 4); // pointer tip
+                ctx.lineTo(tagX + tagW / 2 - 4, tagY + tagH);
+                ctx.lineTo(tagX + r, tagY + tagH);
+                ctx.quadraticCurveTo(tagX, tagY + tagH, tagX, tagY + tagH - r);
+                ctx.lineTo(tagX, tagY + r);
+                ctx.quadraticCurveTo(tagX, tagY, tagX + r, tagY);
+                ctx.closePath();
+
+                ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
+                ctx.shadowColor = 'rgba(0,0,0,0.14)';
+                ctx.shadowBlur = 6;
+                ctx.shadowOffsetY = 2;
+                ctx.fill();
+                ctx.shadowColor = 'transparent';
+
+                ctx.lineWidth = 1.2;
+                ctx.strokeStyle = p.base;
+                ctx.stroke();
+
+                // Tag Text
+                ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(tagText, pos.cx, tagY + tagH / 2);
+                ctx.restore();
+
+                // --- 5.3 Floating Monochrome Circular Icon di Puncak Kolom ---
+                ctx.save();
+                const iconY = tagY - 20;
+                ctx.beginPath();
+                ctx.arc(pos.cx, iconY, 14, 0, Math.PI * 2);
+                ctx.fillStyle = isDark ? '#1e293b' : '#ffffff';
+                ctx.shadowColor = 'rgba(0,0,0,0.12)';
+                ctx.shadowBlur = 5;
+                ctx.shadowOffsetY = 2;
+                ctx.fill();
+                ctx.shadowColor = 'transparent';
+
+                ctx.lineWidth = 1.2;
+                ctx.strokeStyle = p.base;
+                ctx.stroke();
+
+                // Gambar Glyph FontAwesome atau Angka
+                ctx.fillStyle = p.base;
+                ctx.font = '900 12px "Font Awesome 6 Free", "Font Awesome 5 Free", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                if (p.glyph) {
+                    ctx.fillText(p.glyph, pos.cx, iconY + 1);
+                } else {
+                    ctx.font = '800 11px sans-serif';
+                    ctx.fillText(pos.item.num, pos.cx, iconY);
+                }
+                ctx.restore();
+
+                // --- 5.4 Label di Bawah Silinder ---
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.font = '700 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                ctx.fillStyle = isDark ? '#94a3b8' : '#475569';
+                ctx.fillText(pos.item.shortLabel || pos.item.label, pos.cx, pos.baseY + 18);
+                ctx.restore();
+            });
+        }
+
+        let is3DCanvasEventsAttached = false;
+        function attach3DCanvasEvents() {
+            if (is3DCanvasEventsAttached) return;
+            const canvas = document.getElementById('main3DChartCanvas');
+            if (!canvas) return;
+
+            is3DCanvasEventsAttached = true;
+
+            const handleMove = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const mouseX = clientX - rect.left;
+                const mouseY = clientY - rect.top;
+
+                let hoveredIdx = -1;
+                if (infographic3DDataCache && infographic3DDataCache.length > 0) {
+                    infographic3DDataCache.forEach((item, i) => {
+                        const pos = item._canvasPos;
+                        if (pos) {
+                            if (Math.abs(mouseX - pos.x) < 28 && mouseY >= pos.y - 70 && mouseY <= rect.height) {
+                                hoveredIdx = i;
+                            }
+                        }
+                    });
+                }
+
+                if (hoveredIdx !== active3DColHoverIdx) {
+                    active3DColHoverIdx = hoveredIdx;
+                    draw3DColumnsCanvas();
+                    update3DRibbonsActiveState(hoveredIdx);
+                    if (hoveredIdx >= 0) {
+                        show3DTooltipForIndex(hoveredIdx);
+                    } else {
+                        hide3DTooltip();
+                    }
+                }
+            };
+
+            canvas.addEventListener('mousemove', handleMove);
+            canvas.addEventListener('touchmove', handleMove, { passive: true });
+
+            canvas.addEventListener('mouseleave', () => {
+                reset3DInfographicHighlight();
+            });
+
+            canvas.addEventListener('touchend', () => {
+                setTimeout(reset3DInfographicHighlight, 2500);
+            });
+
+            window.addEventListener('resize', () => {
+                if (is3DInfographicViewActive) {
+                    if (window._infographicResizeTimer) clearTimeout(window._infographicResizeTimer);
+                    window._infographicResizeTimer = setTimeout(() => {
+                        render3DColumnsInfographic(currentMainChartMode);
+                    }, 120);
+                }
+            });
         }
 
         function initMainDashboardChart() {
             updateMainDashboardChart();
+            if (is3DInfographicViewActive) {
+                setTimeout(() => {
+                    render3DColumnsInfographic(currentMainChartMode);
+                }, 100);
+            }
         }
 
         /* --- MULTI-CHART ANALYTICS & EXECUTIVE REPORT SMTI --- */
