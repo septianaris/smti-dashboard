@@ -2255,6 +2255,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             .flow-meta-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
         /* =========================================================
            EXECUTIVE ANALYTICS MULTI-CHART & REPORT PRINT STYLES
            ========================================================= */
@@ -2321,7 +2323,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             overflow-y: auto;
         }
         #modalPrintReport.active {
-            display: flex;
+            display: flex !important;
         }
 
         .report-preview-container {
@@ -3212,13 +3214,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <small id="report-kpi-avg-sub" style="color: #64748b; font-size: 11px;">Evaluasi Realisasi 2026</small>
                     </div>
 
-                    <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #dc2626;">
+                    <div id="report-kpi-urgent-card" class="card" style="margin: 0; padding: 16px; border-left: 4px solid #10b981;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #dc2626;">Proyek Kritis / Berjalan</span>
-                            <i class="fas fa-fire" style="color: #dc2626; font-size: 16px;"></i>
+                            <span id="report-kpi-urgent-title" style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #10b981;">Proyek Kritis / Berjalan</span>
+                            <span id="report-kpi-urgent-icon"><i class="fas fa-shield-alt" style="color: #10b981; font-size: 16px;"></i></span>
                         </div>
-                        <h2 id="report-kpi-urgent" style="font-size: 26px; font-weight: 800; color: #dc2626; margin-top: 4px;">--</h2>
-                        <small id="report-kpi-urgent-sub" style="color: #dc2626; font-weight: 600; font-size: 11px;">Urgensi Tinggi Aktif</small>
+                        <h2 id="report-kpi-urgent" style="font-size: 26px; font-weight: 800; color: #10b981; margin-top: 4px;">--</h2>
+                        <small id="report-kpi-urgent-sub" style="color: #10b981; font-weight: 600; font-size: 11px;">Semua Terkendali Aman</small>
                     </div>
 
                     <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #8b5cf6;">
@@ -6058,10 +6060,37 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const kpiAvgSub = document.getElementById('report-kpi-avg-sub');
             if (kpiAvgSub) kpiAvgSub.innerText = `Target RKAP 100% (Gap: ${Math.round((100 - avgProgress) * 10) / 10}%)`;
 
+            const urgentCard = document.getElementById('report-kpi-urgent-card');
+            const urgentTitle = document.getElementById('report-kpi-urgent-title');
+            const urgentIcon = document.getElementById('report-kpi-urgent-icon');
             const kpiUrgentEl = document.getElementById('report-kpi-urgent');
-            if (kpiUrgentEl) kpiUrgentEl.innerText = `${urgentActiveCount} Proyek`;
             const kpiUrgentSub = document.getElementById('report-kpi-urgent-sub');
-            if (kpiUrgentSub) kpiUrgentSub.innerText = urgentActiveCount > 0 ? 'Perlu Eskalasi & Prioritas' : 'Semua Terkendali Aman';
+
+            if (urgentActiveCount > 0) {
+                if (urgentCard) urgentCard.style.borderLeft = '4px solid #dc2626';
+                if (urgentTitle) urgentTitle.style.color = '#dc2626';
+                if (urgentIcon) urgentIcon.innerHTML = '<i class="fas fa-fire" style="color: #dc2626; font-size: 16px;"></i>';
+                if (kpiUrgentEl) {
+                    kpiUrgentEl.innerText = `${urgentActiveCount} Proyek`;
+                    kpiUrgentEl.style.color = '#dc2626';
+                }
+                if (kpiUrgentSub) {
+                    kpiUrgentSub.innerText = `${urgentActiveCount} Proyek Perlu Prioritas`;
+                    kpiUrgentSub.style.color = '#dc2626';
+                }
+            } else {
+                if (urgentCard) urgentCard.style.borderLeft = '4px solid #10b981';
+                if (urgentTitle) urgentTitle.style.color = '#10b981';
+                if (urgentIcon) urgentIcon.innerHTML = '<i class="fas fa-shield-alt" style="color: #10b981; font-size: 16px;"></i>';
+                if (kpiUrgentEl) {
+                    kpiUrgentEl.innerText = '0 Proyek';
+                    kpiUrgentEl.style.color = '#10b981';
+                }
+                if (kpiUrgentSub) {
+                    kpiUrgentSub.innerText = 'Semua Terkendali Aman';
+                    kpiUrgentSub.style.color = '#10b981';
+                }
+            }
 
             const kpiTeamEl = document.getElementById('report-kpi-team');
             if (kpiTeamEl) kpiTeamEl.innerText = `${teamCount} Personil`;
@@ -6362,13 +6391,17 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 tbody.innerHTML = html;
             }
 
+            modal.style.display = 'flex';
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
         function closePrintReportModal() {
             const modal = document.getElementById('modalPrintReport');
-            if (modal) modal.classList.remove('active');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            }
             document.body.style.overflow = '';
         }
 
