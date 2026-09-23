@@ -2248,23 +2248,100 @@
         }
 
         /* =========================================================
-           EXECUTIVE ANALYTICS MULTI-CHART & REPORT PRINT STYLES
+           EXECUTIVE ANALYTICS MULTI-CHART & INFOGRAPHIC STYLES
+           (Inspired by flat-infographic-element-set palette & shapes)
            ========================================================= */
+        .btn-infographic-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 8px 6px 18px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 700;
+            font-size: 13px;
+            color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+            user-select: none;
+        }
+        .btn-infographic-pill:hover {
+            transform: translateY(-2px);
+            opacity: 0.96;
+        }
+        .btn-infographic-pill:active {
+            transform: translateY(0);
+        }
+        .btn-infographic-pill .pill-icon-bubble {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+            font-size: 13px;
+            transition: transform 0.25s ease;
+        }
+        .btn-infographic-pill:hover .pill-icon-bubble {
+            transform: scale(1.08);
+        }
+        .btn-infographic-sunset {
+            background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%);
+            box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+        }
+        .btn-infographic-sunset .pill-icon-bubble {
+            color: #ec4899;
+        }
+        .btn-infographic-ocean {
+            background: linear-gradient(90deg, #0284c7 0%, #10b981 100%);
+            box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
+        }
+        .btn-infographic-ocean .pill-icon-bubble {
+            color: #0284c7;
+        }
+
+        /* Infographic Modern KPI Card */
+        .infographic-kpi-card {
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+        .infographic-kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+        body.dark-mode .infographic-kpi-card {
+            background: linear-gradient(145deg, #1e1e38 0%, #151528 100%) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
         .analytics-grid-2x2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-top: 16px;
+            gap: 18px;
+            margin-top: 18px;
         }
 
         .analytics-chart-box {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 18px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
             display: flex;
             flex-direction: column;
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+        .analytics-chart-box:hover {
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+        }
+        body.dark-mode .analytics-chart-box {
+            background: linear-gradient(145deg, #18182f 0%, #121224 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
         }
 
         .analytics-chart-header {
@@ -2279,13 +2356,13 @@
 
         .analytics-chart-header small {
             font-size: 11.5px;
-            font-weight: 500;
+            font-weight: 600;
             color: #64748b;
         }
 
         .analytics-chart-canvas-wrap {
             position: relative;
-            height: 250px;
+            height: 260px;
             width: 100%;
             flex: 1;
         }
@@ -2295,7 +2372,7 @@
                 grid-template-columns: 1fr;
             }
             .analytics-chart-canvas-wrap {
-                height: 230px;
+                height: 240px;
             }
         }
 
@@ -3174,51 +3251,69 @@
                             Rekapitulasi Kinerja Strategis, Evaluasi Portofolio Proyek, dan Analitik Kinerja Departemen SMTI
                         </small>
                     </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button class="btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); font-weight: 700; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);" onclick="openPrintReportModal()">
-                            <i class="fas fa-file-pdf"></i> Unduh Laporan PDF Resmi
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn-infographic-pill btn-infographic-sunset" onclick="openPrintReportModal()">
+                            <span>Unduh Laporan PDF Resmi</span>
+                            <div class="pill-icon-bubble"><i class="fas fa-file-pdf"></i></div>
                         </button>
-                        <button class="btn" style="background: #10b981; font-weight: 600;" onclick="exportAllProjectsCSV()">
-                            <i class="fas fa-file-excel"></i> Export Rekap CSV
+                        <button class="btn-infographic-pill btn-infographic-ocean" onclick="exportAllProjectsCSV()">
+                            <span>Export Rekap CSV</span>
+                            <div class="pill-icon-bubble"><i class="fas fa-file-excel"></i></div>
                         </button>
                     </div>
                 </div>
 
-                <!-- 4 Live Dynamic KPI Cards -->
+                <!-- 4 Live Dynamic KPI Cards (Infographic Modern Style) -->
                 <div class="dashboard-grid" style="margin-top: 18px; margin-bottom: 0;">
-                    <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #10b981;">
+                    <!-- Card 1: Ketuntasan -->
+                    <div class="card infographic-kpi-card" style="margin: 0; padding: 18px; border-radius: 14px; position: relative; overflow: hidden; border: 1px solid var(--border-color); background: var(--card-bg);">
+                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10b981, #06b6d4);"></div>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Tingkat Ketuntasan</span>
-                            <i class="fas fa-check-double" style="color: #10b981; font-size: 16px;"></i>
+                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; opacity: 0.75;">Tingkat Ketuntasan</span>
+                            <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(16, 185, 129, 0.12); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check-double" style="color: #10b981; font-size: 15px;"></i>
+                            </div>
                         </div>
-                        <h2 id="report-kpi-completion" style="font-size: 26px; font-weight: 800; color: var(--text-color); margin-top: 4px;">--%</h2>
-                        <small id="report-kpi-completion-sub" style="color: #10b981; font-weight: 600; font-size: 11px;">Memuat data...</small>
+                        <h2 id="report-kpi-completion" style="font-size: 28px; font-weight: 800; color: var(--text-color); margin-top: 6px;">--%</h2>
+                        <small id="report-kpi-completion-sub" style="color: #10b981; font-weight: 700; font-size: 11px;">Memuat data...</small>
                     </div>
 
-                    <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #0284c7;">
+                    <!-- Card 2: Rata-rata Progres -->
+                    <div class="card infographic-kpi-card" style="margin: 0; padding: 18px; border-radius: 14px; position: relative; overflow: hidden; border: 1px solid var(--border-color); background: var(--card-bg);">
+                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #0284c7, #6366f1);"></div>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Rata-rata Progres SMTI</span>
-                            <i class="fas fa-chart-line" style="color: #0284c7; font-size: 16px;"></i>
+                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; opacity: 0.75;">Rata-rata Progres SMTI</span>
+                            <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(2, 132, 199, 0.12); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-chart-line" style="color: #0284c7; font-size: 15px;"></i>
+                            </div>
                         </div>
-                        <h2 id="report-kpi-avg" style="font-size: 26px; font-weight: 800; color: #0284c7; margin-top: 4px;">--%</h2>
+                        <h2 id="report-kpi-avg" style="font-size: 28px; font-weight: 800; color: #0284c7; margin-top: 6px;">--%</h2>
                         <small id="report-kpi-avg-sub" style="color: #64748b; font-size: 11px;">Evaluasi Realisasi 2026</small>
                     </div>
 
-                    <div id="report-kpi-urgent-card" class="card" style="margin: 0; padding: 16px; border-left: 4px solid #10b981;">
+                    <!-- Card 3: Proyek Kritis / Berjalan -->
+                    <div id="report-kpi-urgent-card" class="card infographic-kpi-card" style="margin: 0; padding: 18px; border-radius: 14px; position: relative; overflow: hidden; border: 1px solid var(--border-color); background: var(--card-bg);">
+                        <div id="report-kpi-urgent-bar" style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10b981, #14b8a6);"></div>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span id="report-kpi-urgent-title" style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #10b981;">Proyek Kritis / Berjalan</span>
-                            <span id="report-kpi-urgent-icon"><i class="fas fa-shield-alt" style="color: #10b981; font-size: 16px;"></i></span>
+                            <span id="report-kpi-urgent-title" style="font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #10b981;">Proyek Kritis / Berjalan</span>
+                            <div id="report-kpi-urgent-icon-wrap" style="width: 32px; height: 32px; border-radius: 8px; background: rgba(16, 185, 129, 0.12); display: flex; align-items: center; justify-content: center;">
+                                <span id="report-kpi-urgent-icon"><i class="fas fa-shield-alt" style="color: #10b981; font-size: 15px;"></i></span>
+                            </div>
                         </div>
-                        <h2 id="report-kpi-urgent" style="font-size: 26px; font-weight: 800; color: #10b981; margin-top: 4px;">--</h2>
-                        <small id="report-kpi-urgent-sub" style="color: #10b981; font-weight: 600; font-size: 11px;">Semua Terkendali Aman</small>
+                        <h2 id="report-kpi-urgent" style="font-size: 28px; font-weight: 800; color: #10b981; margin-top: 6px;">0 Proyek</h2>
+                        <small id="report-kpi-urgent-sub" style="color: #10b981; font-weight: 700; font-size: 11px;">Semua Terkendali Aman</small>
                     </div>
 
-                    <div class="card" style="margin: 0; padding: 16px; border-left: 4px solid #8b5cf6;">
+                    <!-- Card 4: Kontributor Terlibat -->
+                    <div class="card infographic-kpi-card" style="margin: 0; padding: 18px; border-radius: 14px; position: relative; overflow: hidden; border: 1px solid var(--border-color); background: var(--card-bg);">
+                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ec4899, #8b5cf6);"></div>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b;">Kontributor Terlibat</span>
-                            <i class="fas fa-users-cog" style="color: #8b5cf6; font-size: 16px;"></i>
+                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; opacity: 0.75;">Kontributor Terlibat</span>
+                            <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(139, 92, 246, 0.12); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-users-cog" style="color: #8b5cf6; font-size: 15px;"></i>
+                            </div>
                         </div>
-                        <h2 id="report-kpi-team" style="font-size: 26px; font-weight: 800; color: #8b5cf6; margin-top: 4px;">--</h2>
+                        <h2 id="report-kpi-team" style="font-size: 28px; font-weight: 800; color: #8b5cf6; margin-top: 6px;">--</h2>
                         <small id="report-kpi-team-sub" style="color: #64748b; font-size: 11px;">Personil & Magang PIC</small>
                     </div>
                 </div>
@@ -3229,11 +3324,16 @@
                 <!-- Chart 1: Donut Status Portofolio -->
                 <div class="analytics-chart-box">
                     <div class="analytics-chart-header">
-                        <span><i class="fas fa-chart-pie" style="color: #0284c7;"></i> Komposisi Status Portofolio Proyek</span>
+                        <span><i class="fas fa-chart-pie" style="color: #ec4899;"></i> Komposisi Status Portofolio Proyek</span>
                         <small>Persentase & Jumlah</small>
                     </div>
-                    <div class="analytics-chart-canvas-wrap">
+                    <div class="analytics-chart-canvas-wrap" style="position: relative;">
                         <canvas id="chartReportStatus"></canvas>
+                        <div id="chartReportStatusCenter" style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                            <span style="font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.65; display: block;">Ketuntasan</span>
+                            <strong id="chartReportStatusCenterVal" style="font-size: 24px; font-weight: 800; background: linear-gradient(135deg, #10b981, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">--%</strong>
+                            <small id="chartReportStatusCenterSub" style="font-size: 10px; display: block; opacity: 0.75; font-weight: 600;">Memuat...</small>
+                        </div>
                     </div>
                 </div>
 
@@ -6087,7 +6187,7 @@
             const kpiTeamSub = document.getElementById('report-kpi-team-sub');
             if (kpiTeamSub) kpiTeamSub.innerText = `${totalCount} Inisiatif Terdistribusi`;
 
-            // 2. CHART 1: DONUT STATUS PORTOFOLIO
+            // 2. CHART 1: DONUT STATUS PORTOFOLIO (Infographic Radial Style)
             const canvasStatus = document.getElementById('chartReportStatus');
             if (canvasStatus) {
                 if (chartReportStatusInstance) chartReportStatusInstance.destroy();
@@ -6095,7 +6195,26 @@
                 const ongoingCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && (Number(p.progress) || 0) >= 40).length;
                 const earlyCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && (Number(p.progress) || 0) < 40).length;
 
-                chartReportStatusInstance = new Chart(canvasStatus.getContext('2d'), {
+                const centerVal = document.getElementById('chartReportStatusCenterVal');
+                if (centerVal) centerVal.innerText = `${completionRate}%`;
+                const centerSub = document.getElementById('chartReportStatusCenterSub');
+                if (centerSub) centerSub.innerText = `${doneCount} / ${totalCount} Selesai`;
+
+                const ctxStatus = canvasStatus.getContext('2d');
+                // Canvas Linear Gradients inspired by flat-infographic-element-set
+                const gradTuntas = ctxStatus.createLinearGradient(0, 0, 0, 240);
+                gradTuntas.addColorStop(0, '#10b981');
+                gradTuntas.addColorStop(1, '#06b6d4');
+
+                const gradBerjalan = ctxStatus.createLinearGradient(0, 0, 0, 240);
+                gradBerjalan.addColorStop(0, '#ec4899');
+                gradBerjalan.addColorStop(1, '#8b5cf6');
+
+                const gradAwal = ctxStatus.createLinearGradient(0, 0, 0, 240);
+                gradAwal.addColorStop(0, '#f59e0b');
+                gradAwal.addColorStop(1, '#fbbf24');
+
+                chartReportStatusInstance = new Chart(ctxStatus, {
                     type: 'doughnut',
                     data: {
                         labels: [
@@ -6105,25 +6224,34 @@
                         ],
                         datasets: [{
                             data: [doneCount, ongoingCount, earlyCount],
-                            backgroundColor: ['#10b981', '#0284c7', '#f59e0b'],
-                            borderWidth: 2,
-                            borderColor: '#ffffff'
+                            backgroundColor: [gradTuntas, gradBerjalan, gradAwal],
+                            borderWidth: 0,
+                            borderRadius: 10,
+                            spacing: 6,
+                            hoverOffset: 6
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        cutout: '62%',
+                        cutout: '74%',
                         plugins: {
                             legend: {
                                 position: 'bottom',
                                 labels: {
                                     boxWidth: 12,
-                                    padding: 10,
+                                    boxHeight: 12,
+                                    borderRadius: 6,
+                                    useBorderRadius: true,
+                                    padding: 12,
                                     font: { size: 11, weight: '600' }
                                 }
                             },
                             tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                titleFont: { size: 12, weight: '700' },
+                                padding: 10,
+                                cornerRadius: 8,
                                 callbacks: {
                                     label: function(ctx) {
                                         const total = doneCount + ongoingCount + earlyCount;
@@ -6137,7 +6265,7 @@
                 });
             }
 
-            // 3. CHART 2: HORIZONTAL BAR CAPAIAN PER BAGIAN SMTI
+            // 3. CHART 2: HORIZONTAL BAR CAPAIAN PER BAGIAN SMTI (Pill-ended Bars)
             const canvasBagian = document.getElementById('chartReportBagian');
             if (canvasBagian) {
                 if (chartReportBagianInstance) chartReportBagianInstance.destroy();
@@ -6153,7 +6281,20 @@
                 const pmsmtAvg = pmsmtP.length ? Math.round((pmsmtP.reduce((s, p) => s + (Number(p.progress) || 0), 0) / pmsmtP.length) * 10) / 10 : 0;
                 const sisdurAvg = sisdurP.length ? Math.round((sisdurP.reduce((s, p) => s + (Number(p.progress) || 0), 0) / sisdurP.length) * 10) / 10 : 0;
 
-                chartReportBagianInstance = new Chart(canvasBagian.getContext('2d'), {
+                const ctxBagian = canvasBagian.getContext('2d');
+                const gradMiku = ctxBagian.createLinearGradient(0, 0, 320, 0);
+                gradMiku.addColorStop(0, '#06b6d4');
+                gradMiku.addColorStop(1, '#3b82f6');
+
+                const gradPmsmt = ctxBagian.createLinearGradient(0, 0, 320, 0);
+                gradPmsmt.addColorStop(0, '#10b981');
+                gradPmsmt.addColorStop(1, '#059669');
+
+                const gradSisdur = ctxBagian.createLinearGradient(0, 0, 320, 0);
+                gradSisdur.addColorStop(0, '#ec4899');
+                gradSisdur.addColorStop(1, '#8b5cf6');
+
+                chartReportBagianInstance = new Chart(ctxBagian, {
                     type: 'bar',
                     data: {
                         labels: [
@@ -6164,8 +6305,10 @@
                         datasets: [{
                             label: 'Rata-rata Capaian Progres (%)',
                             data: [mikuAvg, pmsmtAvg, sisdurAvg],
-                            backgroundColor: ['#0284c7', '#10b981', '#6366f1'],
-                            borderRadius: 6
+                            backgroundColor: [gradMiku, gradPmsmt, gradSisdur],
+                            borderRadius: 20,
+                            barThickness: 24,
+                            borderSkipped: false
                         }]
                     },
                     options: {
@@ -6181,12 +6324,14 @@
                             },
                             y: {
                                 grid: { display: false },
-                                ticks: { font: { size: 11, weight: '600' } }
+                                ticks: { font: { size: 11.5, weight: '700' } }
                             }
                         },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                cornerRadius: 8,
                                 callbacks: {
                                     label: ctx => ` Capaian Bagian: ${ctx.raw}%`
                                 }
@@ -6196,7 +6341,7 @@
                 });
             }
 
-            // 4. CHART 3: DISTRIBUSI URGENSI PROYEK
+            // 4. CHART 3: DISTRIBUSI URGENSI PROYEK (Gradient Pillar Bars)
             const canvasUrgensi = document.getElementById('chartReportUrgensi');
             if (canvasUrgensi) {
                 if (chartReportUrgensiInstance) chartReportUrgensiInstance.destroy();
@@ -6214,15 +6359,30 @@
                     return u === 'rendah' || u === 'low' || u === 'rutin';
                 }).length;
 
-                chartReportUrgensiInstance = new Chart(canvasUrgensi.getContext('2d'), {
+                const ctxUrgensi = canvasUrgensi.getContext('2d');
+                const gradTinggi = ctxUrgensi.createLinearGradient(0, 0, 0, 240);
+                gradTinggi.addColorStop(0, '#f43f5e');
+                gradTinggi.addColorStop(1, '#fb7185');
+
+                const gradSedang = ctxUrgensi.createLinearGradient(0, 0, 0, 240);
+                gradSedang.addColorStop(0, '#f59e0b');
+                gradSedang.addColorStop(1, '#fbbf24');
+
+                const gradRendah = ctxUrgensi.createLinearGradient(0, 0, 0, 240);
+                gradRendah.addColorStop(0, '#10b981');
+                gradRendah.addColorStop(1, '#34d399');
+
+                chartReportUrgensiInstance = new Chart(ctxUrgensi, {
                     type: 'bar',
                     data: {
                         labels: ['Tinggi / Kritis', 'Sedang / Menengah', 'Rendah / Rutin'],
                         datasets: [{
                             label: 'Jumlah Proyek',
                             data: [urgentHigh, urgentMed, urgentLow],
-                            backgroundColor: ['#dc2626', '#d97706', '#16a34a'],
-                            borderRadius: 6
+                            backgroundColor: [gradTinggi, gradSedang, gradRendah],
+                            borderRadius: 14,
+                            barThickness: 42,
+                            borderSkipped: false
                         }]
                     },
                     options: {
@@ -6236,12 +6396,14 @@
                             },
                             x: {
                                 grid: { display: false },
-                                ticks: { font: { size: 11, weight: '600' } }
+                                ticks: { font: { size: 11.5, weight: '700' } }
                             }
                         },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                cornerRadius: 8,
                                 callbacks: {
                                     label: ctx => ` ${ctx.raw} Proyek Terdaftar`
                                 }
@@ -6251,22 +6413,35 @@
                 });
             }
 
-            // 5. CHART 4: SEBARAN CAPAIAN TIAP PROYEK SMTI
+            // 5. CHART 4: SEBARAN CAPAIAN TIAP PROYEK SMTI (Neon Bar Chart)
             const canvasOverview = document.getElementById('chartReportOverview');
             if (canvasOverview) {
                 if (chartReportOverviewInstance) chartReportOverviewInstance.destroy();
 
-                const labels = projectDataSMTI.map(p => p.name.length > 22 ? p.name.substring(0, 20) + '...' : p.name);
+                const ctxOverview = canvasOverview.getContext('2d');
+                const labels = projectDataSMTI.map(p => p.name.length > 20 ? p.name.substring(0, 18) + '...' : p.name);
                 const dataValues = projectDataSMTI.map(p => Number(p.progress) || 0);
+
                 const bgColors = projectDataSMTI.map(p => {
                     const prog = Number(p.progress) || 0;
-                    if (prog === 100) return '#10b981';
-                    if (prog >= 70) return '#0284c7';
-                    if (prog >= 40) return '#f59e0b';
-                    return '#dc2626';
+                    const g = ctxOverview.createLinearGradient(0, 0, 0, 240);
+                    if (prog === 100) {
+                        g.addColorStop(0, '#10b981');
+                        g.addColorStop(1, '#059669');
+                    } else if (prog >= 70) {
+                        g.addColorStop(0, '#06b6d4');
+                        g.addColorStop(1, '#3b82f6');
+                    } else if (prog >= 40) {
+                        g.addColorStop(0, '#f59e0b');
+                        g.addColorStop(1, '#f97316');
+                    } else {
+                        g.addColorStop(0, '#f43f5e');
+                        g.addColorStop(1, '#ec4899');
+                    }
+                    return g;
                 });
 
-                chartReportOverviewInstance = new Chart(canvasOverview.getContext('2d'), {
+                chartReportOverviewInstance = new Chart(ctxOverview, {
                     type: 'bar',
                     data: {
                         labels: labels,
@@ -6274,7 +6449,8 @@
                             label: 'Progres (%)',
                             data: dataValues,
                             backgroundColor: bgColors,
-                            borderRadius: 5
+                            borderRadius: 8,
+                            borderSkipped: false
                         }]
                     },
                     options: {
@@ -6292,7 +6468,7 @@
                                     autoSkip: false,
                                     maxRotation: 45,
                                     minRotation: 20,
-                                    font: { size: 10.5 }
+                                    font: { size: 10 }
                                 },
                                 grid: { display: false }
                             }
@@ -6300,11 +6476,10 @@
                         plugins: {
                             legend: { display: false },
                             tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                cornerRadius: 8,
                                 callbacks: {
-                                    title: (items) => {
-                                        const idx = items[0].dataIndex;
-                                        return projectDataSMTI[idx] ? projectDataSMTI[idx].name : '';
-                                    },
+                                    title: (items) => projectDataSMTI[items[0].dataIndex]?.name || '',
                                     label: (ctx) => {
                                         const p = projectDataSMTI[ctx.dataIndex];
                                         return ` Capaian: ${ctx.raw}% | ${p ? p.category : '-'} | PIC: ${p ? p.pic : '-'}`;
