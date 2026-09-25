@@ -26,6 +26,18 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: false, data: null });
       }
       const data = await response.json();
+      if (Array.isArray(data)) {
+        data.forEach(emp => {
+          if (emp.name && emp.name.toLowerCase().includes('wahyu')) {
+            emp.role = "Officer BangSisdur";
+            emp.isManager = false;
+          }
+          if (emp.name && emp.name.toLowerCase().includes('henisya')) {
+            emp.role = "VP SMTI";
+            emp.isManager = true;
+          }
+        });
+      }
       return res.status(200).json({ success: true, data: data });
     } catch (e) {
       return res.status(500).json({ success: false, error: e.message });
@@ -45,6 +57,17 @@ export default async function handler(req, res) {
       if (!Array.isArray(employeesData)) {
         return res.status(400).json({ success: false, error: "Data harus berupa array karyawan" });
       }
+
+      employeesData.forEach(emp => {
+        if (emp.name && emp.name.toLowerCase().includes('wahyu')) {
+          emp.role = "Officer BangSisdur";
+          emp.isManager = false;
+        }
+        if (emp.name && emp.name.toLowerCase().includes('henisya')) {
+          emp.role = "VP SMTI";
+          emp.isManager = true;
+        }
+      });
 
       const patchRes = await fetch(`https://api.vercel.com/v1/edge-config/${EDGE_CONFIG_ID}/items`, {
         method: "PATCH",

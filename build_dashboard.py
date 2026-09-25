@@ -5113,7 +5113,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 SMTI_EMPLOYEES = JSON.parse(JSON.stringify(defaultSMTIEmployees));
             }
 
-            // Sinkronkan peran khusus Henisya Permata Sari (VP SMTI) & Septian (Super Admin)
+            // Sinkronkan peran khusus Henisya Permata Sari (VP SMTI), Septian (Super Admin), dan Wahyu Sukmawati (Officer BangSisdur)
             SMTI_EMPLOYEES.forEach(emp => {
                 if (emp.name.toLowerCase().includes('henisya')) {
                     emp.role = "VP SMTI";
@@ -5123,10 +5123,17 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     emp.role = "Super Admin & Officer Digitalisasi";
                     emp.isSuperAdmin = true;
                 }
+                if (emp.name.toLowerCase().includes('wahyu')) {
+                    emp.role = "Officer BangSisdur";
+                    emp.isManager = false;
+                }
                 if (!emp.pin) {
                     emp.pin = "1234";
                 }
             });
+            try {
+                localStorage.setItem('smti_employees_data_v2', JSON.stringify(SMTI_EMPLOYEES));
+            } catch (e) {}
 
             renderEmployeesTable();
             updateTotalCount();
@@ -5211,6 +5218,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             if (emp.name && emp.name.toLowerCase().includes('henisya')) {
                                 emp.role = "VP SMTI";
                                 emp.isManager = true;
+                            }
+                            if (emp.name && emp.name.toLowerCase().includes('wahyu')) {
+                                emp.role = "Officer BangSisdur";
+                                emp.isManager = false;
                             }
                         });
                         localStorage.setItem('smti_employees_data_v2', JSON.stringify(SMTI_EMPLOYEES));
@@ -11247,7 +11258,15 @@ END:VCALENDAR`;
                     const matched = SMTI_EMPLOYEES.find(e => e.name.toLowerCase() === parsed.name.toLowerCase())
                                  || SMTI_INTERNS.find(i => i.name.toLowerCase() === parsed.name.toLowerCase());
                     if (matched) {
-                        currentAuthUser = Object.assign({}, matched, parsed);
+                        currentAuthUser = Object.assign({}, parsed, matched);
+                        if (currentAuthUser.name.toLowerCase().includes('wahyu')) {
+                            currentAuthUser.role = "Officer BangSisdur";
+                            currentAuthUser.isManager = false;
+                        }
+                        if (currentAuthUser.name.toLowerCase().includes('henisya')) {
+                            currentAuthUser.role = "VP SMTI";
+                            currentAuthUser.isManager = true;
+                        }
                         applyAuthenticatedUser(currentAuthUser);
                         hidePinOverlay();
                         return;
@@ -11270,9 +11289,9 @@ END:VCALENDAR`;
 
             let html = '';
 
-            // Group 1 (PALING ATAS): Pimpinan Departemen SMTI
+            // Group 1 (PALING ATAS): Pimpinan Departemen SMTI (Hanya VP SMTI)
             html += `<optgroup label="👑 Pimpinan Departemen SMTI">`;
-            const leaders = SMTI_EMPLOYEES.filter(e => e.isManager || e.name.toLowerCase().includes('henisya') || (e.role && (e.role.toLowerCase().includes('manager') || e.role.toLowerCase().includes('vp'))));
+            const leaders = SMTI_EMPLOYEES.filter(e => e.isManager || (e.name && e.name.toLowerCase().includes('henisya')));
             if (leaders.length > 0) {
                 leaders.forEach(m => {
                     html += `<option value="${m.name}">👑 ${m.name} — ${m.role || 'VP SMTI'}</option>`;
