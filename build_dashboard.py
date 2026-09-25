@@ -7,12 +7,15 @@ with:
 3. Flexible stage status & manual progress controls (handle completed, active, pending, reopen)
 4. LocalStorage persistence for user inputs and notes
 """
+import os, sys
+sys.path.append(os.path.dirname(__file__))
+from b64_logos import LOGO_KUJANG_EMBLEM_B64, LOGO_KUJANG_FULL_B64
 
 HTML_CONTENT = r'''<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    <link rel="icon" type="image/png" href="__LOGO_KUJANG_EMBLEM__">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>Dashboard Dept SMTI - PT Pupuk Kujang</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -60,7 +63,30 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         .sidebar { width: 260px; background-color: #0f172a; color: #ffffff; display: flex; flex-direction: column; padding: 20px; position: fixed; height: 100%; z-index: 100; justify-content: space-between; border-right: 1px solid rgba(255,255,255,0.08); }
         .sidebar-top { flex: 1; overflow-y: auto; }
         .sidebar-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.12); }
-        .sidebar-brand-icon { width: 42px; height: 42px; background: linear-gradient(135deg, #0284c7, #10b981); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
+        .sidebar-brand-icon { 
+            width: 44px; 
+            height: 44px; 
+            background: #ffffff; 
+            border-radius: 11px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 3.5px; 
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.18); 
+            flex-shrink: 0;
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .sidebar-brand-icon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4), 0 0 0 1px rgba(16, 185, 129, 0.3);
+        }
+        .sidebar-brand-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
         .sidebar-brand-text h2 { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 0.5px; line-height: 1.2; }
         .sidebar-brand-text small { font-size: 11px; color: #94a3b8; letter-spacing: 0.3px; }
         
@@ -633,170 +659,44 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         /* =========================================================
-           3D COLUMNS INFOGRAPHIC (INSPIRED BY BUSINESS 3D COLUMNS 5-STEPS)
+           MODERN MAIN DASHBOARD CHART STYLES & ANIMATIONS
            ========================================================= */
-        .infographic-3d-layout {
-            display: flex;
-            gap: 20px;
-            align-items: stretch;
-            background: radial-gradient(ellipse at 70% 30%, #e0f2fe 0%, #f0fdf4 35%, #f8fafc 100%);
-            border: 1px solid rgba(2, 132, 199, 0.16);
-            border-radius: 16px;
-            padding: 16px 18px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.6), 0 4px 20px rgba(0, 0, 0, 0.03);
+        .main-chart-tab-btn {
+            background: transparent;
+            color: var(--text-color);
+            padding: 6px 14px;
+            font-size: 12.5px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .main-chart-tab-btn:hover {
+            color: #0284c7;
+            background: rgba(2, 132, 199, 0.09);
+            transform: translateY(-1.5px);
+        }
+
+        .main-chart-tab-btn.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.38);
+            transform: translateY(-1.5px) scale(1.02);
+        }
+
+        .chart-container {
             transition: all 0.3s ease;
         }
 
-        body.dark-mode .infographic-3d-layout {
-            background: radial-gradient(ellipse at 70% 30%, #1e293b 0%, #0f172a 65%, #090d16 100%);
-            border-color: rgba(56, 189, 248, 0.22);
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 20px rgba(0, 0, 0, 0.25);
-        }
-
-        .infographic-ribbons-col {
-            flex: 0 0 330px;
-            max-width: 350px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 9px;
-            z-index: 2;
-        }
-
-        .infographic-canvas-col {
-            flex: 1;
-            position: relative;
-            min-height: 380px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
-
-        #main3DChartCanvas {
-            width: 100% !important;
-            height: 100% !important;
-            min-height: 380px;
-            display: block;
-            cursor: pointer;
-        }
-
-        /* 5 Stepped Ribbon Banners (01 to 05) with 3D Fold */
-        .infographic-ribbon-item {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-radius: 8px 12px 12px 8px;
-            padding: 11px 14px 11px 20px;
-            color: #ffffff;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            user-select: none;
-        }
-
-        /* 3D folded tab on left edge */
-        .infographic-ribbon-item::before {
-            content: '';
-            position: absolute;
-            left: -8px;
-            top: 5px;
-            bottom: -5px;
-            width: 8px;
-            border-top-left-radius: 6px;
-            border-bottom-left-radius: 6px;
-            background: var(--ribbon-dark, #b45309);
-            z-index: -1;
-            box-shadow: -2px 2px 5px rgba(0,0,0,0.15);
-        }
-
-        .infographic-ribbon-item::after {
-            content: '';
-            position: absolute;
-            left: -8px;
-            bottom: -5px;
-            border-top: 5px solid var(--ribbon-dark, #b45309);
-            border-left: 8px solid transparent;
-        }
-
-        .infographic-ribbon-item:hover,
-        .infographic-ribbon-item.active {
-            transform: translateX(7px) scale(1.018);
-            box-shadow: 0 8px 24px var(--ribbon-glow, rgba(0,0,0,0.22));
-            filter: brightness(1.06);
-        }
-
-        .infographic-ribbon-content {
-            flex: 1;
-            padding-right: 10px;
-        }
-
-        .infographic-ribbon-title {
-            font-size: 13.5px;
-            font-weight: 800;
-            letter-spacing: -0.2px;
-            line-height: 1.3;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.22);
-        }
-
-        .infographic-ribbon-desc {
-            font-size: 11.5px;
-            opacity: 0.94;
-            margin-top: 3px;
-            line-height: 1.28;
-            font-weight: 500;
-            text-shadow: 0 1px 1px rgba(0,0,0,0.15);
-        }
-
-        .infographic-ribbon-num {
-            font-size: 34px;
-            font-weight: 900;
-            opacity: 0.72;
-            letter-spacing: -1.5px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1;
-            user-select: none;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.25);
-        }
-
-        /* Tooltip Floating Glass */
-        .infographic-3d-tooltip {
-            position: absolute;
-            pointer-events: none;
-            z-index: 100;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(56, 189, 248, 0.45);
-            border-radius: 12px;
-            padding: 12px 16px;
-            color: #f8fafc;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-            font-size: 12px;
-            max-width: 310px;
-            transition: opacity 0.15s ease, transform 0.15s ease;
-            transform: translate(-50%, -115%);
-        }
-
-        @media (max-width: 900px) {
-            .infographic-3d-layout {
-                flex-direction: column-reverse;
-                padding: 12px;
-            }
-            .infographic-ribbons-col {
-                flex: none;
-                max-width: 100%;
-                width: 100%;
-            }
-            .infographic-canvas-col {
-                min-height: 310px;
-                height: 310px;
-            }
+        #mainChart {
+            transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         /* =========================================================
@@ -2497,7 +2397,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         .analytics-grid-2x2 {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 18px;
             margin-top: 18px;
         }
@@ -2544,7 +2444,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             flex: 1;
         }
 
-        @media (max-width: 840px) {
+        @media (max-width: 1080px) {
+            .analytics-grid-2x2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
             .analytics-grid-2x2 {
                 grid-template-columns: 1fr;
             }
@@ -2617,22 +2523,28 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         .report-kop {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 18px;
             border-bottom: 3px double #1e3a8a;
             padding-bottom: 14px;
             margin-bottom: 18px;
         }
 
         .report-kop-logo {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #0284c7, #10b981);
-            border-radius: 12px;
+            width: auto;
+            height: 64px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            color: #ffffff;
+            flex-shrink: 0;
+            background: transparent;
+        }
+
+        .report-kop-logo img {
+            height: 64px;
+            width: auto;
+            max-width: 130px;
+            object-fit: contain;
+            display: block;
         }
 
         .report-kop-text h2 {
@@ -2654,6 +2566,21 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             font-size: 11px;
             color: #64748b;
             margin: 0;
+        }
+
+        .report-kop-meta {
+            text-align: right;
+            font-size: 11px;
+            color: #475569;
+            line-height: 1.5;
+            white-space: nowrap;
+            padding-left: 14px;
+            border-left: 1.5px solid #cbd5e1;
+            flex-shrink: 0;
+        }
+
+        .report-kop-meta strong {
+            color: #0f172a;
         }
 
         .report-title-block {
@@ -2763,6 +2690,151 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             color: #64748b;
         }
 
+        /* --- REPORT WORKFLOW SECTION STYLES --- */
+        .report-workflow-section {
+            margin-top: 24px;
+            margin-bottom: 24px;
+        }
+
+        .report-section-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .report-section-divider-line {
+            flex: 1;
+            height: 1.5px;
+            background: #cbd5e1;
+        }
+
+        .report-section-divider-title {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #1e3a8a;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .report-wf-card {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            background: #ffffff;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .report-wf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .report-wf-callout {
+            padding: 6px 12px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 12px;
+            font-size: 11.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .report-wf-stepper-track {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            position: relative;
+            margin: 10px 0 6px 0;
+        }
+
+        .report-wf-line {
+            position: absolute;
+            top: 14px;
+            left: 24px;
+            right: 24px;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .report-wf-step-node {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+            padding: 0 4px;
+        }
+
+        .report-wf-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin: 0 auto;
+        }
+
+        .report-wf-circle.completed {
+            background: #16a34a;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(22, 163, 74, 0.25);
+        }
+
+        .report-wf-circle.active {
+            background: #0284c7;
+            color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
+        }
+
+        .report-wf-circle.pending {
+            background: #f8fafc;
+            color: #94a3b8;
+            border: 2px solid #cbd5e1;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .report-wf-step-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 5px;
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        .report-wf-step-date {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .report-wf-step-badge {
+            display: inline-block;
+            font-size: 9.5px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 4px;
+            margin-top: 3px;
+        }
+
         /* --- PRINT CSS: HANYA TAMPILKAN LAPORAN RESMI --- */
         @media print {
             body {
@@ -2801,15 +2873,155 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             .report-sheet {
                 box-shadow: none !important;
                 border: none !important;
-                padding: 10mm 12mm !important;
+                padding: 8mm 10mm !important;
                 max-width: 100% !important;
                 width: 100% !important;
                 border-radius: 0 !important;
+            }
+            .report-kop-logo {
+                width: auto !important;
+                height: 64px !important;
+                background: transparent !important;
+            }
+            .report-kop-logo img {
+                height: 64px !important;
+                max-height: 64px !important;
+                width: auto !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-kop {
+                border-bottom: 3px double #1e3a8a !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-kop-meta {
+                text-align: right !important;
+                font-size: 10.5px !important;
+                line-height: 1.4 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-kpi-item {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-data-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            .report-data-table thead {
+                display: table-header-group !important; /* Header tabel otomatis berulang di setiap halaman baru */
+            }
+            .report-data-table tbody {
+                display: table-row-group !important;
+            }
+            .report-data-table tr {
+                page-break-inside: avoid !important; /* Mencegah baris proyek terbelah di batas halaman */
+                break-inside: avoid !important;
+            }
+            .report-data-table th, .report-data-table td, .report-data-table tr {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-workflow-section {
+                display: block !important;
+                margin-top: 20px !important;
+                margin-bottom: 20px !important;
+            }
+            .report-wf-card {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                border: 1px solid #cbd5e1 !important;
+                background: #ffffff !important;
+                margin-bottom: 12px !important;
+                padding: 10px 12px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-wf-line {
+                background: #cbd5e1 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-wf-circle.completed {
+                background: #16a34a !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-wf-circle.active {
+                background: #0284c7 !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-wf-circle.pending {
+                background: #f8fafc !important;
+                color: #64748b !important;
+                border: 2px solid #cbd5e1 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-sign-grid {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                margin-top: 24px !important;
             }
             @page {
                 size: A4 portrait;
                 margin: 8mm;
             }
+        }
+
+        /* --- DASHBOARD URGENT BANNER MULTI-SLIDE CAROUSEL STYLES --- */
+        .btn-urgent-nav {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid rgba(220, 38, 38, 0.25);
+            background: #ffffff;
+            color: #dc2626;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .btn-urgent-nav:hover {
+            background: #dc2626;
+            color: #ffffff;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+        }
+        body.dark-mode .btn-urgent-nav {
+            background: #1e293b;
+            border-color: rgba(248, 113, 113, 0.35);
+            color: #f87171;
+        }
+        body.dark-mode .btn-urgent-nav:hover {
+            background: #dc2626;
+            color: #ffffff;
+        }
+        .urgent-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(220, 38, 38, 0.25);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .urgent-dot:hover {
+            background: rgba(220, 38, 38, 0.6);
+            transform: scale(1.2);
+        }
+        .urgent-dot.active {
+            width: 26px;
+            border-radius: 5px;
+            background: #dc2626;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
         }
     </style>
 </head>
@@ -2877,7 +3089,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         </p>
                         <ul style="margin: 0; padding-left: 18px; line-height: 1.5;">
                             <li><strong>Septian:</strong> Super Admin (PIN: <code>1234</code>)</li>
-                            <li><strong>Henisya Permata Sari:</strong> Manager Dept SMTI (PIN: <code>1234</code>)</li>
+                            <li><strong>Henisya Permata Sari:</strong> VP SMTI (PIN: <code>1234</code>)</li>
                             <li><strong>Karyawan Lainnya:</strong> PIN: <code>1234</code></li>
                         </ul>
                         <p style="margin: 6px 0 0 0; font-size: 11px; color: #16a34a; font-weight: 600;">
@@ -2897,8 +3109,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         <div class="sidebar-top">
             <div class="sidebar-brand" style="display: flex; align-items: center; justify-content: space-between;">
                 <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
-                    <div class="sidebar-brand-icon">
-                        <i class="fas fa-cubes"></i>
+                    <div class="sidebar-brand-icon" title="PT Pupuk Kujang Cikampek">
+                        <img src="__LOGO_KUJANG_EMBLEM__" alt="Logo PT Pupuk Kujang">
                     </div>
                     <div class="sidebar-brand-text">
                         <h2>DEPT. SMTI</h2>
@@ -2985,8 +3197,18 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     <input type="text" placeholder="Cari proyek / karyawan..." onkeyup="handleGlobalSearch(event)">
                 </div>
 
-                <div class="cloud-sync-badge" id="cloud-sync-badge" style="display: none !important;" onclick="syncFromCloud(true)" title="Data tersimpan di Vercel Cloud Storage. Klik untuk menyegarkan data.">
-                    <i class="fas fa-cloud"></i> <span id="cloud-sync-text">Vercel Terhubung</span>
+                <div class="cloud-sync-badge" id="cloud-sync-badge" style="display: none !important;" onclick="syncFromCloud(true)" title="Data tersimpan aman di Cloud. Klik untuk menyegarkan data.">
+                    <i class="fas fa-cloud"></i> <span id="cloud-sync-text">Cloud Terhubung</span>
+                </div>
+
+                <!-- Selector Tahun Anggaran RKAP (Multi-Year & Auto-Rollover) -->
+                <div class="fiscal-year-selector" id="fiscal-year-wrapper" style="display: flex; align-items: center; gap: 6px; background: var(--hover-color); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 8px; font-size: 12px;" title="Pilih Tahun Anggaran RKAP">
+                    <i class="fas fa-calendar-alt" style="color: #0284c7; font-size: 13px;"></i>
+                    <span style="font-size: 11px; font-weight: 700; color: #64748b;">TA:</span>
+                    <select id="select-fiscal-year" onchange="changeFiscalYear(this.value)" style="border: none; background: transparent; font-size: 12px; font-weight: 800; color: #0284c7; cursor: pointer; outline: none; padding: 0 2px;">
+                        <option value="2026">TA 2026</option>
+                        <option value="2027">TA 2027</option>
+                    </select>
                 </div>
 
                 <div class="time-display" id="live-clock">--:--:-- WIB</div>
@@ -3059,8 +3281,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- Urgent Highlight Banner on Dashboard (Dynamic) -->
-            <div class="card" id="dash-urgent-banner" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.06), rgba(2, 132, 199, 0.06)); border: 1px solid rgba(220, 38, 38, 0.2);">
+            <!-- Urgent Highlight Banner on Dashboard (Dynamic Multi-Slide Carousel) -->
+            <div class="card" id="dash-urgent-banner" style="position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(220, 38, 38, 0.05), rgba(2, 132, 199, 0.05)); border: 1px solid rgba(220, 38, 38, 0.22); border-radius: 12px; box-shadow: 0 4px 18px rgba(220, 38, 38, 0.05); padding: 0;">
                 <!-- Dynamically rendered by renderDashboardUrgentBanner() -->
             </div>
 
@@ -3090,38 +3312,22 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <small id="main-chart-subtitle" style="display: block; font-weight: normal; color: #64748b; margin-top: 3px;">Realisasi capaian departemen vs target tahunan RKAP sepanjang 2026</small>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        <div style="display: inline-flex; background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 3px; gap: 4px; flex-wrap: wrap;">
-                            <button id="btn-chart-line" class="btn btn-sm" style="background: #0284c7; color: white; padding: 5px 12px; font-size: 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" onclick="setMainChartMode('line')">
+                        <div class="main-chart-tabs" style="display: inline-flex; background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 10px; padding: 4px; gap: 5px; flex-wrap: wrap;">
+                            <button id="btn-chart-line" class="btn btn-sm main-chart-tab-btn active" onclick="setMainChartMode('line')">
                                 <i class="fas fa-chart-line"></i> Tren Garis Seluruh SMTI
                             </button>
-                            <button id="btn-chart-pic" class="btn btn-sm" style="background: transparent; color: var(--text-color); padding: 5px 12px; font-size: 12px; border-radius: 6px;" onclick="setMainChartMode('pic')">
+                            <button id="btn-chart-pic" class="btn btn-sm main-chart-tab-btn" onclick="setMainChartMode('pic')">
                                 <i class="fas fa-users"></i> Beban Kerja 12 Personil
                             </button>
-                            <button id="btn-chart-category" class="btn btn-sm" style="background: transparent; color: var(--text-color); padding: 5px 12px; font-size: 12px; border-radius: 6px;" onclick="setMainChartMode('category')">
+                            <button id="btn-chart-category" class="btn btn-sm main-chart-tab-btn" onclick="setMainChartMode('category')">
                                 <i class="fas fa-sitemap"></i> Capaian per Bagian
                             </button>
                         </div>
-                        <button id="btn-toggle-3d-style" class="btn btn-sm" style="background: linear-gradient(135deg, #0284c7, #8b5cf6); color: white; padding: 5px 11px; font-size: 11.5px; border-radius: 6px; border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3); cursor: pointer;" onclick="toggleMainChartDisplayType()" title="Beralih tampilan antara Infografis 3D Columns dan Grafik Standar">
-                            <i class="fas fa-cube"></i> <span id="toggle-3d-label">Gaya 3D Infografis Aktif</span>
-                        </button>
                     </div>
                 </div>
 
-                <!-- 3D Columns Infographic Layout (business-chart-graph-infographics-with-colorful-3d-columns-five-steps-icons-light-illustration) -->
-                <div id="main-3d-infographic-container" class="infographic-3d-layout">
-                    <!-- Sisi Kiri: 5 Stepped Folded Ribbon Banners (01 s/d 05) -->
-                    <div id="infographic-ribbons-list" class="infographic-ribbons-col">
-                        <!-- Rendered dynamically by render3DColumnsInfographic() -->
-                    </div>
-                    <!-- Sisi Kanan: Canvas Interaktif 3D Cylindrical Columns & Perspective Floor -->
-                    <div class="infographic-canvas-col">
-                        <canvas id="main3DChartCanvas"></canvas>
-                        <div id="main3DTooltip" class="infographic-3d-tooltip" style="display: none;"></div>
-                    </div>
-                </div>
-
-                <!-- Fallback Classic 2D Chart.js Container (Hidden by default) -->
-                <div id="main-chart-classic-container" class="chart-container" style="display: none; position: relative; height: 340px; width: 100%;">
+                <!-- Modern Interactive Chart.js Canvas Container -->
+                <div id="main-chart-classic-container" class="chart-container" style="display: block; position: relative; height: 390px; width: 100%; padding: 4px 2px;">
                     <canvas id="mainChart"></canvas>
                 </div>
 
@@ -3260,8 +3466,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             <tr><th>Nama Karyawan</th><th>Jabatan</th><th>Status</th><th>Aksi</th></tr>
                         </thead>
                         <tbody id="employee-table-body">
-                            <tr onclick="viewDetail('Henisya Permata Sari', 'Manager Dept SMTI', 'TKO', '#d4edda')">
-                                <td><strong>Henisya Permata Sari</strong></td><td>Manager Dept SMTI</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
+                            <tr onclick="viewDetail('Henisya Permata Sari', 'VP SMTI', 'TKO', '#d4edda')">
+                                <td><strong>Henisya Permata Sari</strong></td><td>VP SMTI</td><td><span class="status" style="background: #d4edda; color: #155724;">TKO</span></td>
                                 <td><button class="action-btn btn-edit" onclick="event.stopPropagation(); editRow(this)"><i class="fas fa-edit"></i></button><button class="action-btn btn-delete" onclick="event.stopPropagation(); deleteRow(this)"><i class="fas fa-trash"></i></button></td>
                             </tr>
                             <tr onclick="viewDetail('Mochamad Januardi', 'Officer MIKU', 'TKO', '#d4edda')">
@@ -3555,17 +3761,6 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <canvas id="chartReportUrgensi"></canvas>
                     </div>
                 </div>
-
-                <!-- Chart 4: Overview Evaluasi Seluruh Proyek -->
-                <div class="analytics-chart-box">
-                    <div class="analytics-chart-header">
-                        <span><i class="fas fa-tasks" style="color: #6366f1;"></i> Sebaran Capaian Progres Tiap Proyek</span>
-                        <small>Hover bar untuk detail</small>
-                    </div>
-                    <div class="analytics-chart-canvas-wrap">
-                        <canvas id="chartReportOverview"></canvas>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -3780,10 +3975,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         <div class="flow-modal-box">
             <div class="flow-modal-header">
                 <div>
-                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap;">
                         <span id="modal-project-category" class="project-category-tag">Kategori</span>
                         <span id="modal-project-urgency" class="urgency-badge high">Urgensi Tinggi</span>
                         <span id="modal-project-status" class="status" style="background: rgba(2, 132, 199, 0.12); color: #0284c7;">In Progress</span>
+                        <button type="button" class="btn-xs" style="background: #10b981; color: white; border: none; padding: 4px 11px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35); transition: transform 0.15s ease;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'" onclick="openGoogleCalendarForProject(currentActiveProjectId)" title="Tambah pengingat deadline proyek ke Google Calendar">
+                            <i class="fab fa-google"></i> Simpan ke Google Calendar
+                        </button>
                     </div>
                     <h2 id="modal-project-title">Nama Proyek</h2>
                     <p id="modal-project-desc" style="font-size: 13px; color: #64748b; line-height: 1.4;"></p>
@@ -3820,9 +4018,17 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
                 <!-- Meta Highlights -->
                 <div class="flow-meta-grid">
-                    <div class="flow-meta-item">
-                        <small>Target Deadline</small>
-                        <strong id="modal-meta-deadline" style="color: #dc2626;">-</strong>
+                    <div class="flow-meta-item" style="position: relative;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                            <small>Target Deadline</small>
+                            <button type="button" class="btn-xs" id="btn-modal-gcal" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); color: #10b981; padding: 2px 7px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; transition: 0.2s;" onclick="openGoogleCalendarForProject(currentActiveProjectId)" title="Tambah pengingat deadline ke Google Calendar">
+                                <i class="fab fa-google"></i> Google Calendar
+                            </button>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 4px;">
+                            <strong id="modal-meta-deadline" style="color: #dc2626;">-</strong>
+                            <button type="button" style="background: none; border: none; font-size: 10.5px; color: #64748b; cursor: pointer; text-decoration: underline; padding: 0;" onclick="downloadIcsCalendar(currentActiveProjectId)" title="Unduh format .ICS untuk Outlook/Apple Calendar">.ICS</button>
+                        </div>
                     </div>
                     <div class="flow-meta-item" style="position: relative;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
@@ -4018,7 +4224,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <input type="text" id="new-proj-name" required placeholder="Contoh: Implementasi ISO 50001 Sistem Manajemen Energi">
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 120px; gap: 12px;">
                         <div class="form-group">
                             <label>Kategori Bagian / Bidang *</label>
                             <select id="new-proj-category" required>
@@ -4036,6 +4242,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                 <option value="Rendah">✅ Urgensi Rendah (Rutin)</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label>Tahun RKAP *</label>
+                            <input type="number" id="new-proj-year" min="2020" max="2099" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); font-weight: 700;">
+                        </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -4049,7 +4259,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                 <option value="">-- Pilih Penanggung Jawab (PIC) --</option>
                             </select>
                             <datalist id="pic-suggestions-list"></datalist>
-                            <small style="color: #0284c7; font-size: 11px; margin-top: 4px; display: block;">
+                            <small id="new-proj-pic-help" style="color: #0284c7; font-size: 11px; margin-top: 4px; display: block;">
                                 <i class="fas fa-magic"></i> Tersedia 12 Karyawan SMTI & Mahasiswa Magang Aktif. Otomatis memilih akun Anda.
                             </small>
                         </div>
@@ -4066,9 +4276,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     </div>
 
                     <div class="form-group">
-                        <label><i class="fas fa-user-plus"></i> Undang Anggota Tim Karyawan SMTI:</label>
-                        <div id="new-proj-team-select" style="display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 8px; max-height: 120px; overflow-y: auto;">
-                            <!-- Checkboxes for all SMTI employees -->
+                        <label><i class="fas fa-user-plus"></i> Undang Anggota Tim (Karyawan Dept SMTI & Mahasiswa Magang):</label>
+                        <div id="new-proj-team-select" style="display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: var(--hover-color); border: 1px solid var(--border-color); border-radius: 8px; max-height: 160px; overflow-y: auto;">
+                            <!-- Checkboxes for all SMTI employees & interns -->
                         </div>
                     </div>
 
@@ -4346,18 +4556,18 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 <div class="report-sheet" id="printable-report-area">
                     <!-- KOP SURAT FORMAL PUPUK KUJANG SMTI -->
                     <div class="report-kop">
-                        <div class="report-kop-logo">
-                            <i class="fas fa-cubes"></i>
+                        <div class="report-kop-logo" title="Logo PT Pupuk Kujang">
+                            <img src="__LOGO_KUJANG_FULL__" alt="Logo PT Pupuk Kujang">
                         </div>
                         <div class="report-kop-text" style="flex: 1;">
                             <h2>PT PUPUK KUJANG CIKAMPEK</h2>
                             <h3>DEPARTEMEN SISTEM MANAJEMEN TERPADU & INOVASI (SMTI)</h3>
                             <p>Kawasan Industri Kujang Cikampek, Jl. Jend. A. Yani No. 39, Dawuan, Cikampek 41373 - Jawa Barat</p>
                         </div>
-                        <div style="text-align: right; font-size: 11px; color: #64748b; line-height: 1.3;">
-                            <strong>No. Dok:</strong> SMTI-REP-2026/09<br>
+                        <div class="report-kop-meta">
+                            <strong>No. Dok:</strong> <span id="report-dok-no">SMTI-REP-2026/09</span><br>
                             <strong>Status:</strong> Dokumen Resmi<br>
-                            <strong>Tahun Anggaran:</strong> 2026
+                            <strong>Tahun Anggaran:</strong> <span id="report-dok-tahun">2026</span>
                         </div>
                     </div>
 
@@ -4393,12 +4603,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             <tr>
                                 <th style="width: 28px; text-align: center;">No</th>
                                 <th>Nama Inisiatif / Proyek SMTI</th>
-                                <th style="width: 110px;">Bagian Unit</th>
-                                <th style="width: 120px;">PIC Proyek</th>
-                                <th style="width: 75px; text-align: center;">Urgensi</th>
-                                <th style="width: 85px; text-align: center;">Status</th>
-                                <th style="width: 90px;">Deadline</th>
-                                <th style="width: 60px; text-align: center;">Progres</th>
+                                <th style="width: 80px;">Bagian Unit</th>
+                                <th style="width: 105px;">PIC Proyek</th>
+                                <th style="width: 135px;">Tahap Terkini</th>
+                                <th style="width: 65px; text-align: center;">Urgensi</th>
+                                <th style="width: 75px; text-align: center;">Status</th>
+                                <th style="width: 85px;">Deadline</th>
+                                <th style="width: 55px; text-align: center;">Progres</th>
                             </tr>
                         </thead>
                         <tbody id="report-print-table-body">
@@ -4412,14 +4623,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             <div>Cikampek, <span id="report-sign-date">22 September 2026</span></div>
                             <div class="sign-role">Disusun Oleh,</div>
                             <div class="sign-name">Septian</div>
-                            <div class="sign-title">Super Admin & Officer Digitalisasi SMTI</div>
+                            <div class="sign-title">Admin SMTI</div>
                         </div>
 
                         <div class="report-sign-box">
                             <div>Mengetahui & Menyetujui,</div>
-                            <div class="sign-role">Manager Departemen SMTI,</div>
+                            <div class="sign-role">VP SMTI,</div>
                             <div class="sign-name">Henisya Permata Sari</div>
-                            <div class="sign-title">Manager Dept. SMTI PT Pupuk Kujang</div>
+                            <div class="sign-title">VP SMTI</div>
                         </div>
                     </div>
                 </div>
@@ -4489,10 +4700,30 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
         let SMTI_INTERNS = [];
 
+        function getDeletedInternIds() {
+            try {
+                const stored = localStorage.getItem('smti_deleted_intern_ids');
+                return stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function addDeletedInternId(id) {
+            try {
+                const ids = getDeletedInternIds();
+                const strId = String(id);
+                if (!ids.includes(strId)) ids.push(strId);
+                localStorage.setItem('smti_deleted_intern_ids', JSON.stringify(ids));
+            } catch (e) {
+                console.error("Gagal simpan deleted intern id:", e);
+            }
+        }
+
         function loadInternsData() {
             try {
                 const stored = localStorage.getItem('smti_interns_data_v1');
-                if (stored) {
+                if (stored !== null) {
                     SMTI_INTERNS = JSON.parse(stored);
                 } else {
                     SMTI_INTERNS = JSON.parse(JSON.stringify(defaultSMTIInterns));
@@ -4501,6 +4732,13 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 console.error("Gagal load interns:", e);
                 SMTI_INTERNS = JSON.parse(JSON.stringify(defaultSMTIInterns));
             }
+
+            // Pastikan data yang sudah dihapus tidak pernah dimunculkan kembali
+            const deletedIds = getDeletedInternIds();
+            if (deletedIds.length > 0) {
+                SMTI_INTERNS = SMTI_INTERNS.filter(i => !deletedIds.includes(String(i.id)) && !deletedIds.includes(i.name));
+            }
+
             // Pastikan setiap record memiliki jenis program magang (migrasi data lama)
             SMTI_INTERNS.forEach(intern => {
                 if (!intern.type) {
@@ -4580,9 +4818,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 const res = await fetch(`${VERCEL_INTERNS_ENDPOINT}?_t=${Date.now()}`, { cache: 'no-store' });
                 if (res.ok) {
                     const json = await res.json();
-                    if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+                    if (json && json.success && Array.isArray(json.data)) {
                         if (Date.now() - lastInternMutationTime < 4000) return;
-                        SMTI_INTERNS = json.data;
+                        const deletedIds = getDeletedInternIds();
+                        SMTI_INTERNS = json.data.filter(i => !deletedIds.includes(String(i.id)) && !deletedIds.includes(i.name));
                         SMTI_INTERNS.forEach(intern => {
                             if (!intern.type) {
                                 const def = defaultSMTIInterns.find(d => d.name.toLowerCase() === intern.name.toLowerCase());
@@ -4594,6 +4833,11 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         updateInternsCount();
                         populateNewProjectMemberCheckboxes();
                         populatePicSuggestions();
+
+                        // Jika cloud masih memiliki data yang sudah dihapus, perbarui cloud secara otomatis
+                        if (json.data.length > SMTI_INTERNS.length) {
+                            syncInternsToCloud();
+                        }
                     }
                 }
             } catch (e) {
@@ -4803,16 +5047,21 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 alert("Akses Terbatas: Hanya Super Admin (Septian) yang dapat menghapus data magang.");
                 return;
             }
-            const intern = SMTI_INTERNS.find(i => i.id == id);
+            const intern = SMTI_INTERNS.find(i => (i.id && i.id == id) || i.name == id);
             if (!intern) return;
 
-            if (confirm(`Hapus data magang "${intern.name}" (${intern.campus})? Data akan terhapus secara permanen dari sistem dan Vercel Cloud.`)) {
+            if (confirm(`Apakah Anda yakin ingin menghapus data magang "${intern.name}" (${intern.campus})?`)) {
                 lastInternMutationTime = Date.now();
-                SMTI_INTERNS = SMTI_INTERNS.filter(i => i.id != id);
+                if (intern.id) addDeletedInternId(intern.id);
+                if (intern.name) addDeletedInternId(intern.name);
+                SMTI_INTERNS = SMTI_INTERNS.filter(i => {
+                    if (i.id && intern.id) return i.id != intern.id;
+                    return i.name !== intern.name;
+                });
                 saveInternsData(false);
                 filterInterns();
                 await syncInternsToCloud();
-                alert(`Data magang "${intern.name}" berhasil dihapus secara permanen.`);
+                alert(`Data magang "${intern.name}" berhasil dihapus.`);
             }
         }
 
@@ -4835,7 +5084,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
            DATA MASTER KARYAWAN SMTI (PERSISTENSI LOCALSTORAGE & CLOUD)
            ========================================================= */
         const defaultSMTIEmployees = [
-            { id: 1, name: "Henisya Permata Sari", role: "Manager Dept SMTI", status: "TKO", color: "#8b5cf6", initials: "HP", pin: "1234", isManager: true },
+            { id: 1, name: "Henisya Permata Sari", role: "VP SMTI", status: "TKO", color: "#8b5cf6", initials: "HP", pin: "1234", isManager: true },
             { id: 2, name: "Mochamad Januardi", role: "Officer MIKU", status: "TKO", color: "#3b82f6", initials: "MJ", pin: "1234" },
             { id: 3, name: "Septian", role: "Super Admin SMTI", status: "TKNO", color: "#06b6d4", initials: "SE", pin: "1234", isSuperAdmin: true },
             { id: 4, name: "Dion Ridwan Giartomi", role: "Staf Miku", status: "TKO", color: "#10b981", initials: "DR", pin: "1234" },
@@ -4864,10 +5113,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 SMTI_EMPLOYEES = JSON.parse(JSON.stringify(defaultSMTIEmployees));
             }
 
-            // Sinkronkan peran khusus Henisya Permata Sari (Manager Dept SMTI) & Septian (Super Admin)
+            // Sinkronkan peran khusus Henisya Permata Sari (VP SMTI) & Septian (Super Admin)
             SMTI_EMPLOYEES.forEach(emp => {
                 if (emp.name.toLowerCase().includes('henisya')) {
-                    emp.role = "Manager Dept SMTI";
+                    emp.role = "VP SMTI";
                     emp.isManager = true;
                 }
                 if (emp.name.toLowerCase().includes('septian')) {
@@ -4958,6 +5207,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
                         if (Date.now() - lastEmployeeMutationTime < 4000) return;
                         SMTI_EMPLOYEES = json.data;
+                        SMTI_EMPLOYEES.forEach(emp => {
+                            if (emp.name && emp.name.toLowerCase().includes('henisya')) {
+                                emp.role = "VP SMTI";
+                                emp.isManager = true;
+                            }
+                        });
                         localStorage.setItem('smti_employees_data_v2', JSON.stringify(SMTI_EMPLOYEES));
                         renderEmployeesTable();
                         updateTotalCount();
@@ -5227,15 +5482,15 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
             if (status === 'syncing') {
                 badge.className = 'cloud-sync-badge syncing';
-                badge.innerHTML = '<i class="fas fa-sync fa-spin"></i> <span id="cloud-sync-text">Menyimpan ke Vercel...</span>';
+                badge.innerHTML = '<i class="fas fa-sync fa-spin"></i> <span id="cloud-sync-text">Menyimpan data...</span>';
             } else if (status === 'error') {
                 badge.className = 'cloud-sync-badge error';
-                badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span id="cloud-sync-text">Offline / Gagal Sync</span>';
-                badge.title = 'Gagal terhubung ke Vercel Storage. Klik untuk mencoba lagi.';
+                badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span id="cloud-sync-text">Offline / Gagal Sinkronisasi</span>';
+                badge.title = 'Gagal terhubung ke Cloud Server. Klik untuk mencoba lagi.';
             } else {
                 badge.className = 'cloud-sync-badge';
-                badge.innerHTML = '<i class="fas fa-cloud"></i> <span id="cloud-sync-text">Vercel Terhubung</span>';
-                badge.title = 'Data tersimpan aman di Vercel Cloud Storage. Klik untuk menyegarkan data.';
+                badge.innerHTML = '<i class="fas fa-cloud"></i> <span id="cloud-sync-text">Cloud Terhubung</span>';
+                badge.title = 'Data tersimpan aman di Cloud Server. Klik untuk menyegarkan data.';
             }
         }
 
@@ -5254,10 +5509,18 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         if (Date.now() - lastProjectMutationTime < 4000) return;
                         projectDataSMTI = json.data;
                         projectDataSMTI.forEach(normalizeProjectPic);
+                        projectDataSMTI.forEach(normalizeProjectYear);
                         localStorage.setItem('smti_projects_data_v2', JSON.stringify(projectDataSMTI));
+                        updateFiscalYearUI();
                         renderProjectsList();
                         renderMonitorBoard();
                         renderNotifications();
+                        if (typeof updateMainDashboardChart === 'function') {
+                            updateMainDashboardChart();
+                        }
+                        if (typeof renderCustomChartLegend === 'function') {
+                            renderCustomChartLegend();
+                        }
                         if (document.getElementById('flowModal') && document.getElementById('flowModal').classList.contains('active')) {
                             openFlowModal(currentActiveProjectId);
                         }
@@ -5266,7 +5529,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         }
                         updateCloudSyncBadge('synced');
                         if (showNotification) {
-                            alert("Data berhasil disinkronisasi langsung dari Vercel Cloud Storage!");
+                            alert("Data berhasil disinkronisasi langsung dari Cloud Server!");
                         }
                         return;
                     }
@@ -5365,6 +5628,164 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 project.teamMembers = [...new Set(project.teamMembers)];
             }
         }
+
+        /* =========================================================
+           MANAJEMEN TAHUN ANGGARAN (TA) RKAP & AUTO-ROLLOVER MULTI-YEAR
+           ========================================================= */
+        let currentFiscalYear = 2026;
+
+        function normalizeProjectYear(project) {
+            if (!project) return;
+            if (!project.year) {
+                if (project.deadline) {
+                    const match = String(project.deadline).match(/\b(20\d\d)\b/);
+                    if (match) {
+                        project.year = parseInt(match[1]);
+                    }
+                }
+                if (!project.year) {
+                    project.year = 2026;
+                }
+            } else {
+                project.year = parseInt(project.year) || 2026;
+            }
+        }
+
+        function initFiscalYear() {
+            try {
+                const saved = localStorage.getItem('smti_fiscal_year');
+                if (saved) {
+                    currentFiscalYear = parseInt(saved) || 2026;
+                } else {
+                    const systemYear = new Date().getFullYear();
+                    currentFiscalYear = systemYear >= 2026 ? systemYear : 2026;
+                    localStorage.setItem('smti_fiscal_year', currentFiscalYear);
+                }
+            } catch (e) {
+                currentFiscalYear = 2026;
+            }
+            updateFiscalYearUI();
+        }
+
+        function getAvailableFiscalYears() {
+            const yearsSet = new Set([2026, 2027]);
+            const systemYear = new Date().getFullYear();
+            if (systemYear >= 2026) yearsSet.add(systemYear);
+            if (currentFiscalYear) yearsSet.add(currentFiscalYear);
+
+            if (Array.isArray(projectDataSMTI)) {
+                projectDataSMTI.forEach(p => {
+                    if (p && p.year) yearsSet.add(Number(p.year));
+                });
+            }
+            return Array.from(yearsSet).sort((a, b) => a - b);
+        }
+
+        function updateFiscalYearUI() {
+            const select = document.getElementById('select-fiscal-year');
+            if (!select) return;
+
+            const years = getAvailableFiscalYears();
+            let html = '';
+            years.forEach(y => {
+                html += `<option value="${y}" ${y === currentFiscalYear ? 'selected' : ''}>TA ${y}</option>`;
+            });
+            html += `<option value="ADD_NEW">+ Tambah TA Baru...</option>`;
+            select.innerHTML = html;
+            select.value = String(currentFiscalYear);
+        }
+
+        function changeFiscalYear(val) {
+            if (val === 'ADD_NEW') {
+                const years = getAvailableFiscalYears();
+                const nextSuggested = Math.max(...years) + 1;
+                const input = prompt(`Masukkan Tahun Anggaran (TA) baru yang ingin ditambahkan (misal: ${nextSuggested}):`, nextSuggested);
+                if (!input) {
+                    updateFiscalYearUI();
+                    return;
+                }
+                const parsed = parseInt(input.trim());
+                if (isNaN(parsed) || parsed < 2020 || parsed > 2099) {
+                    alert("Harap masukkan tahun anggaran yang valid (antara 2020 s/d 2099).");
+                    updateFiscalYearUI();
+                    return;
+                }
+                currentFiscalYear = parsed;
+            } else {
+                currentFiscalYear = parseInt(val) || 2026;
+            }
+
+            try {
+                localStorage.setItem('smti_fiscal_year', currentFiscalYear);
+            } catch (e) {}
+
+            updateFiscalYearUI();
+            onFiscalYearChanged();
+        }
+
+        function onFiscalYearChanged() {
+            renderProjectsList();
+            renderMonitorBoard();
+            if (typeof setMainChartMode === 'function') {
+                setMainChartMode(currentMainChartMode);
+            } else if (typeof updateMainDashboardChart === 'function') {
+                updateMainDashboardChart();
+            }
+            if (typeof renderCustomChartLegend === 'function') {
+                renderCustomChartLegend();
+            }
+            renderNotifications();
+            if (document.getElementById('laporan') && document.getElementById('laporan').classList.contains('active')) {
+                initAnalyticsChart();
+            }
+        }
+
+        function carryOverProjects(fromYear, toYear) {
+            const fromY = parseInt(fromYear) || (currentFiscalYear - 1);
+            const toY = parseInt(toYear) || currentFiscalYear;
+
+            const unfinished = projectDataSMTI.filter(p => (p.year || 2026) === fromY && !isProjectCompleted(p));
+            if (unfinished.length === 0) {
+                alert(`Tidak ditemukan proyek yang belum selesai pada TA ${fromY}. Seluruh portofolio TA ${fromY} telah tuntas 100%!`);
+                return;
+            }
+
+            if (!confirm(`Ditemukan ${unfinished.length} proyek yang belum selesai dari TA ${fromY}.\n\nApakah Anda ingin carry-over (melanjutkan) program kerja ini ke TA ${toY}? Proyek akan disalin ke TA ${toY} dengan checklist dan riwayat alur kerja tetap utuh.`)) {
+                return;
+            }
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ", " + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
+
+            unfinished.forEach(orig => {
+                const clone = JSON.parse(JSON.stringify(orig));
+                clone.id = Date.now() + Math.floor(Math.random() * 100000);
+                clone.year = toY;
+                if (clone.deadline && clone.deadline.includes(String(fromY))) {
+                    clone.deadline = clone.deadline.replace(String(fromY), String(toY));
+                }
+                if (!Array.isArray(clone.comments)) clone.comments = [];
+                clone.comments.unshift({
+                    id: Date.now() + Math.floor(Math.random() * 1000),
+                    author: "Sistem RKAP SMTI",
+                    role: "Auto Rollover",
+                    time: dateStr,
+                    text: `Proyek ini resmi di-carry over dari Tahun Anggaran ${fromY} menuju TA ${toY} sebagai program kerja lanjutan.`
+                });
+                projectDataSMTI.unshift(clone);
+            });
+
+            saveProjectsData();
+            currentFiscalYear = toY;
+            try {
+                localStorage.setItem('smti_fiscal_year', currentFiscalYear);
+            } catch (e) {}
+
+            updateFiscalYearUI();
+            onFiscalYearChanged();
+            alert(`Sukses! Sebanyak ${unfinished.length} proyek berhasil di-carry over ke Tahun Anggaran ${toY}.`);
+        }
+
         function loadProjectsData() {
             try {
                 const stored = localStorage.getItem('smti_projects_data_v2');
@@ -5380,6 +5801,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
             // Normalisasi otomatis seluruh PIC & tim proyek sesuai daftar karyawan resmi & magang
             projectDataSMTI.forEach(normalizeProjectPic);
+            projectDataSMTI.forEach(normalizeProjectYear);
         }
 
         function saveProjectsData() {
@@ -5402,16 +5824,20 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             if (confirm("Reset semua perubahan data checklist, progres, komentar, dan daftar karyawan ke kondisi awal?")) {
                 localStorage.removeItem('smti_projects_data_v2');
                 localStorage.removeItem('smti_employees_data_v2');
+                localStorage.removeItem('smti_interns_data_v1');
+                localStorage.removeItem('smti_deleted_intern_ids');
                 projectDataSMTI = JSON.parse(JSON.stringify(defaultProjectDataSMTI));
                 SMTI_EMPLOYEES = JSON.parse(JSON.stringify(defaultSMTIEmployees));
+                SMTI_INTERNS = JSON.parse(JSON.stringify(defaultSMTIInterns));
                 saveEmployeesData();
+                saveInternsData();
                 renderProjectsList();
                 renderMonitorBoard();
                 if (document.getElementById('flowModal').classList.contains('active')) {
                     openFlowModal(currentActiveProjectId);
                 }
                 saveProjectsData();
-                alert("Data berhasil di-reset ke bawaan sistem dan disinkronkan ke Vercel Cloud.");
+                alert("Data berhasil di-reset ke pengaturan awal sistem.");
             }
         }
 
@@ -5426,6 +5852,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             loadInternsData();
             fetchInternsFromCloud();
             loadProjectsData();
+            initFiscalYear();
             updateTotalCount();
             startClock();
             renderProjectsList();
@@ -5466,9 +5893,11 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         /* --- CHART JS DASHBOARD (DINAMIS & DATA RIIL) --- */
         let mainDashboardChartInstance = null;
         let currentMainChartMode = 'line'; // 'line' (Garis Seluruh SMTI), 'pic' (Beban Kerja 12 Personil), 'category' (Rumpun)
+        let mainChartHiddenDatasets = new Set(); // Indeks data yang disembunyikan pengguna
 
         function setMainChartMode(mode) {
             currentMainChartMode = mode;
+            mainChartHiddenDatasets.clear(); // Bersihkan filter saat beralih mode
             const btnLine = document.getElementById('btn-chart-line');
             const btnPic = document.getElementById('btn-chart-pic');
             const btnCat = document.getElementById('btn-chart-category');
@@ -5478,139 +5907,111 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const legendWrap = document.getElementById('main-chart-legend-wrap');
 
             [btnLine, btnPic, btnCat].forEach(btn => {
-                if (btn) {
-                    btn.style.background = 'transparent';
-                    btn.style.color = 'var(--text-color)';
-                    btn.style.boxShadow = 'none';
-                }
+                if (btn) btn.classList.remove('active');
             });
 
             if (mode === 'line') {
-                if (btnLine) {
-                    btnLine.style.background = '#0284c7';
-                    btnLine.style.color = '#fff';
-                    btnLine.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-                }
-                if (titleEl) titleEl.innerText = 'Tren Kinerja & Progres Akumulatif Seluruh Dept SMTI';
-                if (subEl) subEl.innerText = 'Realisasi capaian departemen vs target tahunan RKAP sepanjang 2026';
+                if (btnLine) btnLine.classList.add('active');
+                if (titleEl) titleEl.innerText = `Tren Kinerja & Progres Akumulatif Seluruh Dept SMTI (TA ${currentFiscalYear})`;
+                if (subEl) subEl.innerHTML = `<i class="far fa-chart-bar" style="color: #0284c7; margin-right: 4px;"></i>Realisasi capaian departemen vs target tahunan RKAP sepanjang ${currentFiscalYear}`;
                 if (iconEl) iconEl.className = 'fas fa-chart-line';
                 if (legendWrap) legendWrap.style.display = 'block';
                 const summaryEl = document.getElementById('chart-pic-date-summary');
                 if (summaryEl) summaryEl.style.display = 'none';
             } else if (mode === 'pic') {
-                if (btnPic) {
-                    btnPic.style.background = '#0284c7';
-                    btnPic.style.color = '#fff';
-                    btnPic.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-                }
-                if (titleEl) titleEl.innerText = 'Distribusi Beban Kerja 12 Personil Dept SMTI';
-                if (subEl) subEl.innerHTML = '<i class="far fa-calendar-alt" style="color: #0284c7; margin-right: 4px;"></i><strong>Target Deadline:</strong> Mei – Agustus 2026 • <strong>Terdekat:</strong> 15 Mei 2026 (H-3) • Disinkronkan dengan Personil & Proyek Aktif SMTI';
+                if (btnPic) btnPic.classList.add('active');
+                if (titleEl) titleEl.innerText = `Distribusi Beban Kerja Personil Dept SMTI (TA ${currentFiscalYear})`;
+                if (subEl) subEl.innerHTML = `<i class="far fa-calendar-alt" style="color: #0284c7; margin-right: 4px;"></i><strong>Tahun Anggaran:</strong> TA ${currentFiscalYear} • Disinkronkan dengan Personil & Proyek Aktif SMTI`;
                 if (iconEl) iconEl.className = 'fas fa-users';
                 if (legendWrap) legendWrap.style.display = 'block';
             } else if (mode === 'category') {
-                if (btnCat) {
-                    btnCat.style.background = '#0284c7';
-                    btnCat.style.color = '#fff';
-                    btnCat.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-                }
-                if (titleEl) titleEl.innerText = 'Capaian Progres Riil per Bagian Dept SMTI';
-                if (subEl) subEl.innerHTML = '<i class="far fa-calendar-alt" style="color: #0284c7; margin-right: 4px;"></i><strong>Periode Capaian:</strong> Tahun 2026 (Maret – Agustus 2026) • <strong>Update:</strong> 22 September 2026 • Rata-rata capaian progres per bagian unit kerja';
+                if (btnCat) btnCat.classList.add('active');
+                if (titleEl) titleEl.innerText = `Capaian Progres Riil per Bagian Dept SMTI (TA ${currentFiscalYear})`;
+                if (subEl) subEl.innerHTML = `<i class="far fa-calendar-alt" style="color: #0284c7; margin-right: 4px;"></i><strong>Periode Capaian:</strong> Tahun Anggaran ${currentFiscalYear} • Rata-rata capaian progres per bagian unit kerja`;
                 if (iconEl) iconEl.className = 'fas fa-sitemap';
                 if (legendWrap) legendWrap.style.display = 'block';
+                const summaryEl = document.getElementById('chart-pic-date-summary');
+                if (summaryEl) summaryEl.style.display = 'none';
             }
-            updateMainDashboardChart();
+
+            const canvasEl = document.getElementById('mainChart');
+            if (canvasEl) {
+                canvasEl.style.opacity = '0.2';
+                canvasEl.style.transform = 'scale(0.985)';
+                setTimeout(() => {
+                    updateMainDashboardChart();
+                    canvasEl.style.opacity = '1';
+                    canvasEl.style.transform = 'scale(1)';
+                }, 130);
+            } else {
+                updateMainDashboardChart();
+            }
         }
 
         function renderCustomChartLegend() {
             const wrap = document.getElementById('main-chart-legend');
-            if (!wrap || !mainDashboardChartInstance) return;
-            if (currentMainChartMode !== 'line' && currentMainChartMode !== 'pic' && currentMainChartMode !== 'category') return;
-
-            const datasets = mainDashboardChartInstance.data.datasets;
-            if (!datasets || datasets.length === 0) return;
+            if (!wrap) return;
 
             const labelEl = document.getElementById('main-chart-legend-label');
             const hintEl = document.getElementById('main-chart-legend-hint');
 
-            if (currentMainChartMode === 'category') {
-                if (labelEl) labelEl.innerHTML = '<i class="fas fa-sitemap" style="color: #0284c7;"></i> Bagian Unit Kerja Dept SMTI:';
-                if (hintEl) hintEl.innerHTML = '<i class="far fa-calendar-alt" style="color: #0284c7;"></i> Target Waktu Capaian 2026';
+            const fiscalProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear);
+            const totalProj = fiscalProjects.length;
+            const totalSum = fiscalProjects.reduce((acc, p) => acc + (Number(p.progress) || 0), 0);
+            const deptAvg = totalProj > 0 ? Math.round((totalSum / totalProj) * 10) / 10 : (currentFiscalYear === 2026 ? 79.2 : 0);
 
-                const mikuP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
-                const pmsmtP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
-                const sisdurP = projectDataSMTI.filter(p => {
-                    const c = (p.category || '').toLowerCase();
-                    return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
-                });
+            const mikuProjs = fiscalProjects.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
+            const pmsmtProjs = fiscalProjects.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
+            const sisdurProjs = fiscalProjects.filter(p => {
+                const c = (p.category || '').toLowerCase();
+                return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
+            });
 
-                const mikuAvg = mikuP.length ? Math.round((mikuP.reduce((s, p) => s + (Number(p.progress)||0), 0) / mikuP.length)*10)/10 : 0;
-                const pmsmtAvg = pmsmtP.length ? Math.round((pmsmtP.reduce((s, p) => s + (Number(p.progress)||0), 0) / pmsmtP.length)*10)/10 : 0;
-                const sisdurAvg = sisdurP.length ? Math.round((sisdurP.reduce((s, p) => s + (Number(p.progress)||0), 0) / sisdurP.length)*10)/10 : 0;
+            const mikuAvg = mikuProjs.length ? Math.round((mikuProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / mikuProjs.length)*10)/10 : (currentFiscalYear === 2026 ? 81.0 : 0);
+            const pmsmtAvg = pmsmtProjs.length ? Math.round((pmsmtProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / pmsmtProjs.length)*10)/10 : (currentFiscalYear === 2026 ? 76.2 : 0);
+            const sisdurAvg = sisdurProjs.length ? Math.round((sisdurProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / sisdurProjs.length)*10)/10 : (currentFiscalYear === 2026 ? 70.0 : 0);
 
-                wrap.innerHTML = `
-                    <button type="button" class="chart-legend-btn active" style="--legend-color: #0284c7; --legend-bg: rgba(2, 132, 199, 0.12); --legend-shadow: rgba(2, 132, 199, 0.25);" title="Bagian Manajemen Inovasi & Kemitraan Usaha">
-                        <span class="chart-legend-indicator"></span>
-                        <i class="fas fa-lightbulb" style="color: #0284c7; font-size: 13.5px;"></i>
-                        <span class="chart-legend-text">Bagian MIKU</span>
-                        <span class="chart-legend-badge">${mikuAvg}% • Target Mei–Jun 2026</span>
-                    </button>
-                    <button type="button" class="chart-legend-btn active" style="--legend-color: #10b981; --legend-bg: rgba(16, 185, 129, 0.12); --legend-shadow: rgba(16, 185, 129, 0.25);" title="Bagian Pengembangan Manajemen Sistem Mutu Terpadu">
-                        <span class="chart-legend-indicator"></span>
-                        <i class="fas fa-award" style="color: #10b981; font-size: 13.5px;"></i>
-                        <span class="chart-legend-text">Bagian PMSMT</span>
-                        <span class="chart-legend-badge">${pmsmtAvg}% • Target Mar–Agu 2026</span>
-                    </button>
-                    <button type="button" class="chart-legend-btn active" style="--legend-color: #6366f1; --legend-bg: rgba(99, 102, 241, 0.12); --legend-shadow: rgba(99, 102, 241, 0.25);" title="Bagian Pengembangan Sistem dan Prosedur">
-                        <span class="chart-legend-indicator"></span>
-                        <i class="fas fa-file-invoice" style="color: #6366f1; font-size: 13.5px;"></i>
-                        <span class="chart-legend-text">Bagian BangSisdur</span>
-                        <span class="chart-legend-badge">${sisdurAvg}% • Target Mar–Agu 2026</span>
-                    </button>
-                `;
-                return;
-            }
+            let configs = [];
 
-            let metaConfigs = [];
             if (currentMainChartMode === 'line') {
                 if (labelEl) labelEl.innerHTML = '<i class="fas fa-layer-group" style="color: #0284c7;"></i> Garis Data Grafik (Klik tombol untuk munculkan / sembunyikan):';
                 if (hintEl) hintEl.innerHTML = '<i class="fas fa-info-circle" style="color: #0284c7;"></i> Tombol Interaktif';
 
-                metaConfigs = [
-                    { label: 'Realisasi Seluruh Dept SMTI', color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-chart-line' },
-                    { label: 'Target RKAP Tahunan', color: '#10b981', rgb: '16, 185, 129', icon: 'fa-bullseye' },
-                    { label: 'Bagian MIKU', color: '#f59e0b', rgb: '245, 158, 11', icon: 'fa-lightbulb' },
-                    { label: 'Bagian PMSMT', color: '#8b5cf6', rgb: '139, 92, 246', icon: 'fa-award' },
-                    { label: 'Bagian BangSisdur', color: '#6366f1', rgb: '99, 102, 241', icon: 'fa-file-invoice' }
+                configs = [
+                    { label: `Realisasi Seluruh Dept SMTI`, color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-chart-line', badge: `${deptAvg}%` },
+                    { label: `Target RKAP Tahunan TA ${currentFiscalYear}`, color: '#10b981', rgb: '16, 185, 129', icon: 'fa-bullseye', badge: '100%' },
+                    { label: `Bagian MIKU`, color: '#f59e0b', rgb: '245, 158, 11', icon: 'fa-lightbulb', badge: `${mikuAvg}%` },
+                    { label: `Bagian PMSMT`, color: '#8b5cf6', rgb: '139, 92, 246', icon: 'fa-award', badge: `${pmsmtAvg}%` },
+                    { label: `Bagian BangSisdur`, color: '#6366f1', rgb: '99, 102, 241', icon: 'fa-file-invoice', badge: `${sisdurAvg}%` }
+                ];
+            } else if (currentMainChartMode === 'category') {
+                if (labelEl) labelEl.innerHTML = '<i class="fas fa-sitemap" style="color: #0284c7;"></i> Bagian Unit Kerja Dept SMTI (Klik tombol untuk munculkan / sembunyikan):';
+                if (hintEl) hintEl.innerHTML = `<i class="far fa-calendar-alt" style="color: #0284c7;"></i> Target Capaian TA ${currentFiscalYear}`;
+
+                configs = [
+                    { label: 'Bagian MIKU', color: '#f59e0b', rgb: '245, 158, 11', icon: 'fa-lightbulb', badge: `${mikuAvg}%` },
+                    { label: 'Bagian PMSMT', color: '#10b981', rgb: '16, 185, 129', icon: 'fa-award', badge: `${pmsmtAvg}%` },
+                    { label: 'Bagian BangSisdur', color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-file-invoice', badge: `${sisdurAvg}%` },
+                    { label: 'Total Dept SMTI', color: '#3b82f6', rgb: '59, 130, 246', icon: 'fa-chart-line', badge: `${deptAvg}%` },
+                    { label: `Target RKAP ${currentFiscalYear}`, color: '#8b5cf6', rgb: '139, 92, 246', icon: 'fa-bullseye', badge: '100%' }
                 ];
             } else if (currentMainChartMode === 'pic') {
-                if (labelEl) labelEl.innerHTML = '<i class="fas fa-filter" style="color: #0284c7;"></i> Kategori Proyek Beban Kerja (Klik tombol untuk munculkan / sembunyikan batang):';
-                if (hintEl) hintEl.innerHTML = '<i class="far fa-calendar-check" style="color: #10b981;"></i> Target Deadline Mei – Agu 2026';
+                if (labelEl) labelEl.innerHTML = '<i class="fas fa-filter" style="color: #0284c7;"></i> Kategori Proyek Beban Kerja (Klik tombol untuk munculkan / sembunyikan):';
+                if (hintEl) hintEl.innerHTML = `<i class="far fa-calendar-check" style="color: #10b981;"></i> Target Deadline TA ${currentFiscalYear}`;
 
-                const totalActive = projectDataSMTI.filter(p => !isProjectCompleted(p)).length;
-                const totalDone = projectDataSMTI.filter(p => isProjectCompleted(p)).length;
-
-                metaConfigs = [
-                    { label: 'Proyek Sedang Berjalan (Aktif)', color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-hourglass-half', defaultBadge: `${totalActive} Proyek • DL s/d Agu 2026` },
-                    { label: 'Proyek Sukses Selesai (100%)', color: '#10b981', rgb: '16, 185, 129', icon: 'fa-check-circle', defaultBadge: `${totalDone} Proyek • Tuntas Mar-Apr 2026` }
+                configs = [
+                    { label: 'Beban Lead (3+ Proyek)', color: '#f59e0b', rgb: '245, 158, 11', icon: 'fa-user-tie', badge: 'Prioritas' },
+                    { label: 'Beban Multi (2 Proyek)', color: '#10b981', rgb: '16, 185, 129', icon: 'fa-users-cog', badge: 'Menengah' },
+                    { label: 'Beban Mandiri (1 Proyek)', color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-user-shield', badge: 'Mandiri' },
+                    { label: 'Kontributor Magang', color: '#3b82f6', rgb: '59, 130, 246', icon: 'fa-graduation-cap', badge: 'Magang' },
+                    { label: 'Kapasitas Siap (Standby)', color: '#8b5cf6', rgb: '139, 92, 246', icon: 'fa-bolt', badge: '100% Siap' }
                 ];
             }
 
             let html = '';
-            datasets.forEach((ds, idx) => {
-                const conf = metaConfigs[idx] || { label: ds.label, color: '#0284c7', rgb: '2, 132, 199', icon: 'fa-chart-bar' };
-
-                // Status visibilitas dataset
-                const isVisible = mainDashboardChartInstance.isDatasetVisible
-                    ? mainDashboardChartInstance.isDatasetVisible(idx)
-                    : !mainDashboardChartInstance.getDatasetMeta(idx).hidden;
-
-                // Ambil nilai persen dari label jika ada (misal: "(79.2%)") atau defaultBadge
-                const valMatch = (ds.label || '').match(/\(([^)]+)\)/);
-                let valBadge = valMatch ? valMatch[1] : '';
-                if (!valBadge && conf.defaultBadge) {
-                    valBadge = conf.defaultBadge;
-                }
-
+            configs.forEach((conf, idx) => {
+                const isHidden = mainChartHiddenDatasets.has(idx);
+                const isVisible = !isHidden;
                 const activeClass = isVisible ? 'active' : 'inactive';
                 const eyeIcon = isVisible ? 'fa-eye' : 'fa-eye-slash';
                 const titleText = isVisible ? `Klik untuk menyembunyikan "${conf.label}" dari grafik` : `Klik untuk memunculkan kembali "${conf.label}" di grafik`;
@@ -5622,8 +6023,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         <i class="fas ${eyeIcon} chart-legend-eye"></i>
                         <span class="chart-legend-indicator"></span>
                         <i class="fas ${conf.icon}" style="color: ${isVisible ? conf.color : '#94a3b8'}; font-size: 13.5px;"></i>
-                        <span class="chart-legend-text">${conf.label}</span>
-                        ${valBadge ? `<span class="chart-legend-badge">${valBadge}</span>` : ''}
+                        <span class="chart-legend-text" style="${isVisible ? '' : 'text-decoration: line-through;'}">${conf.label}</span>
+                        ${conf.badge ? `<span class="chart-legend-badge">${conf.badge}</span>` : ''}
                     </button>
                 `;
             });
@@ -5632,17 +6033,31 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         }
 
         function toggleMainChartDataset(index) {
-            if (!mainDashboardChartInstance) return;
-            const isVisible = mainDashboardChartInstance.isDatasetVisible
-                ? mainDashboardChartInstance.isDatasetVisible(index)
-                : !mainDashboardChartInstance.getDatasetMeta(index).hidden;
-
-            if (mainDashboardChartInstance.setDatasetVisibility) {
-                mainDashboardChartInstance.setDatasetVisibility(index, !isVisible);
+            if (mainChartHiddenDatasets.has(index)) {
+                mainChartHiddenDatasets.delete(index);
             } else {
-                mainDashboardChartInstance.getDatasetMeta(index).hidden = isVisible ? true : null;
+                mainChartHiddenDatasets.add(index);
             }
-            mainDashboardChartInstance.update();
+
+            // Sinkronkan ke Chart.js instance secara halus
+            if (currentMainChartMode === 'line') {
+                if (mainDashboardChartInstance && mainDashboardChartInstance.data && mainDashboardChartInstance.data.datasets) {
+                    if (mainDashboardChartInstance.data.datasets[index]) {
+                        const isVisible = !mainChartHiddenDatasets.has(index);
+                        if (mainDashboardChartInstance.setDatasetVisibility) {
+                            mainDashboardChartInstance.setDatasetVisibility(index, isVisible);
+                        } else if (mainDashboardChartInstance.getDatasetMeta(index)) {
+                            mainDashboardChartInstance.getDatasetMeta(index).hidden = !isVisible;
+                        }
+                        mainDashboardChartInstance.update();
+                    }
+                }
+            } else {
+                // Untuk mode 'pic' dan 'category', perbarui chart agar bar tersaring dengan animasi
+                updateMainDashboardChart();
+            }
+
+            // Perbarui tombol legenda kustom
             renderCustomChartLegend();
         }
 
@@ -5654,8 +6069,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 return;
             }
 
-            const activeProjs = projectDataSMTI.filter(p => !isProjectCompleted(p));
-            const doneProjs = projectDataSMTI.filter(p => isProjectCompleted(p));
+            const fiscalProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear);
+            const activeProjs = fiscalProjects.filter(p => !isProjectCompleted(p));
+            const doneProjs = fiscalProjects.filter(p => isProjectCompleted(p));
 
             summaryEl.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
@@ -5664,20 +6080,20 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             <i class="far fa-calendar-alt"></i>
                         </span>
                         <div>
-                            <strong style="color: #0284c7; font-size: 13px;">Timeline Target & Tanggal Deadline Proyek SMTI</strong>
+                            <strong style="color: #0284c7; font-size: 13px;">Timeline Target & Tanggal Deadline Proyek SMTI (TA ${currentFiscalYear})</strong>
                             <div style="color: #64748b; font-size: 11.5px; margin-top: 1px;">
-                                Rentang Waktu Penugasan: <strong>Maret s/d Agustus 2026</strong> • Total: <strong>${projectDataSMTI.length} Proyek</strong> (${activeProjs.length} Berjalan Aktif • ${doneProjs.length} Sukses Selesai)
+                                Tahun Anggaran: <strong>TA ${currentFiscalYear}</strong> • Total: <strong>${fiscalProjects.length} Proyek</strong> (${activeProjs.length} Berjalan Aktif • ${doneProjs.length} Sukses Selesai)
                             </div>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; background: rgba(2, 132, 199, 0.08); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(2, 132, 199, 0.22);">
                             <i class="fas fa-hourglass-half" style="color: #0284c7;"></i>
-                            <span>Target Terdekat: <strong style="color: #0284c7;">15 Mei 2026</strong> (KIX - Januardi, H-3)</span>
+                            <span>Berjalan: <strong style="color: #0284c7;">${activeProjs.length} Proyek</strong></span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; background: rgba(16, 185, 129, 0.08); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.22);">
                             <i class="fas fa-check-circle" style="color: #10b981;"></i>
-                            <span>Tuntas Terakhir: <strong style="color: #10b981;">10 April 2026</strong> (ISO - Dion)</span>
+                            <span>Tuntas: <strong style="color: #10b981;">${doneProjs.length} Proyek</strong></span>
                         </div>
                     </div>
                 </div>
@@ -5692,9 +6108,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 return;
             }
 
-            const mikuP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
-            const pmsmtP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
-            const sisdurP = projectDataSMTI.filter(p => {
+            const fiscalProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear);
+            const mikuP = fiscalProjects.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
+            const pmsmtP = fiscalProjects.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
+            const sisdurP = fiscalProjects.filter(p => {
                 const c = (p.category || '').toLowerCase();
                 return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
             });
@@ -5710,24 +6127,24 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             <i class="far fa-calendar-alt"></i>
                         </span>
                         <div>
-                            <strong style="color: #0284c7; font-size: 13px;">Timeline Target & Tanggal Waktu Capaian per Bagian SMTI</strong>
+                            <strong style="color: #0284c7; font-size: 13px;">Timeline Target & Tanggal Waktu Capaian per Bagian SMTI (TA ${currentFiscalYear})</strong>
                             <div style="color: #64748b; font-size: 11.5px; margin-top: 1px;">
-                                Periode Evaluasi Capaian: <strong>Maret s/d Agustus 2026</strong> • Total: <strong>3 Bagian Unit Kerja SMTI</strong>
+                                Periode Evaluasi Capaian: <strong>Tahun Anggaran ${currentFiscalYear}</strong> • Total: <strong>${fiscalProjects.length} Portofolio SMTI</strong>
                             </div>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; background: rgba(2, 132, 199, 0.08); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(2, 132, 199, 0.22);">
                             <i class="fas fa-lightbulb" style="color: #0284c7;"></i>
-                            <span>MIKU: <strong style="color: #0284c7;">15 Mei – 30 Jun 2026</strong> (${mikuAvg}%)</span>
+                            <span>MIKU: <strong style="color: #0284c7;">${mikuP.length} Proyek</strong> (${mikuAvg}%)</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; background: rgba(16, 185, 129, 0.08); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.22);">
                             <i class="fas fa-award" style="color: #10b981;"></i>
-                            <span>PMSMT: <strong style="color: #10b981;">Mar – 31 Agu 2026</strong> (${pmsmtAvg}%)</span>
+                            <span>PMSMT: <strong style="color: #10b981;">${pmsmtP.length} Proyek</strong> (${pmsmtAvg}%)</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; background: rgba(99, 102, 241, 0.08); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(99, 102, 241, 0.22);">
                             <i class="fas fa-file-invoice" style="color: #6366f1;"></i>
-                            <span>BangSisdur: <strong style="color: #6366f1;">Mar – 31 Agu 2026</strong> (${sisdurAvg}%)</span>
+                            <span>BangSisdur: <strong style="color: #6366f1;">${sisdurP.length} Proyek</strong> (${sisdurAvg}%)</span>
                         </div>
                     </div>
                 </div>
@@ -5738,35 +6155,91 @@ HTML_CONTENT = r'''<!DOCTYPE html>
         function updateMainDashboardChart() {
             const ctx = document.getElementById('mainChart');
             if (!ctx) return;
+            const ctx2d = ctx.getContext('2d');
 
             if (currentMainChartMode === 'line') {
-                // ================= MODE 1: GRAFIK GARIS SELURUH DEPT SMTI =================
-                const totalProj = projectDataSMTI.length;
-                const totalProgressSum = projectDataSMTI.reduce((acc, p) => acc + (Number(p.progress) || 0), 0);
-                const currentDeptAvg = totalProj > 0 ? Math.round((totalProgressSum / totalProj) * 10) / 10 : 77.2;
+                // ================= MODE 1: GRAFIK TREN GARIS SELURUH DEPT SMTI (MODERN & GLOWING ANIMATED) =================
+                const fiscalProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear);
+                const totalProj = fiscalProjects.length;
+                const totalProgressSum = fiscalProjects.reduce((acc, p) => acc + (Number(p.progress) || 0), 0);
+                const currentDeptAvg = totalProj > 0 ? Math.round((totalProgressSum / totalProj) * 10) / 10 : (currentFiscalYear === 2026 ? 79.2 : 0);
 
-                const mikuProjs = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
-                const pmsmtProjs = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
-                const sisdurProjs = projectDataSMTI.filter(p => (p.category || '').toLowerCase().includes('sistem'));
+                const mikuProjs = fiscalProjects.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
+                const pmsmtProjs = fiscalProjects.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
+                const sisdurProjs = fiscalProjects.filter(p => {
+                    const c = (p.category || '').toLowerCase();
+                    return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
+                });
 
-                const mikuAvg = mikuProjs.length > 0 ? Math.round(mikuProjs.reduce((a, b) => a + Number(b.progress), 0) / mikuProjs.length * 10) / 10 : 81.0;
-                const pmsmtAvg = pmsmtProjs.length > 0 ? Math.round(pmsmtProjs.reduce((a, b) => a + Number(b.progress), 0) / pmsmtProjs.length * 10) / 10 : 76.2;
-                const sisdurAvg = sisdurProjs.length > 0 ? Math.round(sisdurProjs.reduce((a, b) => a + Number(b.progress), 0) / sisdurProjs.length * 10) / 10 : 70.0;
+                const mikuAvg = mikuProjs.length > 0 ? Math.round(mikuProjs.reduce((a, b) => a + Number(b.progress), 0) / mikuProjs.length * 10) / 10 : (currentFiscalYear === 2026 ? 81.0 : 0);
+                const pmsmtAvg = pmsmtProjs.length > 0 ? Math.round(pmsmtProjs.reduce((a, b) => a + Number(b.progress), 0) / pmsmtProjs.length * 10) / 10 : (currentFiscalYear === 2026 ? 76.2 : 0);
+                const sisdurAvg = sisdurProjs.length > 0 ? Math.round(sisdurProjs.reduce((a, b) => a + Number(b.progress), 0) / sisdurProjs.length * 10) / 10 : (currentFiscalYear === 2026 ? 70.0 : 0);
 
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep (Kini)', 'Okt (Est)', 'Nov (Est)', 'Des (Tgt)'];
-                
-                // Realisasi kumulatif departemen s/d September 2026
-                const realisasiDept = [18, 28, 45, 56, 65, 69, 73, 75, currentDeptAvg, null, null, null];
+                const baseMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
                 const targetRKAP = [15, 25, 40, 52, 62, 70, 78, 85, 90, 94, 97, 100];
-                const lineMiku = [16, 26, 44, 55, 68, 72, 77, 79, mikuAvg, null, null, null];
-                const linePMSMT = [20, 30, 48, 58, 63, 67, 71, 73, pmsmtAvg, null, null, null];
-                const lineSisdur = [17, 27, 42, 50, 57, 62, 65, 68, sisdurAvg, null, null, null];
+
+                let months = [];
+                let realisasiDept = [];
+                let lineMiku = [];
+                let linePMSMT = [];
+                let lineSisdur = [];
+                let pointRadiusDept = [];
+
+                if (currentFiscalYear === 2026) {
+                    months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep (Kini)', 'Okt (Est)', 'Nov (Est)', 'Des (Tgt)'];
+                    realisasiDept = [18, 28, 45, 56, 65, 69, 73, 75, currentDeptAvg, null, null, null];
+                    lineMiku = [16, 26, 44, 55, 68, 72, 77, 79, mikuAvg, null, null, null];
+                    linePMSMT = [20, 30, 48, 58, 63, 67, 71, 73, pmsmtAvg, null, null, null];
+                    lineSisdur = [17, 27, 42, 50, 57, 62, 65, 68, sisdurAvg, null, null, null];
+                    pointRadiusDept = [4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 7.5, 0, 0, 0];
+                } else {
+                    // Multi-year (misal: TA 2027, 2028 dst) - Grafik bersih dari 0%
+                    const sysYear = new Date().getFullYear();
+                    const curMonthIdx = (sysYear === currentFiscalYear) ? new Date().getMonth() : 0;
+
+                    months = baseMonths.map((m, idx) => {
+                        if (idx === curMonthIdx) return `${m} (Kini)`;
+                        if (idx === 11) return `${m} (Tgt)`;
+                        if (idx > curMonthIdx) return `${m} (Est)`;
+                        return m;
+                    });
+
+                    realisasiDept = new Array(12).fill(null);
+                    lineMiku = new Array(12).fill(null);
+                    linePMSMT = new Array(12).fill(null);
+                    lineSisdur = new Array(12).fill(null);
+                    pointRadiusDept = new Array(12).fill(0);
+
+                    if (totalProj > 0) {
+                        for (let i = 0; i <= curMonthIdx; i++) {
+                            const ratio = curMonthIdx === 0 ? 1 : (i / curMonthIdx);
+                            realisasiDept[i] = Math.round(currentDeptAvg * ratio * 10) / 10;
+                            lineMiku[i] = Math.round(mikuAvg * ratio * 10) / 10;
+                            linePMSMT[i] = Math.round(pmsmtAvg * ratio * 10) / 10;
+                            lineSisdur[i] = Math.round(sisdurAvg * ratio * 10) / 10;
+                            pointRadiusDept[i] = (i === curMonthIdx) ? 7.5 : 4.5;
+                        }
+                    } else {
+                        // Bersih dari 0% pada awal tahun baru
+                        realisasiDept[0] = 0;
+                        lineMiku[0] = 0;
+                        linePMSMT[0] = 0;
+                        lineSisdur[0] = 0;
+                        pointRadiusDept[0] = 7.5;
+                    }
+                }
+
+                // Modern smooth area gradient
+                const gradSMTI = ctx2d.createLinearGradient(0, 0, 0, 360);
+                gradSMTI.addColorStop(0, 'rgba(2, 132, 199, 0.38)');
+                gradSMTI.addColorStop(0.65, 'rgba(2, 132, 199, 0.08)');
+                gradSMTI.addColorStop(1, 'rgba(2, 132, 199, 0.0)');
 
                 if (mainDashboardChartInstance) {
                     mainDashboardChartInstance.destroy();
                 }
 
-                mainDashboardChartInstance = new Chart(ctx.getContext('2d'), {
+                mainDashboardChartInstance = new Chart(ctx2d, {
                     type: 'line',
                     data: {
                         labels: months,
@@ -5775,59 +6248,91 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                 label: `Realisasi Seluruh Dept SMTI (${currentDeptAvg}%)`,
                                 data: realisasiDept,
                                 borderColor: '#0284c7',
-                                backgroundColor: 'rgba(2, 132, 199, 0.12)',
+                                backgroundColor: gradSMTI,
                                 borderWidth: 3.5,
                                 fill: true,
-                                tension: 0.35,
+                                tension: 0.38,
                                 pointBackgroundColor: '#0284c7',
                                 pointBorderColor: '#ffffff',
-                                pointBorderWidth: 2,
-                                pointRadius: 5,
-                                pointHoverRadius: 8
+                                pointBorderWidth: 2.2,
+                                pointRadius: pointRadiusDept,
+                                pointHoverRadius: 9.5,
+                                pointHoverBorderWidth: 3.5,
+                                pointHoverBackgroundColor: '#ffffff',
+                                pointHoverBorderColor: '#0284c7',
+                                hidden: mainChartHiddenDatasets.has(0)
                             },
                             {
-                                label: 'Target RKAP Tahunan (100%)',
+                                label: `Target RKAP Tahunan TA ${currentFiscalYear} (100%)`,
                                 data: targetRKAP,
                                 borderColor: '#10b981',
-                                borderWidth: 2,
+                                borderWidth: 2.2,
                                 borderDash: [6, 6],
                                 fill: false,
                                 tension: 0.25,
                                 pointBackgroundColor: '#10b981',
-                                pointRadius: 3
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 1.5,
+                                pointRadius: 3.5,
+                                pointHoverRadius: 7,
+                                pointHoverBorderWidth: 2.5,
+                                pointHoverBackgroundColor: '#ffffff',
+                                pointHoverBorderColor: '#10b981',
+                                hidden: mainChartHiddenDatasets.has(1)
                             },
                             {
-                                label: `Rumpun MIKU (${mikuAvg}%)`,
+                                label: `Bagian MIKU (${mikuAvg}%)`,
                                 data: lineMiku,
                                 borderColor: '#f59e0b',
-                                borderWidth: 1.8,
-                                borderDash: [3, 3],
+                                borderWidth: 2,
+                                borderDash: [4, 4],
                                 fill: false,
-                                tension: 0.3,
+                                tension: 0.35,
                                 pointBackgroundColor: '#f59e0b',
-                                pointRadius: 3
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 1.5,
+                                pointRadius: 3.5,
+                                pointHoverRadius: 7,
+                                pointHoverBorderWidth: 2.5,
+                                pointHoverBackgroundColor: '#ffffff',
+                                pointHoverBorderColor: '#f59e0b',
+                                hidden: mainChartHiddenDatasets.has(2)
                             },
                             {
-                                label: `Rumpun PMSMT (${pmsmtAvg}%)`,
+                                label: `Bagian PMSMT (${pmsmtAvg}%)`,
                                 data: linePMSMT,
                                 borderColor: '#8b5cf6',
-                                borderWidth: 1.8,
-                                borderDash: [3, 3],
+                                borderWidth: 2,
+                                borderDash: [4, 4],
                                 fill: false,
-                                tension: 0.3,
+                                tension: 0.35,
                                 pointBackgroundColor: '#8b5cf6',
-                                pointRadius: 3
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 1.5,
+                                pointRadius: 3.5,
+                                pointHoverRadius: 7,
+                                pointHoverBorderWidth: 2.5,
+                                pointHoverBackgroundColor: '#ffffff',
+                                pointHoverBorderColor: '#8b5cf6',
+                                hidden: mainChartHiddenDatasets.has(3)
                             },
                             {
-                                label: `BangSisdur (${sisdurAvg}%)`,
+                                label: `Bagian BangSisdur (${sisdurAvg}%)`,
                                 data: lineSisdur,
                                 borderColor: '#6366f1',
-                                borderWidth: 1.8,
-                                borderDash: [3, 3],
+                                borderWidth: 2,
+                                borderDash: [4, 4],
                                 fill: false,
-                                tension: 0.3,
+                                tension: 0.35,
                                 pointBackgroundColor: '#6366f1',
-                                pointRadius: 3
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 1.5,
+                                pointRadius: 3.5,
+                                pointHoverRadius: 7,
+                                pointHoverBorderWidth: 2.5,
+                                pointHoverBackgroundColor: '#ffffff',
+                                pointHoverBorderColor: '#6366f1',
+                                hidden: mainChartHiddenDatasets.has(4)
                             }
                         ]
                     },
@@ -5838,36 +6343,74 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             mode: 'index',
                             intersect: false
                         },
+                        animation: {
+                            duration: 1200,
+                            easing: 'easeOutQuart',
+                            delay: (context) => {
+                                let delay = 0;
+                                if (context.type === 'data' && context.mode === 'default') {
+                                    delay = context.dataIndex * 45 + context.datasetIndex * 80;
+                                }
+                                return delay;
+                            }
+                        },
+                        transitions: {
+                            active: {
+                                animation: {
+                                    duration: 280,
+                                    easing: 'easeOutQuad'
+                                }
+                            }
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 max: 100,
                                 ticks: {
-                                    callback: v => v + '%'
+                                    callback: v => v + '%',
+                                    font: { size: 11, weight: '600' }
                                 },
                                 grid: { color: 'rgba(100, 116, 139, 0.12)' }
                             },
                             x: {
                                 grid: { color: 'rgba(100, 116, 139, 0.06)' },
                                 ticks: {
-                                    font: { size: 11 }
+                                    font: { size: 11.5, weight: '600' }
                                 }
                             }
                         },
                         plugins: {
-                            legend: {
-                                display: false
-                            },
+                            legend: { display: false },
                             tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.94)',
+                                titleColor: '#38bdf8',
+                                titleFont: { size: 13, weight: '800' },
+                                bodyColor: '#f1f5f9',
+                                bodyFont: { size: 12 },
+                                borderColor: 'rgba(56, 189, 248, 0.35)',
+                                borderWidth: 1.2,
+                                padding: 14,
+                                cornerRadius: 10,
+                                boxPadding: 6,
+                                usePointStyle: true,
                                 callbacks: {
+                                    title: (items) => `📅 Periode: ${items[0].label}`,
                                     label: function(ctx) {
                                         if (ctx.raw === null || ctx.raw === undefined) return null;
                                         return ` ${ctx.dataset.label.split('(')[0].trim()}: ${ctx.raw}%`;
                                     },
                                     afterBody: function(items) {
                                         const idx = items[0].dataIndex;
-                                        if (idx === 8) {
-                                            return `\nPerforma September 2026:\n• Realisasi Gabungan: ${currentDeptAvg}%\n• Total Proyek Terpantau: ${totalProj} Proyek`;
+                                        if (currentFiscalYear === 2026 && idx === 8) {
+                                            const devText = currentDeptAvg >= 90 ? '🟢 On Target' : `🟡 Deviasi ${(Math.round(Math.abs(90 - currentDeptAvg)*10)/10)}%`;
+                                            return `\n📌 Posisi September 2026:\n• Realisasi Gabungan: ${currentDeptAvg}%\n• Target RKAP: 90%\n• Progres Target: ${devText}\n• Total Portofolio: ${totalProj} Proyek SMTI`;
+                                        } else if (currentFiscalYear !== 2026) {
+                                            const tgtVal = targetRKAP[idx] || 100;
+                                            const realVal = realisasiDept[idx];
+                                            if (realVal !== null && realVal !== undefined) {
+                                                const devText = realVal >= tgtVal ? '🟢 On Target' : `🟡 Gap ${(Math.round(Math.abs(tgtVal - realVal)*10)/10)}%`;
+                                                return `\n📌 Posisi TA ${currentFiscalYear} (${items[0].label}):\n• Realisasi Gabungan: ${realVal}%\n• Target RKAP: ${tgtVal}%\n• Status: ${devText}\n• Total Portofolio: ${totalProj} Proyek SMTI`;
+                                            }
                                         }
                                         return '';
                                     }
@@ -5877,11 +6420,11 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     }
                 });
 
-                // Render tombol legenda interaktif kustom (Lebih besar, jelas, dan dapat diklik)
+                // Render tombol legenda interaktif kustom
                 renderCustomChartLegend();
 
             } else if (currentMainChartMode === 'pic') {
-                // ================= MODE 2: BEBAN KERJA 12 PERSONIL SMTI & MAGANG (STACKED BAR & DEADLINE TOOLTIP) =================
+                // ================= MODE 2: BEBAN KERJA 12 PERSONIL SMTI (MODERN STACKED BAR & TOOLTIP) =================
                 const empList = (typeof SMTI_EMPLOYEES !== 'undefined' && SMTI_EMPLOYEES.length > 0) ? SMTI_EMPLOYEES : defaultSMTIEmployees;
                 const internList = (typeof SMTI_INTERNS !== 'undefined' && Array.isArray(SMTI_INTERNS)) ? SMTI_INTERNS : [];
 
@@ -5903,7 +6446,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 const internWorkloadMap = {};
                 const otherContributors = {};
 
-                projectDataSMTI.forEach(p => {
+                const fiscalProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear);
+
+                fiscalProjects.forEach(p => {
                     const picRaw = (p.pic || '').trim();
                     const picLower = picRaw.toLowerCase();
                     let matchedEmp = null;
@@ -6019,34 +6564,64 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     sorted.push([k + ' (Mitra)', v]);
                 });
 
-                const labels = sorted.map(([name, d]) => {
+                // Terapkan filter berdasarkan tombol legenda yang disembunyikan
+                // 0: Beban Lead (>= 3 Proyek)
+                // 1: Beban Multi (2 Proyek)
+                // 2: Beban Mandiri (1 Proyek)
+                // 3: Kontributor Magang
+                // 4: Kapasitas Siap (0 Proyek)
+                const filteredSorted = sorted.filter(([name, d]) => {
+                    if (d.isIntern) {
+                        if (mainChartHiddenDatasets.has(3)) return false;
+                    } else if (d.count >= 3) {
+                        if (mainChartHiddenDatasets.has(0)) return false;
+                    } else if (d.count === 2) {
+                        if (mainChartHiddenDatasets.has(1)) return false;
+                    } else if (d.count === 1) {
+                        if (mainChartHiddenDatasets.has(2)) return false;
+                    } else if (d.count === 0) {
+                        if (mainChartHiddenDatasets.has(4)) return false;
+                    }
+                    return true;
+                });
+
+                const labels = filteredSorted.map(([name, d]) => {
                     const line1 = `${name} (${d.status})`;
                     let line2 = '';
                     if (d.activeProjects && d.activeProjects.length > 0) {
-                        const dls = d.activeProjects.map(p => (p.deadline || '').replace(' 2026', '').trim()).filter(Boolean);
+                        const dls = d.activeProjects.map(p => (p.deadline || '').replace(` ${currentFiscalYear}`, '').replace(' 2026', '').trim()).filter(Boolean);
                         if (dls.length === 1) {
                             line2 = `📅 DL: ${dls[0]}`;
                         } else if (dls.length > 1) {
                             line2 = `📅 DL: ${dls.slice(0, 2).join(' & ')}`;
                         } else {
-                            line2 = '📅 DL: Aktif 2026';
+                            line2 = `📅 DL: Aktif TA ${currentFiscalYear}`;
                         }
                     } else if (d.completedProjects && d.completedProjects.length > 0) {
-                        const dls = d.completedProjects.map(p => (p.deadline || '').replace(' 2026', '').trim()).filter(Boolean);
+                        const dls = d.completedProjects.map(p => (p.deadline || '').replace(` ${currentFiscalYear}`, '').replace(' 2026', '').trim()).filter(Boolean);
                         line2 = `✅ Tuntas (${dls[0] || '100%'})`;
                     } else {
                         line2 = '⚡ Beban 0 (Standby)';
                     }
                     return [line1, line2];
                 });
-                const activeDataValues = sorted.map(([, d]) => d.activeCount);
-                const completedDataValues = sorted.map(([, d]) => d.completedCount);
+                const activeDataValues = filteredSorted.map(([, d]) => d.activeCount);
+                const completedDataValues = filteredSorted.map(([, d]) => d.completedCount);
+
+                // Buat gradient modern untuk stacked bars
+                const activeGrad = ctx2d.createLinearGradient(0, 0, 0, 360);
+                activeGrad.addColorStop(0, '#38bdf8');
+                activeGrad.addColorStop(1, '#0284c7');
+
+                const completedGrad = ctx2d.createLinearGradient(0, 0, 0, 360);
+                completedGrad.addColorStop(0, '#34d399');
+                completedGrad.addColorStop(1, '#059669');
 
                 if (mainDashboardChartInstance) {
                     mainDashboardChartInstance.destroy();
                 }
 
-                mainDashboardChartInstance = new Chart(ctx.getContext('2d'), {
+                mainDashboardChartInstance = new Chart(ctx2d, {
                     type: 'bar',
                     data: {
                         labels: labels,
@@ -6054,20 +6629,26 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             {
                                 label: 'Proyek Sedang Berjalan (Aktif)',
                                 data: activeDataValues,
-                                backgroundColor: '#0284c7',
-                                borderColor: '#0369a1',
+                                backgroundColor: activeGrad,
+                                borderColor: '#0284c7',
                                 borderWidth: 1.5,
                                 borderRadius: { topLeft: 0, topRight: 0, bottomLeft: 6, bottomRight: 6 },
-                                maxBarThickness: 42
+                                hoverBackgroundColor: '#60a5fa',
+                                hoverBorderColor: '#ffffff',
+                                hoverBorderWidth: 2,
+                                maxBarThickness: 44
                             },
                             {
                                 label: 'Proyek Sukses Selesai (100%)',
                                 data: completedDataValues,
-                                backgroundColor: '#10b981',
+                                backgroundColor: completedGrad,
                                 borderColor: '#059669',
                                 borderWidth: 1.5,
                                 borderRadius: { topLeft: 6, topRight: 6, bottomLeft: 0, bottomRight: 0 },
-                                maxBarThickness: 42
+                                hoverBackgroundColor: '#4ade80',
+                                hoverBorderColor: '#ffffff',
+                                hoverBorderWidth: 2,
+                                maxBarThickness: 44
                             }
                         ]
                     },
@@ -6077,6 +6658,25 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         interaction: {
                             mode: 'index',
                             intersect: false
+                        },
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeOutQuart',
+                            delay: (context) => {
+                                let delay = 0;
+                                if (context.type === 'data' && context.mode === 'default') {
+                                    delay = context.dataIndex * 35;
+                                }
+                                return delay;
+                            }
+                        },
+                        transitions: {
+                            active: {
+                                animation: {
+                                    duration: 250,
+                                    easing: 'easeOutQuad'
+                                }
+                            }
                         },
                         scales: {
                             x: {
@@ -6094,169 +6694,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                 beginAtZero: true,
                                 ticks: { 
                                     stepSize: 1,
-                                    precision: 0
-                                },
-                                grid: { color: 'rgba(100, 116, 139, 0.12)' }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(15, 23, 42, 0.96)',
-                                titleColor: '#38bdf8',
-                                titleFont: { size: 13, weight: '800' },
-                                bodyColor: '#f1f5f9',
-                                bodyFont: { size: 12 },
-                                borderColor: 'rgba(56, 189, 248, 0.35)',
-                                borderWidth: 1,
-                                padding: 14,
-                                cornerRadius: 10,
-                                boxPadding: 6,
-                                callbacks: {
-                                    title: function(items) {
-                                        const idx = items[0].dataIndex;
-                                        const [nameWithStatus, d] = sorted[idx];
-                                        return `👤 ${nameWithStatus} • ${d.role}`;
-                                    },
-                                    beforeBody: function(items) {
-                                        const idx = items[0].dataIndex;
-                                        const [, d] = sorted[idx];
-                                        return `Total Tugas: ${d.count} Proyek (${d.activeCount} Aktif • ${d.completedCount} Selesai)\n────────────────────────────────────────`;
-                                    },
-                                    afterBody: function(items) {
-                                        const idx = items[0].dataIndex;
-                                        const [, d] = sorted[idx];
-                                        if (d.allProjects.length === 0) {
-                                            return `\nStatus: Kapasitas Tersedia (Siap Menerima Penugasan Baru)`;
-                                        }
-
-                                        let str = '\nRincian Proyek & Target Tanggal:\n';
-                                        d.allProjects.forEach((proj, i) => {
-                                            const statusBadge = proj.isCompleted 
-                                                ? '✅ TUNTAS SELESAI (100%)' 
-                                                : `⏳ ${proj.progress}% BERJALAN`;
-                                            const dl = proj.deadline ? `📅 Target Deadline: ${proj.deadline}` : '📅 Target: Belum ditentukan';
-                                            const days = (!proj.isCompleted && proj.daysLeft && proj.daysLeft !== 'Selesai') ? ` [${proj.daysLeft}]` : (proj.isCompleted ? ' [Tuntas 100%]' : '');
-                                            str += `\n${i + 1}. ${proj.name}\n   • Kategori: ${proj.category}\n   • Status: ${statusBadge}\n   • ${dl}${days}`;
-                                        });
-                                        return str;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-
-                // Render tombol legenda kustom (Sama persis dengan model tren garis)
-                renderCustomChartLegend();
-                renderPicDateSummary(sorted);
-
-            } else if (currentMainChartMode === 'category') {
-                // ================= MODE 3: CAPAIAN PER BAGIAN DEPT SMTI =================
-                const bagianDefs = [
-                    {
-                        key: 'MIKU',
-                        name: 'Bagian MIKU',
-                        fullName: 'Manajemen Inovasi & Kemitraan Usaha',
-                        dateRange: '15 Mei – 30 Jun 2026',
-                        icon: 'fa-lightbulb',
-                        bg: 'rgba(2, 132, 199, 0.85)',
-                        border: '#0284c7',
-                        match: (cat) => (cat || '').toUpperCase().includes('MIKU')
-                    },
-                    {
-                        key: 'PMSMT',
-                        name: 'Bagian PMSMT',
-                        fullName: 'Pengembangan Manajemen Sistem Mutu Terpadu',
-                        dateRange: '10 Apr – 31 Agu 2026',
-                        icon: 'fa-award',
-                        bg: 'rgba(16, 185, 129, 0.85)',
-                        border: '#10b981',
-                        match: (cat) => (cat || '').toUpperCase().includes('PMSMT')
-                    },
-                    {
-                        key: 'BangSisdur',
-                        name: 'Bagian BangSisdur',
-                        fullName: 'Pengembangan Sistem & Prosedur',
-                        dateRange: '25 Mar – 31 Agu 2026',
-                        icon: 'fa-file-invoice',
-                        bg: 'rgba(99, 102, 241, 0.85)',
-                        border: '#6366f1',
-                        match: (cat) => {
-                            const c = (cat || '').toLowerCase();
-                            return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
-                        }
-                    }
-                ];
-
-                const labels = [];
-                const dataValues = [];
-                const bgColors = [];
-                const borderColors = [];
-                const tooltipData = [];
-
-                bagianDefs.forEach(b => {
-                    const projs = projectDataSMTI.filter(p => b.match(p.category));
-                    const count = projs.length;
-                    const totalProg = projs.reduce((s, p) => s + (Number(p.progress) || 0), 0);
-                    const avg = count > 0 ? Math.round((totalProg / count) * 10) / 10 : 0;
-
-                    // Multiline label: Nama Bagian + Tanggal Target Waktu
-                    labels.push([
-                        `${b.name} (${count} Proyek)`,
-                        `📅 Target: ${b.dateRange}`
-                    ]);
-                    dataValues.push(avg);
-                    bgColors.push(b.bg);
-                    borderColors.push(b.border);
-                    tooltipData.push({
-                        bagian: b,
-                        count: count,
-                        avg: avg,
-                        projects: projs
-                    });
-                });
-
-                if (mainDashboardChartInstance) {
-                    mainDashboardChartInstance.destroy();
-                }
-
-                mainDashboardChartInstance = new Chart(ctx.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Rata-rata Capaian Progres (%)',
-                            data: dataValues,
-                            backgroundColor: bgColors,
-                            borderColor: borderColors,
-                            borderWidth: 1.5,
-                            borderRadius: 8,
-                            maxBarThickness: 58
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: 100,
-                                ticks: {
-                                    stepSize: 20,
-                                    callback: function(value) { return value + '%'; }
-                                },
-                                grid: { color: 'rgba(100, 116, 139, 0.12)' }
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: {
-                                    maxRotation: 0,
-                                    padding: 8,
+                                    precision: 0,
                                     font: { size: 11, weight: '600' }
-                                }
+                                },
+                                grid: { color: 'rgba(100, 116, 139, 0.12)' }
                             }
                         },
                         plugins: {
@@ -6275,18 +6716,245 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                 callbacks: {
                                     title: function(items) {
                                         const idx = items[0].dataIndex;
+                                        const [nameWithStatus, d] = filteredSorted[idx];
+                                        return `👤 ${nameWithStatus} • ${d.role}`;
+                                    },
+                                    beforeBody: function(items) {
+                                        const idx = items[0].dataIndex;
+                                        const [, d] = filteredSorted[idx];
+                                        return `Total Tugas: ${d.count} Proyek (${d.activeCount} Aktif • ${d.completedCount} Selesai)\n────────────────────────────────────────`;
+                                    },
+                                    afterBody: function(items) {
+                                        const idx = items[0].dataIndex;
+                                        const [, d] = filteredSorted[idx];
+                                        if (d.allProjects.length === 0) {
+                                            return `\nStatus: Kapasitas Tersedia (Siap Menerima Penugasan Baru)`;
+                                        }
+
+                                        let str = '\nRincian Proyek & Target Tanggal:\n';
+                                        d.allProjects.forEach((proj, i) => {
+                                            const statusBadge = proj.isCompleted 
+                                                ? '✅ TUNTAS SELESAI (100%)' 
+                                                : `⏳ ${proj.progress}% BERJALAN`;
+                                            const dl = proj.deadline ? `📅 Target: ${proj.deadline}` : '📅 Target: Belum ditentukan';
+                                            const days = (!proj.isCompleted && proj.daysLeft && proj.daysLeft !== 'Selesai') ? ` [${proj.daysLeft}]` : (proj.isCompleted ? ' [Tuntas 100%]' : '');
+                                            str += `\n${i + 1}. ${proj.name}\n   • Kategori: ${proj.category}\n   • Status: ${statusBadge}\n   • ${dl}${days}`;
+                                        });
+                                        return str;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Render tombol legenda kustom dan ringkasan tanggal
+                renderCustomChartLegend();
+                renderPicDateSummary(sorted);
+
+            } else if (currentMainChartMode === 'category') {
+                // ================= MODE 3: CAPAIAN PER BAGIAN DEPT SMTI (MODERN COLORFUL BARS & ANIMATIONS) =================
+                const fiscalProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear);
+                const totalProj = fiscalProjects.length;
+                const totalSum = fiscalProjects.reduce((s, p) => s + (Number(p.progress) || 0), 0);
+                const deptAvg = totalProj > 0 ? Math.round((totalSum / totalProj) * 10) / 10 : (currentFiscalYear === 2026 ? 79.2 : 0);
+
+                const mikuProjs = fiscalProjects.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
+                const pmsmtProjs = fiscalProjects.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
+                const sisdurProjs = fiscalProjects.filter(p => {
+                    const c = (p.category || '').toLowerCase();
+                    return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
+                });
+
+                const mikuAvg = mikuProjs.length ? Math.round((mikuProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / mikuProjs.length)*10)/10 : (currentFiscalYear === 2026 ? 81.0 : 0);
+                const pmsmtAvg = pmsmtProjs.length ? Math.round((pmsmtProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / pmsmtProjs.length)*10)/10 : (currentFiscalYear === 2026 ? 76.2 : 0);
+                const sisdurAvg = sisdurProjs.length ? Math.round((sisdurProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / sisdurProjs.length)*10)/10 : (currentFiscalYear === 2026 ? 70.0 : 0);
+
+                const categoryItems = [
+                    {
+                        idx: 0,
+                        name: 'Bagian MIKU',
+                        fullName: 'Manajemen Inovasi & Kemitraan Usaha',
+                        sub: `${mikuProjs.length} Proyek • Realisasi: ${mikuAvg}%`,
+                        avg: mikuAvg,
+                        col1: '#fbbf24',
+                        col2: '#d97706',
+                        border: '#f59e0b',
+                        icon: 'fa-lightbulb',
+                        desc: `Manajemen Inovasi & Kemitraan Usaha: ${mikuProjs.length} portofolio riset & inovasi pupuk. Capaian rata-rata mencapai ${mikuAvg}%.`,
+                        dateRange: `TA ${currentFiscalYear}`,
+                        projects: mikuProjs
+                    },
+                    {
+                        idx: 1,
+                        name: 'Bagian PMSMT',
+                        fullName: 'Pengembangan Manajemen Sistem Mutu Terpadu',
+                        sub: `${pmsmtProjs.length} Proyek • Realisasi: ${pmsmtAvg}%`,
+                        avg: pmsmtAvg,
+                        col1: '#34d399',
+                        col2: '#059669',
+                        border: '#10b981',
+                        icon: 'fa-award',
+                        desc: `Sistem Manajemen Mutu Terpadu: Sertifikasi & audit ISO 9001/14001/45001. Capaian rata-rata ${pmsmtAvg}%.`,
+                        dateRange: `TA ${currentFiscalYear}`,
+                        projects: pmsmtProjs
+                    },
+                    {
+                        idx: 2,
+                        name: 'Bagian BangSisdur',
+                        fullName: 'Pengembangan Sistem & Prosedur',
+                        sub: `${sisdurProjs.length} Proyek • Realisasi: ${sisdurAvg}%`,
+                        avg: sisdurAvg,
+                        col1: '#818cf8',
+                        col2: '#4338ca',
+                        border: '#6366f1',
+                        icon: 'fa-file-invoice',
+                        desc: `Pengembangan Sistem & Prosedur: Digitalisasi SOP & penyempurnaan proses bisnis. Capaian rata-rata ${sisdurAvg}%.`,
+                        dateRange: `TA ${currentFiscalYear}`,
+                        projects: sisdurProjs
+                    },
+                    {
+                        idx: 3,
+                        name: 'Total Dept SMTI',
+                        fullName: 'Seluruh Portofolio Departemen SMTI',
+                        sub: `${totalProj} Proyek • Akumulatif: ${deptAvg}%`,
+                        avg: deptAvg,
+                        col1: '#38bdf8',
+                        col2: '#0284c7',
+                        border: '#0284c7',
+                        icon: 'fa-chart-line',
+                        desc: `Realisasi gabungan seluruh ${totalProj} portofolio strategis Departemen SMTI TA ${currentFiscalYear}.`,
+                        dateRange: `Januari – Desember ${currentFiscalYear}`,
+                        projects: fiscalProjects
+                    },
+                    {
+                        idx: 4,
+                        name: `Target RKAP ${currentFiscalYear}`,
+                        fullName: `Sasaran Target Korporasi Tahunan TA ${currentFiscalYear}`,
+                        sub: 'Sasaran Ketuntasan Mutlak 100%',
+                        avg: 100.0,
+                        col1: '#a78bfa',
+                        col2: '#6d28d9',
+                        border: '#8b5cf6',
+                        icon: 'fa-bullseye',
+                        desc: `Sasaran Ketuntasan Rencana Kerja Anggaran Perusahaan (RKAP) PT Pupuk Kujang Tahun ${currentFiscalYear}.`,
+                        dateRange: `Januari – Desember ${currentFiscalYear}`,
+                        projects: []
+                    }
+                ];
+
+                // Saring item yang disembunyikan pengguna
+                const visibleCategoryItems = categoryItems.filter(item => !mainChartHiddenDatasets.has(item.idx));
+
+                const labels = [];
+                const dataValues = [];
+                const bgGradients = [];
+                const borderColors = [];
+                const tooltipData = [];
+
+                visibleCategoryItems.forEach(item => {
+                    labels.push([
+                        `${item.name} (${item.avg}%)`,
+                        `📅 Target: ${item.dateRange}`
+                    ]);
+                    dataValues.push(item.avg);
+
+                    const grad = ctx2d.createLinearGradient(0, 0, 0, 340);
+                    grad.addColorStop(0, item.col1);
+                    grad.addColorStop(1, item.col2);
+                    bgGradients.push(grad);
+                    borderColors.push(item.border);
+
+                    tooltipData.push(item);
+                });
+
+                if (mainDashboardChartInstance) {
+                    mainDashboardChartInstance.destroy();
+                }
+
+                mainDashboardChartInstance = new Chart(ctx2d, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Capaian Progres (%)',
+                            data: dataValues,
+                            backgroundColor: bgGradients,
+                            borderColor: borderColors,
+                            borderWidth: 2,
+                            borderRadius: { topLeft: 10, topRight: 10, bottomLeft: 0, bottomRight: 0 },
+                            hoverBorderColor: '#ffffff',
+                            hoverBorderWidth: 3,
+                            maxBarThickness: 62
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 1200,
+                            easing: 'easeOutBack',
+                            delay: (context) => context.dataIndex * 120
+                        },
+                        transitions: {
+                            active: {
+                                animation: {
+                                    duration: 250,
+                                    easing: 'easeOutQuad'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    stepSize: 20,
+                                    callback: function(value) { return value + '%'; },
+                                    font: { size: 11, weight: '600' }
+                                },
+                                grid: { color: 'rgba(100, 116, 139, 0.12)' }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    maxRotation: 0,
+                                    padding: 8,
+                                    font: { size: 11.5, weight: '600' }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.96)',
+                                titleColor: '#38bdf8',
+                                titleFont: { size: 13, weight: '800' },
+                                bodyColor: '#f1f5f9',
+                                bodyFont: { size: 12 },
+                                borderColor: 'rgba(56, 189, 248, 0.35)',
+                                borderWidth: 1.2,
+                                padding: 14,
+                                cornerRadius: 10,
+                                boxPadding: 6,
+                                callbacks: {
+                                    title: function(items) {
+                                        const idx = items[0].dataIndex;
                                         const item = tooltipData[idx];
-                                        return `🏢 ${item.bagian.name} • ${item.bagian.fullName}`;
+                                        return `🏢 ${item.name} • ${item.fullName}`;
                                     },
                                     beforeBody: function(items) {
                                         const idx = items[0].dataIndex;
                                         const item = tooltipData[idx];
-                                        return `Rata-rata Capaian: ${item.avg}%\nTotal Penugasan: ${item.count} Proyek\n📅 Rentang Target Waktu: ${item.bagian.dateRange}\n────────────────────────────────────────`;
+                                        return `Capaian Riil: ${item.avg}%\n📅 Rentang Target Waktu: ${item.dateRange}\n────────────────────────────────────────`;
                                     },
                                     afterBody: function(items) {
                                         const idx = items[0].dataIndex;
                                         const item = tooltipData[idx];
-                                        let str = '\nRincian Proyek & Target Tanggal:\n';
+                                        if (!item.projects || item.projects.length === 0) {
+                                            return `\n${item.desc}`;
+                                        }
+                                        let str = `\nRincian Portofolio Proyek (${item.projects.length}):\n`;
                                         item.projects.forEach((p, i) => {
                                             const statusBadge = isProjectCompleted(p) ? '✅ Tuntas 100%' : `⏳ ${p.progress}%`;
                                             const dl = p.deadline ? `Target: ${p.deadline}` : 'Target: Belum ditentukan';
@@ -6305,799 +6973,33 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 renderCustomChartLegend();
                 renderBagianDateSummary();
             }
-
-            // Selaraskan rendering Infografis 3D Columns (Inspirasi: business-chart-graph-infographics-with-colorful-3d-columns-five-steps-icons-light-illustration)
-            if (typeof is3DInfographicViewActive !== 'undefined' && is3DInfographicViewActive) {
-                render3DColumnsInfographic(currentMainChartMode);
-            }
-        }
-
-        /* =========================================================
-           INFOGRAFIS 3D COLUMNS & 5-STEPS SYSTEM
-           Inspirasi: business-chart-graph-infographics-with-colorful-3d-columns-five-steps-icons-light-illustration
-           ========================================================= */
-        let is3DInfographicViewActive = true;
-        let active3DColHoverIdx = -1;
-        let infographic3DDataCache = [];
-
-        const INFOGRAPHIC_5_PALETTE = [
-            {
-                // Step 01: Warm Gold / Amber
-                base: '#f59e0b',
-                highlight: '#fef08a',
-                light: '#fffbeb',
-                shadow: '#b45309',
-                rim: '#fef9c3',
-                topCap: '#fde047',
-                shadowGround: 'rgba(245, 158, 11, 0.45)',
-                ribbonGrad: 'linear-gradient(90deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%)',
-                ribbonDark: '#92400e',
-                ribbonGlow: 'rgba(245, 158, 11, 0.35)',
-                faIcon: 'fa-lightbulb',
-                glyph: '\uf0eb'
-            },
-            {
-                // Step 02: Mint / Turquoise / Emerald
-                base: '#10b981',
-                highlight: '#a7f3d0',
-                light: '#ecfdf5',
-                shadow: '#047857',
-                rim: '#ccfbf1',
-                topCap: '#34d399',
-                shadowGround: 'rgba(16, 185, 129, 0.45)',
-                ribbonGrad: 'linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%)',
-                ribbonDark: '#064e3b',
-                ribbonGlow: 'rgba(16, 185, 129, 0.35)',
-                faIcon: 'fa-award',
-                glyph: '\uf559'
-            },
-            {
-                // Step 03: Cyan / Sky Blue
-                base: '#0284c7',
-                highlight: '#bae6fd',
-                light: '#f0f9ff',
-                shadow: '#0369a1',
-                rim: '#e0f2fe',
-                topCap: '#38bdf8',
-                shadowGround: 'rgba(2, 132, 199, 0.45)',
-                ribbonGrad: 'linear-gradient(90deg, #0369a1 0%, #0284c7 50%, #38bdf8 100%)',
-                ribbonDark: '#0c4a6e',
-                ribbonGlow: 'rgba(2, 132, 199, 0.35)',
-                faIcon: 'fa-file-invoice',
-                glyph: '\uf15c'
-            },
-            {
-                // Step 04: Royal / Indigo Blue
-                base: '#3b82f6',
-                highlight: '#bfdbfe',
-                light: '#eff6ff',
-                shadow: '#1d4ed8',
-                rim: '#dbeafe',
-                topCap: '#60a5fa',
-                shadowGround: 'rgba(59, 130, 246, 0.45)',
-                ribbonGrad: 'linear-gradient(90deg, #1d4ed8 0%, #3b82f6 50%, #60a5fa 100%)',
-                ribbonDark: '#1e3a8a',
-                ribbonGlow: 'rgba(59, 130, 246, 0.35)',
-                faIcon: 'fa-chart-line',
-                glyph: '\uf201'
-            },
-            {
-                // Step 05: Purple / Violet
-                base: '#8b5cf6',
-                highlight: '#ddd6fe',
-                light: '#f5f3ff',
-                shadow: '#6d28d9',
-                rim: '#ede9fe',
-                topCap: '#a78bfa',
-                shadowGround: 'rgba(139, 92, 246, 0.45)',
-                ribbonGrad: 'linear-gradient(90deg, #6d28d9 0%, #8b5cf6 50%, #a78bfa 100%)',
-                ribbonDark: '#4c1d95',
-                ribbonGlow: 'rgba(139, 92, 246, 0.35)',
-                faIcon: 'fa-bullseye',
-                glyph: '\uf140'
-            }
-        ];
-
-        function toggleMainChartDisplayType() {
-            is3DInfographicViewActive = !is3DInfographicViewActive;
-            const container3D = document.getElementById('main-3d-infographic-container');
-            const container2D = document.getElementById('main-chart-classic-container');
-            const toggleBtn = document.getElementById('btn-toggle-3d-style');
-            const toggleLabel = document.getElementById('toggle-3d-label');
-
-            if (is3DInfographicViewActive) {
-                if (container3D) container3D.style.display = 'flex';
-                if (container2D) container2D.style.display = 'none';
-                if (toggleBtn) {
-                    toggleBtn.style.background = 'linear-gradient(135deg, #0284c7, #8b5cf6)';
-                    toggleBtn.style.color = '#ffffff';
-                }
-                if (toggleLabel) toggleLabel.innerText = 'Gaya 3D Infografis Aktif';
-                render3DColumnsInfographic(currentMainChartMode);
-            } else {
-                if (container3D) container3D.style.display = 'none';
-                if (container2D) container2D.style.display = 'block';
-                if (toggleBtn) {
-                    toggleBtn.style.background = 'var(--hover-color)';
-                    toggleBtn.style.color = 'var(--text-color)';
-                }
-                if (toggleLabel) toggleLabel.innerText = 'Beralih ke 3D Infografis';
-                if (mainDashboardChartInstance) {
-                    mainDashboardChartInstance.resize();
-                    mainDashboardChartInstance.update();
-                }
-            }
-        }
-
-        function highlight3DInfographicCol(idx) {
-            active3DColHoverIdx = idx;
-            draw3DColumnsCanvas();
-            update3DRibbonsActiveState(idx);
-            show3DTooltipForIndex(idx);
-        }
-
-        function reset3DInfographicHighlight() {
-            active3DColHoverIdx = -1;
-            draw3DColumnsCanvas();
-            update3DRibbonsActiveState(-1);
-            hide3DTooltip();
-        }
-
-        function update3DRibbonsActiveState(activeIdx) {
-            const ribbonItems = document.querySelectorAll('.infographic-ribbon-item');
-            ribbonItems.forEach((el, i) => {
-                if (i === activeIdx) {
-                    el.classList.add('active');
-                } else {
-                    el.classList.remove('active');
-                }
-            });
-        }
-
-        function show3DTooltipForIndex(idx) {
-            const tooltip = document.getElementById('main3DTooltip');
-            const canvas = document.getElementById('main3DChartCanvas');
-            if (!tooltip || !canvas || !infographic3DDataCache[idx]) return;
-
-            const item = infographic3DDataCache[idx];
-            const p = item.palette;
-            const pos = item._canvasPos;
-
-            let html = `
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; background: ${p.base}; color: #fff; font-size: 11px;">
-                        <i class="fas ${item.icon}"></i>
-                    </span>
-                    <strong style="color: #fff; font-size: 13px;">${item.label}</strong>
-                    <span style="margin-left: auto; font-size: 12px; font-weight: 800; color: ${p.topCap};">${item.tag}</span>
-                </div>
-                <div style="color: #94a3b8; font-size: 11px; margin-bottom: 6px;">
-                    📅 <strong>Periode Target:</strong> ${item.dateRange || 'Tahun 2026'}
-                </div>
-                <div style="font-size: 11.5px; line-height: 1.35; color: #e2e8f0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
-                    ${item.tooltipDesc || item.sub}
-                </div>
-            `;
-
-            if (item.projects && item.projects.length > 0) {
-                html += `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.15); font-size: 11px; color: #cbd5e1;">`;
-                html += `<strong style="color: #38bdf8;">Daftar Proyek Terkait (${item.projects.length}):</strong><br>`;
-                item.projects.slice(0, 3).forEach((prj, pi) => {
-                    const statusText = isProjectCompleted(prj) ? '✅ 100%' : `⏳ ${prj.progress}%`;
-                    html += `• ${prj.name} (${statusText})<br>`;
-                });
-                if (item.projects.length > 3) {
-                    html += `<em>...dan ${item.projects.length - 3} proyek lainnya</em>`;
-                }
-                html += `</div>`;
-            }
-
-            tooltip.innerHTML = html;
-            tooltip.style.display = 'block';
-
-            if (pos) {
-                tooltip.style.left = `${pos.x}px`;
-                tooltip.style.top = `${pos.y - 12}px`;
-            }
-        }
-
-        function hide3DTooltip() {
-            const tooltip = document.getElementById('main3DTooltip');
-            if (tooltip) tooltip.style.display = 'none';
-        }
-
-        function render3DColumnsInfographic(mode) {
-            const canvas = document.getElementById('main3DChartCanvas');
-            const ribbonsContainer = document.getElementById('infographic-ribbons-list');
-            if (!canvas || !ribbonsContainer) return;
-
-            const mikuProjs = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
-            const pmsmtProjs = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
-            const sisdurProjs = projectDataSMTI.filter(p => {
-                const c = (p.category || '').toLowerCase();
-                return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
-            });
-
-            const mikuAvg = mikuProjs.length ? Math.round((mikuProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / mikuProjs.length)*10)/10 : 81.0;
-            const pmsmtAvg = pmsmtProjs.length ? Math.round((pmsmtProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / pmsmtProjs.length)*10)/10 : 76.2;
-            const sisdurAvg = sisdurProjs.length ? Math.round((sisdurProjs.reduce((s, p) => s + (Number(p.progress)||0), 0) / sisdurProjs.length)*10)/10 : 70.0;
-            const totalProj = projectDataSMTI.length;
-            const totalSum = projectDataSMTI.reduce((s, p) => s + (Number(p.progress)||0), 0);
-            const deptAvg = totalProj > 0 ? Math.round((totalSum / totalProj)*10)/10 : 79.2;
-
-            let steps = [];
-
-            if (mode === 'category') {
-                // ================= GAYA 3D: CAPAIAN PER BAGIAN SMTI =================
-                steps = [
-                    {
-                        num: '01',
-                        label: 'Bagian MIKU',
-                        shortLabel: 'MIKU',
-                        sub: `4 Proyek • Realisasi: <strong>${mikuAvg}%</strong> • Target Mei–Jun 2026`,
-                        tooltipDesc: `Manajemen Inovasi & Kemitraan Usaha: 4 portofolio riset & inovasi pupuk. Capaian rata-rata mencapai ${mikuAvg}%.`,
-                        val: mikuAvg,
-                        tag: `${mikuAvg}%`,
-                        icon: 'fa-lightbulb',
-                        dateRange: '15 Mei – 30 Jun 2026',
-                        projects: mikuProjs
-                    },
-                    {
-                        num: '02',
-                        label: 'Bagian PMSMT',
-                        shortLabel: 'PMSMT',
-                        sub: `4 Proyek • Realisasi: <strong>${pmsmtAvg}%</strong> • Target Mar–Agu 2026`,
-                        tooltipDesc: `Sistem Manajemen Mutu Terpadu: Sertifikasi & audit ISO 9001/14001/45001. Capaian rata-rata ${pmsmtAvg}%.`,
-                        val: pmsmtAvg,
-                        tag: `${pmsmtAvg}%`,
-                        icon: 'fa-award',
-                        dateRange: '10 Apr – 31 Agu 2026',
-                        projects: pmsmtProjs
-                    },
-                    {
-                        num: '03',
-                        label: 'Bagian BangSisdur',
-                        shortLabel: 'BangSisdur',
-                        sub: `4 Proyek • Realisasi: <strong>${sisdurAvg}%</strong> • Target Mar–Agu 2026`,
-                        tooltipDesc: `Pengembangan Sistem & Prosedur: Digitalisasi SOP & penyempurnaan proses bisnis. Capaian rata-rata ${sisdurAvg}%.`,
-                        val: sisdurAvg,
-                        tag: `${sisdurAvg}%`,
-                        icon: 'fa-file-invoice',
-                        dateRange: '25 Mar – 31 Agu 2026',
-                        projects: sisdurProjs
-                    },
-                    {
-                        num: '04',
-                        label: 'Total Dept SMTI',
-                        shortLabel: 'Dept SMTI',
-                        sub: `${totalProj} Proyek • Akumulatif: <strong>${deptAvg}%</strong> • Posisi Sep 2026`,
-                        tooltipDesc: `Realisasi gabungan seluruh 12 portofolio strategis Departemen SMTI posisi September 2026.`,
-                        val: deptAvg,
-                        tag: `${deptAvg}%`,
-                        icon: 'fa-chart-line',
-                        dateRange: 'Januari – September 2026',
-                        projects: projectDataSMTI
-                    },
-                    {
-                        num: '05',
-                        label: 'Target RKAP 2026',
-                        shortLabel: 'Target RKAP',
-                        sub: `Sasaran Korporasi: <strong>100%</strong> • Tenggat Des 2026`,
-                        tooltipDesc: `Sasaran Ketuntasan Rencana Kerja Anggaran Perusahaan (RKAP) PT Pupuk Kujang Tahun 2026.`,
-                        val: 100.0,
-                        tag: '100%',
-                        icon: 'fa-bullseye',
-                        dateRange: 'Januari – Desember 2026',
-                        projects: []
-                    }
-                ];
-            } else if (mode === 'pic') {
-                // ================= GAYA 3D: BEBAN KERJA 12 PERSONIL SMTI =================
-                steps = [
-                    {
-                        num: '01',
-                        label: 'Beban Lead (3 Proyek)',
-                        shortLabel: 'Lead (3 Proj)',
-                        sub: `Januardi & Dion • Proyek Strategis & Sertifikasi (92% Capaian)`,
-                        tooltipDesc: `Personil dengan beban penugasan tertinggi mengawal portofolio kunci Departemen SMTI.`,
-                        val: 92,
-                        tag: '3 Proyek',
-                        icon: 'fa-user-tie',
-                        dateRange: 'Target: Mei & Agu 2026',
-                        projects: projectDataSMTI.filter(p => (p.pic || '').toLowerCase().includes('januardi') || (p.pic || '').toLowerCase().includes('dion'))
-                    },
-                    {
-                        num: '02',
-                        label: 'Beban Multi (2 Proyek)',
-                        shortLabel: 'Multi (2 Proj)',
-                        sub: `Rifki & Taufik • SOP Digital & Sisdur Terpadu (78% Capaian)`,
-                        tooltipDesc: `Personil mengelola 2 proyek simultan pada klaster sistem prosedur & kepatuhan.`,
-                        val: 78,
-                        tag: '2 Proyek',
-                        icon: 'fa-users-cog',
-                        dateRange: 'Target: Jun & Jul 2026',
-                        projects: projectDataSMTI.filter(p => (p.pic || '').toLowerCase().includes('rifki') || (p.pic || '').toLowerCase().includes('taufik'))
-                    },
-                    {
-                        num: '03',
-                        label: 'Beban Mandiri (1 Proyek)',
-                        shortLabel: 'Mandiri (1 Proj)',
-                        sub: `Arief, Fikri, dkk • Spesialis Audit & Dokumen (65% Capaian)`,
-                        tooltipDesc: `Personil fokus pada penyelesaian portofolio spesifik dengan kontrol kualitas penuh.`,
-                        val: 65,
-                        tag: '1 Proyek',
-                        icon: 'fa-user-shield',
-                        dateRange: 'Target: Mar – Agu 2026',
-                        projects: projectDataSMTI.filter(p => (p.pic || '').toLowerCase().includes('arief') || (p.pic || '').toLowerCase().includes('fikri'))
-                    },
-                    {
-                        num: '04',
-                        label: 'Kontributor Magang',
-                        shortLabel: 'Magang SMTI',
-                        sub: `Farhan, Kholid, Syahrul • Dukungan Verifikasi & Data (50% Capaian)`,
-                        tooltipDesc: `Mahasiswa magang aktif membantu penyiapan dokumen, verifikasi lapangan, dan pengujian sistem.`,
-                        val: 50,
-                        tag: '3 Rekan',
-                        icon: 'fa-graduation-cap',
-                        dateRange: 'Periode Magang 2026',
-                        projects: []
-                    },
-                    {
-                        num: '05',
-                        label: 'Kapasitas Siap (Standby)',
-                        shortLabel: 'Kapasitas Siap',
-                        sub: `4 Personil Standby • 100% Kesiapan Menerima Penugasan Baru`,
-                        tooltipDesc: `Personil internal SMTI dengan ketersediaan waktu untuk penugasan inisiatif ad-hoc pimpinan.`,
-                        val: 100,
-                        tag: '100% Siap',
-                        icon: 'fa-bolt',
-                        dateRange: 'Kesiapan Operasional Dept',
-                        projects: []
-                    }
-                ];
-            } else {
-                // ================= GAYA 3D: TREN KINERJA & MILESTONE SMTI =================
-                steps = [
-                    {
-                        num: '01',
-                        label: 'Triwulan I (Q1)',
-                        shortLabel: 'Q1 (Mar)',
-                        sub: `Jan – Mar 2026 • Realisasi: <strong>45.0%</strong> • Kick-off & Inisiasi`,
-                        tooltipDesc: `Penyusunan Rencana Kerja Tahunan, inisiasi proyek, dan sosialisasi target RKAP 2026.`,
-                        val: 45,
-                        tag: '45.0%',
-                        icon: 'fa-play-circle',
-                        dateRange: 'Januari – Maret 2026',
-                        projects: []
-                    },
-                    {
-                        num: '02',
-                        label: 'Triwulan II (Q2)',
-                        shortLabel: 'Q2 (Jun)',
-                        sub: `Apr – Jun 2026 • Realisasi: <strong>69.0%</strong> • Eksekusi & Sertifikasi`,
-                        tooltipDesc: `Penyelesaian audit tahap 1, pengembangan modul inovasi, dan perbaikan prosedur awal.`,
-                        val: 69,
-                        tag: '69.0%',
-                        icon: 'fa-cogs',
-                        dateRange: 'April – Juni 2026',
-                        projects: []
-                    },
-                    {
-                        num: '03',
-                        label: 'Triwulan III (Kini)',
-                        shortLabel: 'Q3 (Kini)',
-                        sub: `Jul – Sep 2026 • Realisasi: <strong>${deptAvg}%</strong> • Posisi Terkini`,
-                        tooltipDesc: `Akselerasi capaian riil Departemen SMTI posisi September 2026 (7 Proyek Tuntas, 5 Berjalan).`,
-                        val: deptAvg,
-                        tag: `${deptAvg}%`,
-                        icon: 'fa-tachometer-alt',
-                        dateRange: 'Juli – September 2026',
-                        projects: projectDataSMTI
-                    },
-                    {
-                        num: '04',
-                        label: 'Triwulan IV (Est)',
-                        shortLabel: 'Q4 (Est)',
-                        sub: `Okt – Nov 2026 • Proyeksi: <strong>94.0%</strong> • Finalisasi Portofolio`,
-                        tooltipDesc: `Estimasi penyelesaian seluruh audit eksternal, implementasi SOP terpadu, dan review mutu.`,
-                        val: 94,
-                        tag: '94.0%',
-                        icon: 'fa-tasks',
-                        dateRange: 'Oktober – November 2026',
-                        projects: []
-                    },
-                    {
-                        num: '05',
-                        label: 'Target Akhir RKAP',
-                        shortLabel: 'Target 100%',
-                        sub: `Desember 2026 • Sasaran: <strong>100.0%</strong> • Ketuntasan Mutlak`,
-                        tooltipDesc: `Pemenuhan sasaran kinerja korporasi 100% tuntas seluruh inisiatif strategis SMTI.`,
-                        val: 100,
-                        tag: '100%',
-                        icon: 'fa-flag-checkered',
-                        dateRange: 'Desember 2026',
-                        projects: []
-                    }
-                ];
-            }
-
-            // Gabungkan palette warna
-            steps.forEach((s, i) => {
-                s.palette = INFOGRAPHIC_5_PALETTE[i % INFOGRAPHIC_5_PALETTE.length];
-            });
-
-            infographic3DDataCache = steps;
-
-            // Render Stepped Ribbon Banners di sisi kiri
-            let ribbonsHtml = '';
-            steps.forEach((s, i) => {
-                const p = s.palette;
-                ribbonsHtml += `
-                    <div class="infographic-ribbon-item" 
-                         style="background: ${p.ribbonGrad}; --ribbon-dark: ${p.ribbonDark}; --ribbon-glow: ${p.ribbonGlow};"
-                         onmouseenter="highlight3DInfographicCol(${i})"
-                         onmouseleave="reset3DInfographicHighlight()"
-                         onclick="highlight3DInfographicCol(${i})">
-                        <div class="infographic-ribbon-content">
-                            <div class="infographic-ribbon-title">
-                                <i class="fas ${s.icon}"></i>
-                                <span>${s.label}</span>
-                            </div>
-                            <div class="infographic-ribbon-desc">${s.sub}</div>
-                        </div>
-                        <div class="infographic-ribbon-num">${s.num}</div>
-                    </div>
-                `;
-            });
-            ribbonsContainer.innerHTML = ribbonsHtml;
-
-            // Gambar Canvas 3D
-            draw3DColumnsCanvas();
-            attach3DCanvasEvents();
-        }
-
-        function draw3DColumnsCanvas() {
-            const canvas = document.getElementById('main3DChartCanvas');
-            if (!canvas || !infographic3DDataCache || infographic3DDataCache.length === 0) return;
-
-            const rect = canvas.parentElement.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            const W = Math.max(320, rect.width);
-            const H = Math.max(380, rect.height || 380);
-
-            canvas.width = W * dpr;
-            canvas.height = H * dpr;
-            canvas.style.width = W + 'px';
-            canvas.style.height = H + 'px';
-
-            const ctx = canvas.getContext('2d');
-            ctx.scale(dpr, dpr);
-            ctx.clearRect(0, 0, W, H);
-
-            const isDark = document.body.classList.contains('dark-mode');
-            const data = infographic3DDataCache;
-            const N = data.length;
-
-            const paddingX = Math.max(40, W * 0.1);
-            const availableW = W - paddingX * 2;
-            const colSpacing = availableW / (N - 1);
-            const colWidth = Math.min(54, Math.max(34, availableW / N * 0.52));
-            const radiusX = colWidth / 2;
-            const radiusY = radiusX * 0.38; // isometric ellipse ratio
-            const baseY = H - 58;
-            const maxColHeight = H - 150;
-
-            // 1. Gambar Isometric Perspective Floor Grid di latar bawah
-            ctx.save();
-            ctx.strokeStyle = isDark ? 'rgba(56, 189, 248, 0.08)' : 'rgba(2, 132, 199, 0.12)';
-            ctx.lineWidth = 1;
-            const gridBottom = H - 10;
-            const gridTop = baseY - radiusY * 2.5;
-            for (let gx = -W * 0.2; gx <= W * 1.3; gx += 42) {
-                ctx.beginPath();
-                ctx.moveTo(gx, gridBottom);
-                ctx.lineTo(gx + 120, gridTop);
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.moveTo(gx, gridTop);
-                ctx.lineTo(gx + 120, gridBottom);
-                ctx.stroke();
-            }
-            ctx.restore();
-
-            // Hitung posisi tiap kolom
-            const colPositions = [];
-            data.forEach((item, i) => {
-                const cx = paddingX + i * colSpacing;
-                const valRatio = Math.max(0.12, Math.min(1.0, item.val / 100));
-                const isHovered = (active3DColHoverIdx === i);
-                const elev = isHovered ? 10 : 0;
-                const colH = valRatio * maxColHeight;
-                const topY = baseY - colH - elev;
-
-                colPositions.push({ cx, topY, baseY, colH, radiusX, radiusY, isHovered, item, elev });
-                item._canvasPos = { x: cx, y: topY };
-            });
-
-            // 2. Gambar Ground Shadow di bawah setiap silinder
-            colPositions.forEach((pos, i) => {
-                const p = pos.item.palette;
-                ctx.save();
-                ctx.beginPath();
-                const shadowRx = pos.radiusX * (pos.isHovered ? 1.35 : 1.22);
-                const shadowRy = pos.radiusY * (pos.isHovered ? 1.55 : 1.4);
-                ctx.ellipse(pos.cx + 8, pos.baseY + 6, shadowRx, shadowRy, Math.PI / 12, 0, Math.PI * 2);
-                const sGrad = ctx.createRadialGradient(pos.cx + 8, pos.baseY + 6, 0, pos.cx + 8, pos.baseY + 6, shadowRx);
-                sGrad.addColorStop(0, p.shadowGround);
-                sGrad.addColorStop(1, 'transparent');
-                ctx.fillStyle = sGrad;
-                ctx.fill();
-                ctx.restore();
-            });
-
-            // 3. Gambar Silinder 3D (Body + Top Cap)
-            colPositions.forEach((pos, i) => {
-                const p = pos.item.palette;
-                const rx = pos.radiusX * (pos.isHovered ? 1.05 : 1.0);
-                const ry = pos.radiusY * (pos.isHovered ? 1.05 : 1.0);
-                const topY = pos.topY;
-                const baseY = pos.baseY;
-
-                // --- 3.1 Lateral Body ---
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(pos.cx - rx, topY);
-                ctx.lineTo(pos.cx - rx, baseY);
-                ctx.ellipse(pos.cx, baseY, rx, ry, 0, Math.PI, 0, true);
-                ctx.lineTo(pos.cx + rx, topY);
-                ctx.ellipse(pos.cx, topY, rx, ry, 0, 0, Math.PI, false);
-                ctx.closePath();
-
-                const bodyGrad = ctx.createLinearGradient(pos.cx - rx, 0, pos.cx + rx, 0);
-                bodyGrad.addColorStop(0.00, p.light);
-                bodyGrad.addColorStop(0.24, p.highlight);
-                bodyGrad.addColorStop(0.55, p.base);
-                bodyGrad.addColorStop(0.88, p.shadow);
-                bodyGrad.addColorStop(1.00, p.rim);
-                ctx.fillStyle = bodyGrad;
-                ctx.fill();
-
-                if (pos.isHovered) {
-                    ctx.lineWidth = 2;
-                    ctx.strokeStyle = '#ffffff';
-                    ctx.stroke();
-                }
-                ctx.restore();
-
-                // --- 3.2 Top Elliptical Cap ---
-                ctx.save();
-                ctx.beginPath();
-                ctx.ellipse(pos.cx, topY, rx, ry, 0, 0, Math.PI * 2);
-                const topGrad = ctx.createLinearGradient(pos.cx - rx, topY - ry, pos.cx + rx, topY + ry);
-                topGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.95)');
-                topGrad.addColorStop(0.4, p.topCap);
-                topGrad.addColorStop(1.0, p.base);
-                ctx.fillStyle = topGrad;
-                ctx.fill();
-
-                ctx.lineWidth = 1.2;
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-                ctx.stroke();
-                ctx.restore();
-            });
-
-            // 4. Gambar Connected Zigzag Milestone Polyline
-            ctx.save();
-            ctx.beginPath();
-            colPositions.forEach((pos, i) => {
-                const nodeY = pos.topY - 24;
-                if (i === 0) ctx.moveTo(pos.cx, nodeY);
-                else ctx.lineTo(pos.cx, nodeY);
-            });
-            ctx.strokeStyle = isDark ? 'rgba(148, 163, 184, 0.55)' : '#94a3b8';
-            ctx.lineWidth = 2.2;
-            ctx.setLineDash([4, 3]);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            ctx.restore();
-
-            // 5. Gambar Node Dots, Floating Percentage Pills, dan Floating Icons
-            colPositions.forEach((pos, i) => {
-                const p = pos.item.palette;
-                const nodeY = pos.topY - 24;
-
-                // --- 5.1 Node Dot di garis zigzag ---
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(pos.cx, nodeY, 6.5, 0, Math.PI * 2);
-                ctx.fillStyle = isDark ? '#1e293b' : '#ffffff';
-                ctx.fill();
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = p.base;
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.arc(pos.cx, nodeY, 3.5, 0, Math.PI * 2);
-                ctx.fillStyle = p.base;
-                ctx.fill();
-                ctx.restore();
-
-                // --- 5.2 Floating Percentage Speech-Bubble / Tag ---
-                ctx.save();
-                const tagText = pos.item.tag;
-                ctx.font = '800 11.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-                const tagW = ctx.measureText(tagText).width + 16;
-                const tagH = 22;
-                const tagX = pos.cx - tagW / 2;
-                const tagY = nodeY - 24;
-
-                // Tag Background
-                ctx.beginPath();
-                const r = 5;
-                ctx.moveTo(tagX + r, tagY);
-                ctx.lineTo(tagX + tagW - r, tagY);
-                ctx.quadraticCurveTo(tagX + tagW, tagY, tagX + tagW, tagY + r);
-                ctx.lineTo(tagX + tagW, tagY + tagH - r);
-                ctx.quadraticCurveTo(tagX + tagW, tagY + tagH, tagX + tagW - r, tagY + tagH);
-                ctx.lineTo(tagX + tagW / 2 + 4, tagY + tagH);
-                ctx.lineTo(tagX + tagW / 2, tagY + tagH + 4); // pointer tip
-                ctx.lineTo(tagX + tagW / 2 - 4, tagY + tagH);
-                ctx.lineTo(tagX + r, tagY + tagH);
-                ctx.quadraticCurveTo(tagX, tagY + tagH, tagX, tagY + tagH - r);
-                ctx.lineTo(tagX, tagY + r);
-                ctx.quadraticCurveTo(tagX, tagY, tagX + r, tagY);
-                ctx.closePath();
-
-                ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
-                ctx.shadowColor = 'rgba(0,0,0,0.14)';
-                ctx.shadowBlur = 6;
-                ctx.shadowOffsetY = 2;
-                ctx.fill();
-                ctx.shadowColor = 'transparent';
-
-                ctx.lineWidth = 1.2;
-                ctx.strokeStyle = p.base;
-                ctx.stroke();
-
-                // Tag Text
-                ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(tagText, pos.cx, tagY + tagH / 2);
-                ctx.restore();
-
-                // --- 5.3 Floating Monochrome Circular Icon di Puncak Kolom ---
-                ctx.save();
-                const iconY = tagY - 20;
-                ctx.beginPath();
-                ctx.arc(pos.cx, iconY, 14, 0, Math.PI * 2);
-                ctx.fillStyle = isDark ? '#1e293b' : '#ffffff';
-                ctx.shadowColor = 'rgba(0,0,0,0.12)';
-                ctx.shadowBlur = 5;
-                ctx.shadowOffsetY = 2;
-                ctx.fill();
-                ctx.shadowColor = 'transparent';
-
-                ctx.lineWidth = 1.2;
-                ctx.strokeStyle = p.base;
-                ctx.stroke();
-
-                // Gambar Glyph FontAwesome atau Angka
-                ctx.fillStyle = p.base;
-                ctx.font = '900 12px "Font Awesome 6 Free", "Font Awesome 5 Free", sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                if (p.glyph) {
-                    ctx.fillText(p.glyph, pos.cx, iconY + 1);
-                } else {
-                    ctx.font = '800 11px sans-serif';
-                    ctx.fillText(pos.item.num, pos.cx, iconY);
-                }
-                ctx.restore();
-
-                // --- 5.4 Label di Bawah Silinder ---
-                ctx.save();
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-                ctx.font = '700 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-                ctx.fillStyle = isDark ? '#94a3b8' : '#475569';
-                ctx.fillText(pos.item.shortLabel || pos.item.label, pos.cx, pos.baseY + 18);
-                ctx.restore();
-            });
-        }
-
-        let is3DCanvasEventsAttached = false;
-        function attach3DCanvasEvents() {
-            if (is3DCanvasEventsAttached) return;
-            const canvas = document.getElementById('main3DChartCanvas');
-            if (!canvas) return;
-
-            is3DCanvasEventsAttached = true;
-
-            const handleMove = (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                const mouseX = clientX - rect.left;
-                const mouseY = clientY - rect.top;
-
-                let hoveredIdx = -1;
-                if (infographic3DDataCache && infographic3DDataCache.length > 0) {
-                    infographic3DDataCache.forEach((item, i) => {
-                        const pos = item._canvasPos;
-                        if (pos) {
-                            if (Math.abs(mouseX - pos.x) < 28 && mouseY >= pos.y - 70 && mouseY <= rect.height) {
-                                hoveredIdx = i;
-                            }
-                        }
-                    });
-                }
-
-                if (hoveredIdx !== active3DColHoverIdx) {
-                    active3DColHoverIdx = hoveredIdx;
-                    draw3DColumnsCanvas();
-                    update3DRibbonsActiveState(hoveredIdx);
-                    if (hoveredIdx >= 0) {
-                        show3DTooltipForIndex(hoveredIdx);
-                    } else {
-                        hide3DTooltip();
-                    }
-                }
-            };
-
-            canvas.addEventListener('mousemove', handleMove);
-            canvas.addEventListener('touchmove', handleMove, { passive: true });
-
-            canvas.addEventListener('mouseleave', () => {
-                reset3DInfographicHighlight();
-            });
-
-            canvas.addEventListener('touchend', () => {
-                setTimeout(reset3DInfographicHighlight, 2500);
-            });
-
-            window.addEventListener('resize', () => {
-                if (is3DInfographicViewActive) {
-                    if (window._infographicResizeTimer) clearTimeout(window._infographicResizeTimer);
-                    window._infographicResizeTimer = setTimeout(() => {
-                        render3DColumnsInfographic(currentMainChartMode);
-                    }, 120);
-                }
-            });
         }
 
         function initMainDashboardChart() {
             updateMainDashboardChart();
-            if (is3DInfographicViewActive) {
-                setTimeout(() => {
-                    render3DColumnsInfographic(currentMainChartMode);
-                }, 100);
-            }
         }
 
         /* --- MULTI-CHART ANALYTICS & EXECUTIVE REPORT SMTI --- */
         let chartReportStatusInstance = null;
         let chartReportBagianInstance = null;
         let chartReportUrgensiInstance = null;
-        let chartReportOverviewInstance = null;
 
         function initAnalyticsChart() {
-            if (!projectDataSMTI || projectDataSMTI.length === 0) return;
+            const fiscalProjects = (projectDataSMTI || []).filter(p => (p.year || 2026) === currentFiscalYear);
 
             // 1. UPDATE 4 LIVE DYNAMIC KPI CARDS
-            const totalCount = projectDataSMTI.length;
-            const completedCount = projectDataSMTI.filter(p => isProjectCompleted(p)).length;
+            const totalCount = fiscalProjects.length;
+            const completedCount = fiscalProjects.filter(p => isProjectCompleted(p)).length;
             const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 1000) / 10 : 0;
-            const totalProgress = projectDataSMTI.reduce((sum, p) => sum + (Number(p.progress) || 0), 0);
+            const totalProgress = fiscalProjects.reduce((sum, p) => sum + (Number(p.progress) || 0), 0);
             const avgProgress = totalCount > 0 ? Math.round((totalProgress / totalCount) * 10) / 10 : 0;
-            const urgentActiveCount = projectDataSMTI.filter(p => {
+            const urgentActiveCount = fiscalProjects.filter(p => {
                 const urg = (p.urgency || '').toLowerCase();
                 return (urg === 'tinggi' || urg === 'high') && !isProjectCompleted(p);
             }).length;
 
             const activePics = new Set();
-            projectDataSMTI.forEach(p => {
+            fiscalProjects.forEach(p => {
                 if (p.pic && p.pic.trim()) activePics.add(p.pic.trim());
             });
             const teamCount = activePics.size;
@@ -7154,8 +7056,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             if (canvasStatus) {
                 if (chartReportStatusInstance) chartReportStatusInstance.destroy();
                 const doneCount = completedCount;
-                const ongoingCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && (Number(p.progress) || 0) >= 40).length;
-                const earlyCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && (Number(p.progress) || 0) < 40).length;
+                const ongoingCount = fiscalProjects.filter(p => !isProjectCompleted(p) && (Number(p.progress) || 0) >= 40).length;
+                const earlyCount = fiscalProjects.filter(p => !isProjectCompleted(p) && (Number(p.progress) || 0) < 40).length;
 
                 const centerVal = document.getElementById('chartReportStatusCenterVal');
                 if (centerVal) centerVal.innerText = `${completionRate}%`;
@@ -7232,9 +7134,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             if (canvasBagian) {
                 if (chartReportBagianInstance) chartReportBagianInstance.destroy();
 
-                const mikuP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
-                const pmsmtP = projectDataSMTI.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
-                const sisdurP = projectDataSMTI.filter(p => {
+                const mikuP = fiscalProjects.filter(p => (p.category || '').toUpperCase().includes('MIKU'));
+                const pmsmtP = fiscalProjects.filter(p => (p.category || '').toUpperCase().includes('PMSMT'));
+                const sisdurP = fiscalProjects.filter(p => {
                     const c = (p.category || '').toLowerCase();
                     return c.includes('sisdur') || c.includes('sistem') || c.includes('prosedur');
                 });
@@ -7308,15 +7210,15 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             if (canvasUrgensi) {
                 if (chartReportUrgensiInstance) chartReportUrgensiInstance.destroy();
 
-                const urgentHigh = projectDataSMTI.filter(p => {
+                const urgentHigh = fiscalProjects.filter(p => {
                     const u = (p.urgency || '').toLowerCase();
                     return u === 'tinggi' || u === 'high';
                 }).length;
-                const urgentMed = projectDataSMTI.filter(p => {
+                const urgentMed = fiscalProjects.filter(p => {
                     const u = (p.urgency || '').toLowerCase();
                     return u === 'sedang' || u === 'medium';
                 }).length;
-                const urgentLow = projectDataSMTI.filter(p => {
+                const urgentLow = fiscalProjects.filter(p => {
                     const u = (p.urgency || '').toLowerCase();
                     return u === 'rendah' || u === 'low' || u === 'rutin';
                 }).length;
@@ -7367,85 +7269,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                 backgroundColor: 'rgba(15, 23, 42, 0.95)',
                                 cornerRadius: 8,
                                 callbacks: {
-                                    label: ctx => ` ${ctx.raw} Proyek Terdaftar`
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // 5. CHART 4: SEBARAN CAPAIAN TIAP PROYEK SMTI (Neon Bar Chart)
-            const canvasOverview = document.getElementById('chartReportOverview');
-            if (canvasOverview) {
-                if (chartReportOverviewInstance) chartReportOverviewInstance.destroy();
-
-                const ctxOverview = canvasOverview.getContext('2d');
-                const labels = projectDataSMTI.map(p => p.name.length > 20 ? p.name.substring(0, 18) + '...' : p.name);
-                const dataValues = projectDataSMTI.map(p => Number(p.progress) || 0);
-
-                const bgColors = projectDataSMTI.map(p => {
-                    const prog = Number(p.progress) || 0;
-                    const g = ctxOverview.createLinearGradient(0, 0, 0, 240);
-                    if (prog === 100) {
-                        g.addColorStop(0, '#10b981');
-                        g.addColorStop(1, '#059669');
-                    } else if (prog >= 70) {
-                        g.addColorStop(0, '#06b6d4');
-                        g.addColorStop(1, '#3b82f6');
-                    } else if (prog >= 40) {
-                        g.addColorStop(0, '#f59e0b');
-                        g.addColorStop(1, '#f97316');
-                    } else {
-                        g.addColorStop(0, '#f43f5e');
-                        g.addColorStop(1, '#ec4899');
-                    }
-                    return g;
-                });
-
-                chartReportOverviewInstance = new Chart(ctxOverview, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Progres (%)',
-                            data: dataValues,
-                            backgroundColor: bgColors,
-                            borderRadius: 8,
-                            borderSkipped: false
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: 100,
-                                ticks: { callback: v => v + '%' },
-                                grid: { color: 'rgba(100, 116, 139, 0.12)' }
-                            },
-                            x: {
-                                ticks: {
-                                    autoSkip: false,
-                                    maxRotation: 45,
-                                    minRotation: 20,
-                                    font: { size: 10 }
-                                },
-                                grid: { display: false }
-                            }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                                cornerRadius: 8,
-                                callbacks: {
-                                    title: (items) => projectDataSMTI[items[0].dataIndex]?.name || '',
-                                    label: (ctx) => {
-                                        const p = projectDataSMTI[ctx.dataIndex];
-                                        return ` Capaian: ${ctx.raw}% | ${p ? p.category : '-'} | PIC: ${p ? p.pic : '-'}`;
-                                    }
+                                     label: ctx => ` ${ctx.raw} Proyek Terdaftar`
                                 }
                             }
                         }
@@ -7506,31 +7330,38 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const modal = document.getElementById('modalPrintReport');
             if (!modal) return;
 
+            const fiscalProjects = (projectDataSMTI || []).filter(p => (p.year || 2026) === currentFiscalYear);
             const now = new Date();
             const optionsDate = { day: 'numeric', month: 'long', year: 'numeric' };
             const dateStr = now.toLocaleDateString('id-ID', optionsDate);
             const printDateEl = document.getElementById('report-print-date');
             if (printDateEl) {
-                printDateEl.innerText = `Periode Evaluasi: s/d ${dateStr} • Status: Realisasi Berjalan`;
+                printDateEl.innerText = `Periode Evaluasi: Tahun Anggaran ${currentFiscalYear} (s/d ${dateStr}) • Status: Realisasi Berjalan`;
             }
             const signDateEl = document.getElementById('report-sign-date');
             if (signDateEl) {
                 signDateEl.innerText = dateStr;
             }
 
-            const totalCount = projectDataSMTI.length;
-            const completedCount = projectDataSMTI.filter(p => isProjectCompleted(p)).length;
-            const totalProgress = projectDataSMTI.reduce((sum, p) => sum + (Number(p.progress) || 0), 0);
+            const dokTahunEl = document.getElementById('report-dok-tahun');
+            if (dokTahunEl) dokTahunEl.innerText = currentFiscalYear;
+            const dokNoEl = document.getElementById('report-dok-no');
+            if (dokNoEl) dokNoEl.innerText = `SMTI-REP-${currentFiscalYear}/${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+            const totalCount = fiscalProjects.length;
+            const completedCount = fiscalProjects.filter(p => isProjectCompleted(p)).length;
+            const totalProgress = fiscalProjects.reduce((sum, p) => sum + (Number(p.progress) || 0), 0);
             const avgProgress = totalCount > 0 ? Math.round((totalProgress / totalCount) * 10) / 10 : 0;
 
             const totalEl = document.getElementById('print-kpi-total');
             if (totalEl) totalEl.innerText = `${totalCount} Proyek`;
             const compEl = document.getElementById('print-kpi-completed');
-            if (compEl) compEl.innerText = `${completedCount} Proyek (${Math.round((completedCount / totalCount) * 100)}%)`;
+            if (compEl) compEl.innerText = `${completedCount} Proyek (${totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0}%)`;
             const progEl = document.getElementById('print-kpi-progress');
             if (progEl) progEl.innerText = `${avgProgress}%`;
 
             const tbody = document.getElementById('report-print-table-body');
+
             if (tbody) {
                 const groups = [
                     {
@@ -7570,18 +7401,21 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 let html = '';
                 let globalIdx = 0;
 
-                groups.forEach(grp => {
-                    const projs = projectDataSMTI.filter(p => getProjectBagianInfo(p).key === grp.key);
-                    if (projs.length === 0) return;
+                if (fiscalProjects.length === 0) {
+                    html = `<tr><td colspan="9" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 13px;">Belum ada proyek atau program kerja terdaftar untuk <strong>Tahun Anggaran ${currentFiscalYear}</strong>.</td></tr>`;
+                } else {
+                    groups.forEach(grp => {
+                        const projs = fiscalProjects.filter(p => getProjectBagianInfo(p).key === grp.key);
+                        if (projs.length === 0) return;
 
-                    const secDone = projs.filter(p => isProjectCompleted(p)).length;
-                    const secProgressSum = projs.reduce((s, p) => s + (Number(p.progress) || 0), 0);
-                    const secAvg = Math.round((secProgressSum / projs.length) * 10) / 10;
+                        const secDone = projs.filter(p => isProjectCompleted(p)).length;
+                        const secProgressSum = projs.reduce((s, p) => s + (Number(p.progress) || 0), 0);
+                        const secAvg = Math.round((secProgressSum / projs.length) * 10) / 10;
 
-                    // Baris Subheader Bagian
+                        // Baris Subheader Bagian
                     html += `
                         <tr style="background: ${grp.bg}; border-top: 2px solid ${grp.borderColor}; border-bottom: 1.5px solid #cbd5e1;">
-                            <td colspan="8" style="padding: 8px 12px; font-weight: 800; font-size: 11.5px; color: ${grp.color}; letter-spacing: 0.3px;">
+                            <td colspan="9" style="padding: 8px 12px; font-weight: 800; font-size: 11.5px; color: ${grp.color}; letter-spacing: 0.3px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
                                     <div style="display: flex; align-items: center; gap: 8px;">
                                         <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: ${grp.borderColor};"></span>
@@ -7606,15 +7440,47 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         const prog = Number(p.progress) || 0;
                         const deadline = p.deadline || '-';
 
+                        const flow = (Array.isArray(p.flow) && p.flow.length > 0) ? p.flow : [
+                            { stepNumber: 1, title: "Inisiasi & Perencanaan", date: "Bulan 1", status: isDone ? "completed" : (prog > 0 ? "completed" : "active") },
+                            { stepNumber: 2, title: "Eksekusi & Asistensi", date: "Bulan 2", status: isDone ? "completed" : (prog >= 50 ? "active" : "pending") },
+                            { stepNumber: 3, title: "Review & Pengujian", date: "Bulan 3", status: isDone ? "completed" : "pending" },
+                            { stepNumber: 4, title: "Finalisasi & Serah Terima", date: p.deadline || "Akhir", status: isDone ? "completed" : "pending" }
+                        ];
+
+                        const activeStep = flow.find(st => st.status === 'active') || flow.find(st => st.status === 'pending') || flow[flow.length - 1];
+                        const activeIdx = flow.indexOf(activeStep);
+
+                        // Format ringkas kolom baru: Tahap Terkini (tulis terakhir di alur mana biar tidak kepanjangan)
+                        let workflowCellHtml = '';
+                        if (isDone) {
+                            workflowCellHtml = `
+                                <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 11px; color: #15803d; background: #dcfce7; padding: 2px 7px; border-radius: 4px; border: 1px solid #bbf7d0; white-space: nowrap;">
+                                    <i class="fas fa-check-circle"></i> Tuntas Selesai
+                                </span>
+                            `;
+                        } else if (activeStep) {
+                            workflowCellHtml = `
+                                <div style="font-size: 11px; line-height: 1.35;">
+                                    <strong style="color: #0284c7;">Tahap ${activeIdx + 1}:</strong> <span style="color: #0f172a; font-weight: 600;">${activeStep.title}</span>
+                                </div>
+                            `;
+                        } else {
+                            workflowCellHtml = `<span style="font-size: 11px; color: #64748b;">-</span>`;
+                        }
+
+                        // Baris Tabel (Nama Proyek bersih tanpa badge workflow, Workflow di kolom tersendiri)
                         html += `
                             <tr>
                                 <td style="text-align: center; font-weight: 600;">${globalIdx}</td>
                                 <td>
-                                    <strong style="color: #0f172a;">${p.name}</strong>
-                                    <div style="font-size: 10px; color: #64748b;">${p.desc ? p.desc.substring(0, 75) + '...' : ''}</div>
+                                    <strong style="color: #0f172a; font-size: 12px;">${p.name}</strong>
+                                    <div style="font-size: 10px; color: #64748b; margin-top: 1px;">${p.desc ? p.desc.substring(0, 80) + '...' : ''}</div>
                                 </td>
                                 <td><span style="font-size: 11px; font-weight: 700; color: ${grp.color};">${grp.shortName}</span></td>
                                 <td><strong>${p.pic || '-'}</strong></td>
+                                <td>
+                                    ${workflowCellHtml}
+                                </td>
                                 <td style="text-align: center;"><span style="font-weight: 700; font-size: 11px; color: ${urgColor};">${urg}</span></td>
                                 <td style="text-align: center;">
                                     <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10.5px; font-weight: 700; background: ${statusBg}">${statusLabel}</span>
@@ -7627,6 +7493,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         `;
                     });
                 });
+                }
 
                 tbody.innerHTML = html;
             }
@@ -7665,7 +7532,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 return (a.name || '').localeCompare(b.name || '');
             });
 
-            const headers = ['No', 'Nama Proyek', 'Bagian Unit', 'PIC', 'Tim', 'Urgensi', 'Target Selesai', 'Sisa Waktu', 'Progres (%)', 'Status'];
+            const headers = ['No', 'Tahun Anggaran', 'Nama Proyek', 'Bagian Unit', 'PIC', 'Tim', 'Urgensi', 'Target Selesai', 'Sisa Waktu', 'Progres (%)', 'Status'];
             const rows = sortedProjects.map((p, idx) => {
                 const teamStr = Array.isArray(p.teamMembers) ? p.teamMembers.join('; ') : '';
                 const isDone = isProjectCompleted(p);
@@ -7675,6 +7542,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
                 return [
                     idx + 1,
+                    p.year || 2026,
                     `"${(p.name || '').replace(/"/g, '""')}"`,
                     `"${bagianInfo.shortName}"`,
                     `"${(p.pic || '').replace(/"/g, '""')}"`,
@@ -7841,8 +7709,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const badgeCount = document.getElementById('notif-badge-count');
             if (!dropdown) return;
 
-            // 1. Ambil proyek yang aktif berjalan (belum 100% tuntas)
-            const activeProjects = projectDataSMTI.filter(p => !isProjectCompleted(p));
+            // 1. Ambil proyek yang aktif berjalan pada Tahun Anggaran aktif (belum 100% tuntas)
+            const activeProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear && !isProjectCompleted(p));
             
             // Pengguna saat ini jika sedang login via PIN
             const currentUserName = (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) 
@@ -8058,52 +7926,86 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             dropdown.innerHTML = html;
         }
 
+        /* --- DASHBOARD URGENT BANNER MULTI-SLIDE CAROUSEL SYSTEM --- */
+        let urgentSliderCurrentIndex = 0;
+        let urgentSliderProgressInterval = null;
+        let urgentSliderElapsed = 0;
+        let isUrgentSliderHovered = false;
+        const URGENT_SLIDE_DURATION = 6000; // 6 Detik (Rekomendasi ideal: tidak terlalu cepat & tidak terlalu lambat)
+        const URGENT_PROGRESS_TICK = 50;   // Update progress bar tiap 50ms
+
+        function stopUrgentSliderTimer() {
+            if (urgentSliderProgressInterval) {
+                clearInterval(urgentSliderProgressInterval);
+                urgentSliderProgressInterval = null;
+            }
+            urgentSliderElapsed = 0;
+        }
+
+        function startUrgentSliderAuto(totalCount) {
+            stopUrgentSliderTimer();
+            urgentSliderElapsed = 0;
+
+            urgentSliderProgressInterval = setInterval(() => {
+                // Pause saat mouse kursor berada di atas banner
+                if (isUrgentSliderHovered) return;
+
+                urgentSliderElapsed += URGENT_PROGRESS_TICK;
+
+                if (urgentSliderElapsed >= URGENT_SLIDE_DURATION) {
+                    urgentSliderElapsed = 0;
+                    nextUrgentSlide();
+                }
+            }, URGENT_PROGRESS_TICK);
+        }
+
+        function goToUrgentSlide(index) {
+            const fiscalProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear);
+            const activeUrgent = fiscalProjects.filter(p => !isProjectCompleted(p) && p.urgency === 'Tinggi');
+            const urgentList = activeUrgent.length > 0 ? activeUrgent : fiscalProjects.filter(p => !isProjectCompleted(p));
+            if (urgentList.length <= 1) return;
+
+            urgentSliderCurrentIndex = (index + urgentList.length) % urgentList.length;
+
+            const track = document.getElementById('urgent-slider-track');
+            if (track) {
+                track.style.transform = `translateX(-${urgentSliderCurrentIndex * 100}%)`;
+            }
+
+            const counter = document.getElementById('urgent-slide-counter');
+            if (counter) {
+                counter.innerText = `${urgentSliderCurrentIndex + 1} / ${urgentList.length}`;
+            }
+
+            const dots = document.querySelectorAll('.urgent-dot');
+            dots.forEach((d, i) => {
+                d.classList.toggle('active', i === urgentSliderCurrentIndex);
+            });
+
+            urgentSliderElapsed = 0;
+        }
+
+        function nextUrgentSlide() {
+            goToUrgentSlide(urgentSliderCurrentIndex + 1);
+        }
+
+        function prevUrgentSlide() {
+            goToUrgentSlide(urgentSliderCurrentIndex - 1);
+        }
+
         function renderDashboardUrgentBanner() {
             const banner = document.getElementById('dash-urgent-banner');
             if (!banner) return;
 
-            // Cari proyek aktif prioritas tertinggi yang belum selesai
-            const activeUrgent = projectDataSMTI.filter(p => !isProjectCompleted(p) && p.urgency === 'Tinggi');
-            const targetProj = activeUrgent.length > 0 ? activeUrgent[0] : projectDataSMTI.find(p => !isProjectCompleted(p));
+            stopUrgentSliderTimer();
 
-            if (targetProj) {
-                const stageIndex = targetProj.flow.findIndex(s => s.status === 'active');
-                const activeStage = stageIndex >= 0 ? targetProj.flow[stageIndex] : targetProj.flow[0];
-                const stageName = activeStage ? activeStage.title : 'Tahap Berjalan';
+            // Cari seluruh proyek aktif prioritas tinggi yang belum selesai di TA terpilih
+            const fiscalProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear);
+            const activeUrgent = fiscalProjects.filter(p => !isProjectCompleted(p) && p.urgency === 'Tinggi');
+            const urgentList = activeUrgent.length > 0 ? activeUrgent : fiscalProjects.filter(p => !isProjectCompleted(p));
 
-                banner.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-                        <div style="flex: 1; min-width: 260px;">
-                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
-                                <span class="urgency-badge high"><i class="fas fa-exclamation-circle"></i> PRIORITAS UTAMA SEDANG BERJALAN</span>
-                                <span class="project-category-tag" style="font-size: 11px;">${targetProj.category}</span>
-                                <span style="font-size: 12px; color: #dc2626; font-weight: 700;"><i class="fas fa-calendar-alt"></i> Target Deadline: ${targetProj.deadline}</span>
-                            </div>
-                            <h3 style="font-size: 17px; font-weight: 800; color: var(--text-color); margin: 4px 0;">${targetProj.name}</h3>
-                            <p style="font-size: 13px; color: #64748b; margin: 4px 0 8px 0; line-height: 1.4;">${targetProj.description}</p>
-                            <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 12px;">
-                                <span><i class="fas fa-user-tie" style="color: #0284c7;"></i> PIC: <strong>${targetProj.pic}</strong></span>
-                                <span><i class="fas fa-sitemap" style="color: #0284c7;"></i> Tahap: <strong>${stageName}</strong></span>
-                                <div style="display: inline-flex; align-items: center; gap: 6px;">
-                                    <span>Progres:</span>
-                                    <div style="width: 90px; height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; display: inline-block;">
-                                        <div style="width: ${targetProj.progress}%; height: 100%; background: #0284c7; border-radius: 4px;"></div>
-                                    </div>
-                                    <strong style="color: #0284c7;">${targetProj.progress}%</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <button class="btn" style="background: #dc2626; font-weight: 700;" onclick="openFlowModal(${targetProj.id})">
-                                <i class="fas fa-sitemap"></i> Buka Alur & Input Checklist
-                            </button>
-                            <button class="btn" style="background: #0284c7;" onclick="openMonitorMode()">
-                                <i class="fas fa-desktop"></i> Pantau di Monitor
-                            </button>
-                        </div>
-                    </div>
-                `;
-            } else {
+            if (urgentList.length === 0) {
+                banner.style.padding = '18px 22px';
                 banner.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                         <div style="display: flex; align-items: center; gap: 12px;">
@@ -8118,6 +8020,146 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         </button>
                     </div>
                 `;
+                return;
+            }
+
+            if (urgentSliderCurrentIndex >= urgentList.length) {
+                urgentSliderCurrentIndex = 0;
+            }
+
+            const isMultiple = urgentList.length > 1;
+
+            banner.style.padding = '0';
+            banner.style.position = 'relative';
+            banner.style.overflow = 'hidden';
+
+            // Pause on hover
+            banner.onmouseenter = () => { isUrgentSliderHovered = true; };
+            banner.onmouseleave = () => { isUrgentSliderHovered = false; };
+
+            // Swipe listener untuk mobile / tablet
+            let touchStartX = 0;
+            banner.ontouchstart = (e) => {
+                if (e.changedTouches && e.changedTouches[0]) {
+                    touchStartX = e.changedTouches[0].screenX;
+                }
+            };
+            banner.ontouchend = (e) => {
+                if (e.changedTouches && e.changedTouches[0]) {
+                    const touchEndX = e.changedTouches[0].screenX;
+                    if (touchStartX - touchEndX > 45) {
+                        nextUrgentSlide();
+                    } else if (touchEndX - touchStartX > 45) {
+                        prevUrgentSlide();
+                    }
+                }
+            };
+
+            let slidesHtml = '';
+            urgentList.forEach((p) => {
+                const flow = (Array.isArray(p.flow) && p.flow.length > 0) ? p.flow : [];
+                const stageIndex = flow.findIndex(s => s.status === 'active');
+                const activeStage = stageIndex >= 0 ? flow[stageIndex] : (flow.find(s => s.status === 'pending') || flow[0]);
+                const stageName = activeStage ? activeStage.title : 'Tahap Berjalan';
+                const prog = Number(p.progress) || 0;
+                const descText = p.description || p.desc || 'Inisiatif strategis prioritas utama Departemen SMTI.';
+
+                slidesHtml += `
+                    <div class="urgent-slide-item" style="min-width: 100%; width: 100%; flex-shrink: 0; box-sizing: border-box; padding: 0 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                            <div style="flex: 1; min-width: 260px;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
+                                    <span class="project-category-tag" style="font-size: 11px;">${p.category || 'SMTI'}</span>
+                                    <span style="font-size: 12px; color: #dc2626; font-weight: 700;">
+                                        <i class="fas fa-calendar-alt"></i> Target Deadline: ${p.deadline || '-'}
+                                    </span>
+                                </div>
+                                <h3 style="font-size: 17px; font-weight: 800; color: var(--text-color); margin: 4px 0; line-height: 1.3;">
+                                    ${p.name}
+                                </h3>
+                                <p style="font-size: 13px; color: #64748b; margin: 4px 0 8px 0; line-height: 1.4;">
+                                    ${descText}
+                                </p>
+                                <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 12px;">
+                                    <span><i class="fas fa-user-tie" style="color: #0284c7;"></i> PIC: <strong>${p.pic || '-'}</strong></span>
+                                    <span><i class="fas fa-sitemap" style="color: #0284c7;"></i> Tahap: <strong>${stageName}</strong></span>
+                                    <div style="display: inline-flex; align-items: center; gap: 6px;">
+                                        <span>Progres:</span>
+                                        <div style="width: 90px; height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; display: inline-block;">
+                                            <div style="width: ${prog}%; height: 100%; background: #0284c7; border-radius: 4px;"></div>
+                                        </div>
+                                        <strong style="color: #0284c7;">${prog}%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                                <button class="btn" style="background: #dc2626; font-weight: 700; white-space: nowrap;" onclick="openFlowModal(${p.id})">
+                                    <i class="fas fa-sitemap"></i> Buka Alur & Input Checklist
+                                </button>
+                                <button class="btn" style="background: #0284c7; font-weight: 600; white-space: nowrap;" onclick="openMonitorMode()">
+                                    <i class="fas fa-desktop"></i> Pantau di Monitor
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            let dotsHtml = '';
+            if (isMultiple) {
+                for (let i = 0; i < urgentList.length; i++) {
+                    dotsHtml += `<span class="urgent-dot ${i === urgentSliderCurrentIndex ? 'active' : ''}" onclick="goToUrgentSlide(${i})" title="Lihat Proyek Prioritas ${i+1}"></span>`;
+                }
+            }
+
+            banner.innerHTML = `
+                <div style="padding: 18px 22px;">
+                    <!-- Top Controls Row -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span class="urgency-badge high" style="box-shadow: 0 2px 8px rgba(220,38,38,0.22);">
+                                <i class="fas fa-fire" style="animation: pulseRed 1.5s infinite;"></i> PRIORITAS UTAMA SEDANG BERJALAN
+                            </span>
+                            ${isMultiple ? `
+                                <span style="font-size: 11px; font-weight: 700; color: #dc2626; background: rgba(220, 38, 38, 0.08); border: 1px solid rgba(220, 38, 38, 0.2); padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 4px;">
+                                    <i class="fas fa-layer-group"></i> ${urgentList.length} Proyek Urgent
+                                </span>
+                            ` : ''}
+                        </div>
+
+                        ${isMultiple ? `
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span id="urgent-slide-counter" style="font-size: 11.5px; font-weight: 700; color: #64748b; background: rgba(0,0,0,0.04); padding: 3px 8px; border-radius: 10px;">
+                                    ${urgentSliderCurrentIndex + 1} / ${urgentList.length}
+                                </span>
+                                <button type="button" class="btn-urgent-nav" onclick="prevUrgentSlide()" title="Slide Sebelumnya (Kiri)">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button type="button" class="btn-urgent-nav" onclick="nextUrgentSlide()" title="Slide Selanjutnya (Kanan)">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Viewport & Track (Slide bergerak bergantian ke kanan) -->
+                    <div id="urgent-slider-viewport" style="overflow: hidden; width: 100%; position: relative;">
+                        <div id="urgent-slider-track" style="display: flex; transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1); transform: translateX(-${urgentSliderCurrentIndex * 100}%);">
+                            ${slidesHtml}
+                        </div>
+                    </div>
+
+                    <!-- Bottom Navigation Dots -->
+                    ${isMultiple ? `
+                        <div id="urgent-slider-dots" style="display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 14px;">
+                            ${dotsHtml}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            if (isMultiple) {
+                startUrgentSliderAuto(urgentList.length);
             }
         }
 
@@ -8125,9 +8167,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const container = document.getElementById('dash-running-projects-list');
             if (!container) return;
 
-            const runningProjects = projectDataSMTI.filter(p => !isProjectCompleted(p));
+            const fiscalProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear);
+            const runningProjects = fiscalProjects.filter(p => !isProjectCompleted(p));
             if (runningProjects.length === 0) {
-                container.innerHTML = `<div style="grid-column: 1 / -1; padding: 24px; text-align: center; color: #64748b; font-size: 13px;">Semua proyek telah tuntas diselesaikan.</div>`;
+                if (fiscalProjects.length === 0) {
+                    container.innerHTML = `<div style="grid-column: 1 / -1; padding: 24px; text-align: center; color: #64748b; font-size: 13px;">Belum ada proyek terdaftar untuk TA ${currentFiscalYear}. Gunakan tombol tambah proyek baru atau carry-over.</div>`;
+                } else {
+                    container.innerHTML = `<div style="grid-column: 1 / -1; padding: 24px; text-align: center; color: #16a34a; font-size: 13px;"><i class="fas fa-check-circle"></i> Semua portofolio proyek TA ${currentFiscalYear} telah tuntas diselesaikan.</div>`;
+                }
                 return;
             }
 
@@ -8159,9 +8206,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border-color);">
                                 <small style="font-size: 11px; color: #dc2626;"><i class="fas fa-clock"></i> ${p.daysLeft || p.deadline}</small>
-                                <button class="btn btn-sm" style="background: #0284c7; font-size: 11px; padding: 3px 9px;" onclick="openFlowModal(${p.id})">
-                                    <i class="fas fa-external-link-alt"></i> Alur
-                                </button>
+                                <div style="display: flex; gap: 4px; align-items: center;">
+                                    <button class="btn btn-sm" style="background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; padding: 3px 7px;" onclick="event.stopPropagation(); openGoogleCalendarForProject(${p.id})" title="Set Pengingat Deadline ke Google Calendar">
+                                        <i class="fab fa-google"></i>
+                                    </button>
+                                    <button class="btn btn-sm" style="background: #0284c7; font-size: 11px; padding: 3px 9px;" onclick="openFlowModal(${p.id})">
+                                        <i class="fas fa-external-link-alt"></i> Alur
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -8173,7 +8225,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const container = document.getElementById('project-card-container');
             if (!container) return;
 
-            const filtered = projectDataSMTI.filter(p => {
+            const fiscalProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear);
+
+            const filtered = fiscalProjects.filter(p => {
                 const done = isProjectCompleted(p);
                 let matchFilter = true;
                 if (currentProjectFilter === "semua") {
@@ -8192,18 +8246,18 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             });
 
             // Update KPI counts
-            const totalCount = projectDataSMTI.length;
-            const completedCount = projectDataSMTI.filter(p => isProjectCompleted(p)).length;
+            const totalCount = fiscalProjects.length;
+            const completedCount = fiscalProjects.filter(p => isProjectCompleted(p)).length;
             const runningCount = totalCount - completedCount;
 
             // Hitung urgensi HANYA untuk proyek yang sedang aktif berjalan
-            const runningHighCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && p.urgency === 'Tinggi').length;
-            const runningMedCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && p.urgency === 'Sedang').length;
-            const runningLowCount = projectDataSMTI.filter(p => !isProjectCompleted(p) && p.urgency === 'Rendah').length;
+            const runningHighCount = fiscalProjects.filter(p => !isProjectCompleted(p) && p.urgency === 'Tinggi').length;
+            const runningMedCount = fiscalProjects.filter(p => !isProjectCompleted(p) && p.urgency === 'Sedang').length;
+            const runningLowCount = fiscalProjects.filter(p => !isProjectCompleted(p) && p.urgency === 'Rendah').length;
 
-            const allHighCount = projectDataSMTI.filter(p => p.urgency === 'Tinggi').length;
-            const allMedCount = projectDataSMTI.filter(p => p.urgency === 'Sedang').length;
-            const allLowCount = projectDataSMTI.filter(p => p.urgency === 'Rendah').length;
+            const allHighCount = fiscalProjects.filter(p => p.urgency === 'Tinggi').length;
+            const allMedCount = fiscalProjects.filter(p => p.urgency === 'Sedang').length;
+            const allLowCount = fiscalProjects.filter(p => p.urgency === 'Rendah').length;
 
             if (document.getElementById('proyek-kpi-total')) document.getElementById('proyek-kpi-total').innerText = totalCount;
             if (document.getElementById('proyek-kpi-running')) document.getElementById('proyek-kpi-running').innerText = runningCount;
@@ -8234,13 +8288,46 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             updateMainDashboardChart();
             renderNotifications();
 
+            if (fiscalProjects.length === 0) {
+                const prevYear = currentFiscalYear - 1;
+                const prevYearUnfinishedCount = projectDataSMTI.filter(p => (p.year || 2026) === prevYear && !isProjectCompleted(p)).length;
+
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; background: var(--card-bg); border: 2px dashed var(--border-color); border-radius: 14px; padding: 44px 20px; text-align: center; box-shadow: 0 4px 18px rgba(0,0,0,0.04);">
+                        <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(2, 132, 199, 0.1); color: #0284c7; display: inline-flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 14px;">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <h3 style="font-size: 19px; font-weight: 800; color: var(--text-color); margin-bottom: 6px;">
+                            Tahun Anggaran (TA) ${currentFiscalYear} Siap Digunakan
+                        </h3>
+                        <p style="font-size: 13.5px; color: #64748b; max-width: 540px; margin: 0 auto 20px auto; line-height: 1.5;">
+                            Belum ada proyek atau program kerja yang terdaftar untuk <strong>TA ${currentFiscalYear}</strong>. Grafik realisasi RKAP dimulai bersih dari 0%. Anda dapat mendaftarkan inisiatif baru atau menyalin (carry-over) proyek berjalan dari tahun sebelumnya.
+                        </p>
+                        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); font-weight: 700; padding: 9px 18px; font-size: 13px;" onclick="openAddProjectModal()">
+                                <i class="fas fa-plus-circle"></i> Tambah Proyek Baru TA ${currentFiscalYear}
+                            </button>
+                            ${prevYearUnfinishedCount > 0 ? `
+                                <button class="btn" style="background: linear-gradient(135deg, #d97706, #b45309); font-weight: 700; padding: 9px 18px; font-size: 13px;" onclick="carryOverProjects(${prevYear}, ${currentFiscalYear})">
+                                    <i class="fas fa-history"></i> Salin ${prevYearUnfinishedCount} Proyek Belum Selesai dari TA ${prevYear}
+                                </button>
+                            ` : ''}
+                            <button class="btn" style="background: var(--hover-color); color: var(--text-color); border: 1px solid var(--border-color); font-weight: 600; padding: 9px 16px; font-size: 13px;" onclick="changeFiscalYear(${prevYear})">
+                                <i class="fas fa-arrow-left"></i> Kembali ke TA ${prevYear}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
             if (filtered.length === 0) {
                 container.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; opacity: 0.6;">
                         <i class="fas fa-search" style="font-size: 32px; margin-bottom: 10px; color: #94a3b8;"></i>
-                        <p style="font-weight: 600; font-size: 14px;">Tidak ada proyek pada filter ini.</p>
+                        <p style="font-weight: 600; font-size: 14px;">Tidak ada proyek pada filter ini di TA ${currentFiscalYear}.</p>
                         <button class="btn btn-sm" style="margin-top: 8px; background: #0284c7;" onclick="filterProjects('semua', document.querySelector('.tab-btn[data-filter=\'semua\']'))">
-                            Tampilkan Semua Proyek
+                            Tampilkan Semua Proyek TA ${currentFiscalYear}
                         </button>
                     </div>
                 `;
@@ -8318,7 +8405,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                                         <i class="fas fa-flag-checkered"></i> Selesai (${p.deadline})
                                     </span>
                                 ` : `
-                                    <span class="project-deadline-pill"><i class="fas fa-calendar-alt"></i> ${p.deadline} (${p.daysLeft})</span>
+                                    <span class="project-deadline-pill" style="display: inline-flex; align-items: center; gap: 5px;">
+                                        <span><i class="fas fa-calendar-alt"></i> ${p.deadline} (${p.daysLeft})</span>
+                                        <button type="button" style="border: none; background: rgba(16, 185, 129, 0.15); color: #10b981; border-radius: 4px; padding: 2px 6px; font-size: 10px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 3px;" onclick="event.stopPropagation(); openGoogleCalendarForProject(${p.id})" title="Tambah pengingat deadline ke Google Calendar">
+                                            <i class="fab fa-google"></i> Cal
+                                        </button>
+                                    </span>
                                 `}
                             </div>
 
@@ -8453,8 +8545,8 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
             if (!highList || !medList || !lowList || !colHigh || !colMed || !colLow || !board) return;
 
-            // Filter by category if set
-            let filteredProjects = projectDataSMTI;
+            // Filter by fiscal year and category if set
+            let filteredProjects = projectDataSMTI.filter(p => (p.year || 2026) === currentFiscalYear);
             if (currentMonitorCategoryFilter && currentMonitorCategoryFilter !== 'semua') {
                 filteredProjects = filteredProjects.filter(p => p.category === currentMonitorCategoryFilter);
             }
@@ -8838,6 +8930,127 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     avatarEl.style.background = '#64748b';
                 }
             }
+        }
+
+        /* =========================================================
+           GOOGLE CALENDAR & ICALENDAR SYNC REMINDER HELPERS
+           ========================================================= */
+        function parseProjectDeadline(deadlineStr) {
+            if (!deadlineStr) return new Date();
+            // 1. Format ISO: YYYY-MM-DD
+            const isoMatch = String(deadlineStr).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+            if (isoMatch) {
+                return new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2]) - 1, parseInt(isoMatch[3]));
+            }
+            // 2. Format Indonesia: "15 Mei 2026", "20 Agustus 2026", dsb
+            const monthsMap = {
+                'januari': 0, 'jan': 0, 'january': 0,
+                'februari': 1, 'feb': 1, 'february': 1,
+                'maret': 2, 'mar': 2, 'march': 2,
+                'april': 3, 'apr': 3,
+                'mei': 4, 'may': 4,
+                'juni': 5, 'jun': 5, 'june': 5,
+                'juli': 6, 'jul': 6, 'july': 6,
+                'agustus': 7, 'ags': 7, 'agt': 7, 'august': 7, 'aug': 7,
+                'september': 8, 'sep': 8,
+                'oktober': 9, 'okt': 9, 'october': 9, 'oct': 9,
+                'november': 10, 'nov': 10,
+                'desember': 11, 'des': 11, 'december': 11, 'dec': 11
+            };
+            const parts = String(deadlineStr).trim().split(/\s+/);
+            if (parts.length >= 3) {
+                const day = parseInt(parts[0]) || 1;
+                const monthKey = parts[1].toLowerCase().replace(/[^a-z]/g, '');
+                const month = monthsMap[monthKey] !== undefined ? monthsMap[monthKey] : 0;
+                const year = parseInt(parts[2]) || new Date().getFullYear();
+                return new Date(year, month, day);
+            }
+            const fallback = new Date(deadlineStr);
+            return isNaN(fallback.getTime()) ? new Date() : fallback;
+        }
+
+        function openGoogleCalendarForProject(projectId) {
+            const project = projectDataSMTI.find(p => p.id === projectId);
+            if (!project) return;
+
+            const d = parseProjectDeadline(project.deadline);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+
+            // Format all-day Google Calendar: YYYYMMDD/YYYYMMDD (next day)
+            const nextDay = new Date(d);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const nextYyyy = nextDay.getFullYear();
+            const nextMm = String(nextDay.getMonth() + 1).padStart(2, '0');
+            const nextDd = String(nextDay.getDate()).padStart(2, '0');
+
+            const dateRange = `${yyyy}${mm}${dd}/${nextYyyy}${nextMm}${nextDd}`;
+
+            const title = `[SMTI] Target Deadline: ${project.name}`;
+            const details = `PENGINGAT TARGET SELESAI PROYEK DEPT SMTI - PT PUPUK KUJANG\n\n` +
+                `• Nama Inisiatif: ${project.name}\n` +
+                `• Bagian / Unit Kerja: ${project.category}\n` +
+                `• Penanggung Jawab (PIC): ${project.pic}\n` +
+                `• Urgensi: ${project.urgency}\n` +
+                `• Target Deadline: ${project.deadline} (${project.daysLeft || 'Target'})\n` +
+                `• Capaian Saat Ini: ${project.progress}%\n` +
+                `• Deskripsi:\n${project.description || '-'}\n\n` +
+                `Akses Dashboard SMTI: https://smti-pupuk-kujang.vercel.app`;
+
+            const location = `Departemen SMTI - PT Pupuk Kujang Cikampek`;
+
+            const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${dateRange}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
+
+            window.open(gcalUrl, '_blank');
+        }
+
+        function downloadIcsCalendar(projectId) {
+            const project = projectDataSMTI.find(p => p.id === projectId);
+            if (!project) return;
+
+            const d = parseProjectDeadline(project.deadline);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            const startStr = `${yyyy}${mm}${dd}`;
+
+            const nextDay = new Date(d);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const endStr = `${nextDay.getFullYear()}${String(nextDay.getMonth() + 1).padStart(2, '0')}${String(nextDay.getDate()).padStart(2, '0')}`;
+
+            const cleanName = (project.name || '').replace(/[\r\n]+/g, ' ').replace(/"/g, "'");
+            const cleanDesc = (project.description || '').replace(/[\r\n]+/g, '\\n').replace(/"/g, "'");
+
+            const icsContent = 
+`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Dept SMTI PT Pupuk Kujang//Dashboard SMTI//ID
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:smti_proj_${project.id}@pupuk-kujang.co.id
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTSTART;VALUE=DATE:${startStr}
+DTEND;VALUE=DATE:${endStr}
+SUMMARY:[SMTI] Deadline: ${cleanName}
+DESCRIPTION:Target Selesai Proyek SMTI: ${cleanName}\\nBagian: ${project.category}\\nPIC: ${project.pic}\\nUrgensi: ${project.urgency}\\nProgres: ${project.progress}%\\n${cleanDesc}\\nhttps://smti-pupuk-kujang.vercel.app
+LOCATION:Dept SMTI, PT Pupuk Kujang Cikampek
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Pengingat Deadline Proyek SMTI
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+END:VCALENDAR`;
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Deadline_SMTI_${cleanName.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30)}.ics`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         /* =========================================================
@@ -9486,7 +9699,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const container = document.getElementById('new-proj-team-select');
             if (!container) return;
 
-            let html = `<div style="width: 100%; font-size: 11px; font-weight: 700; color: #0284c7; margin-bottom: 4px;"><i class="fas fa-user-tie"></i> Karyawan SMTI:</div>`;
+            let html = `<div style="width: 100%; font-size: 11px; font-weight: 700; color: #0284c7; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between;">
+                <span><i class="fas fa-user-tie"></i> Karyawan Dept SMTI (${SMTI_EMPLOYEES.length}):</span>
+            </div>`;
             html += SMTI_EMPLOYEES.map(emp => `
                 <label style="display: flex; align-items: center; gap: 6px; background: var(--card-bg); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 16px; font-size: 11.5px; cursor: pointer;">
                     <input type="checkbox" value="${emp.name}" class="new-proj-member-check">
@@ -9494,9 +9709,14 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 </label>
             `).join('');
 
-            if (SMTI_INTERNS && SMTI_INTERNS.length > 0) {
-                html += `<div style="width: 100%; font-size: 11px; font-weight: 700; color: #10b981; margin: 8px 0 4px 0;"><i class="fas fa-user-graduate"></i> Mahasiswa / Magang:</div>`;
-                html += SMTI_INTERNS.map(intern => {
+            const activeInterns = (SMTI_INTERNS || []).filter(i => (i.status || 'Aktif') === 'Aktif');
+
+            if (activeInterns.length > 0) {
+                html += `<div style="width: 100%; font-size: 11px; font-weight: 700; color: #10b981; margin: 10px 0 4px 0; display: flex; align-items: center; justify-content: space-between;">
+                    <span><i class="fas fa-user-graduate"></i> Mahasiswa / Siswa Magang Aktif (${activeInterns.length}):</span>
+                    <span style="font-size: 10px; font-weight: 600; color: #059669;">Bisa diundang ke tim</span>
+                </div>`;
+                html += activeInterns.map(intern => {
                     const tInfo = getInternTypeBadgeInfo(intern.type);
                     return `
                         <label style="display: flex; align-items: center; gap: 6px; background: var(--card-bg); border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 16px; font-size: 11.5px; cursor: pointer;">
@@ -9507,6 +9727,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         </label>
                     `;
                 }).join('');
+            } else {
+                html += `<div style="width: 100%; font-size: 11px; font-weight: 700; color: #10b981; margin: 10px 0 4px 0;"><i class="fas fa-user-graduate"></i> Mahasiswa / Siswa Magang:</div>`;
+                html += `<div style="width: 100%; font-size: 11px; color: #94a3b8; font-style: italic; padding: 4px 0;"><i class="fas fa-info-circle"></i> Belum ada mahasiswa magang aktif. Anda dapat menambahkannya di menu "Mahasiswa & Magang", dan mereka akan otomatis muncul di sini.</div>`;
             }
 
             container.innerHTML = html;
@@ -10197,9 +10420,44 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
             if (dl) dl.innerHTML = datalistHtml;
             if (selectAdd) {
-                const curVal = selectAdd.value;
-                selectAdd.innerHTML = `<option value="">-- Pilih Penanggung Jawab (PIC) --</option>` + optgroupsHtml;
-                if (curVal) selectAdd.value = curVal;
+                const isSuper = typeof isCurrentUserSuperAdmin === 'function' && isCurrentUserSuperAdmin();
+                const curUser = (typeof currentAuthUser !== 'undefined' && currentAuthUser) ? currentAuthUser : null;
+                const helpEl = document.getElementById('new-proj-pic-help');
+
+                if (isSuper) {
+                    const curVal = selectAdd.value;
+                    selectAdd.disabled = false;
+                    selectAdd.removeAttribute('disabled');
+                    selectAdd.style.pointerEvents = 'auto';
+                    selectAdd.style.cursor = 'default';
+                    selectAdd.style.background = 'var(--card-bg)';
+                    selectAdd.style.opacity = '1';
+                    selectAdd.innerHTML = `<option value="">-- Pilih Penanggung Jawab (PIC) --</option>` + optgroupsHtml;
+                    if (curVal && Array.from(selectAdd.options).some(o => o.value === curVal)) {
+                        selectAdd.value = curVal;
+                    } else if (curUser && curUser.name) {
+                        selectAdd.value = curUser.name;
+                    }
+                    if (helpEl) {
+                        helpEl.innerHTML = `<i class="fas fa-user-shield" style="color: #0891b2;"></i> <strong>Mode Super Admin:</strong> Anda dapat bebas memilih PIC dari seluruh personil SMTI & magang.`;
+                        helpEl.style.color = '#0891b2';
+                    }
+                } else {
+                    const userName = curUser ? curUser.name : 'Pengguna SMTI';
+                    const userRole = curUser ? (curUser.role || (curUser.campus ? `Magang ${curUser.campus.split(' ')[0]}` : 'Officer SMTI')) : 'SMTI';
+                    selectAdd.innerHTML = `<option value="${userName}" selected>👤 ${userName} (${userRole})</option>`;
+                    selectAdd.value = userName;
+                    selectAdd.disabled = true;
+                    selectAdd.setAttribute('disabled', 'disabled');
+                    selectAdd.style.pointerEvents = 'none';
+                    selectAdd.style.cursor = 'not-allowed';
+                    selectAdd.style.background = 'var(--hover-color)';
+                    selectAdd.style.opacity = '0.9';
+                    if (helpEl) {
+                        helpEl.innerHTML = `<i class="fas fa-lock" style="color: #10b981;"></i> <strong>Terkunci Otomatis:</strong> Penanggung Jawab (PIC) langsung ditetapkan sesuai akun login Anda (<em>${userName}</em>).`;
+                        helpEl.style.color = '#059669';
+                    }
+                }
             }
             if (selectChange) {
                 const curVal = selectChange.value;
@@ -10287,7 +10545,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             updateMainDashboardChart();
 
             closeChangePicModal();
-            alert(`Sukses! Penanggung Jawab (PIC) proyek "${project.name}" berhasil diubah menjadi "${newPic}". Data disinkronkan ke Vercel Cloud.`);
+            alert(`Sukses! Penanggung Jawab (PIC) proyek "${project.name}" berhasil diubah menjadi "${newPic}".`);
         }
 
         function openAddProjectModal() {
@@ -10296,11 +10554,15 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             d.setDate(d.getDate() + 30);
             document.getElementById('new-proj-deadline').value = d.toISOString().split('T')[0];
 
+            const yearInput = document.getElementById('new-proj-year');
+            if (yearInput) yearInput.value = currentFiscalYear;
+
+            // Pastikan PIC diatur sesuai hak akses (Super Admin bebas memilih, Non-Super Admin terkunci ke akun login)
             populatePicSuggestions();
 
-            // Otomatis pilih akun pengguna yang sedang login sebagai default PIC
+            const isSuper = typeof isCurrentUserSuperAdmin === 'function' && isCurrentUserSuperAdmin();
             const picInput = document.getElementById('new-proj-pic');
-            if (picInput && typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) {
+            if (isSuper && picInput && typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name) {
                 for (let i = 0; i < picInput.options.length; i++) {
                     if (picInput.options[i].value.toLowerCase() === currentAuthUser.name.toLowerCase()) {
                         picInput.selectedIndex = i;
@@ -10332,7 +10594,18 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const category = document.getElementById('new-proj-category').value;
             const urgency = document.getElementById('new-proj-urgency').value;
             const deadlineRaw = document.getElementById('new-proj-deadline').value;
-            const pic = document.getElementById('new-proj-pic').value.trim();
+            const yearEl = document.getElementById('new-proj-year');
+            const projYear = yearEl ? (parseInt(yearEl.value) || currentFiscalYear) : currentFiscalYear;
+            
+            // Ambil PIC: jika Super Admin ambil dari select, jika non-Super Admin selalu kunci ke akun login saat ini
+            let pic = '';
+            if (typeof isCurrentUserSuperAdmin === 'function' && isCurrentUserSuperAdmin()) {
+                pic = document.getElementById('new-proj-pic').value.trim();
+            } else {
+                pic = (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.name)
+                    ? currentAuthUser.name.trim()
+                    : document.getElementById('new-proj-pic').value.trim();
+            }
             const desc = document.getElementById('new-proj-desc').value.trim() || 'Tidak ada deskripsi rinci.';
             const alertNote = document.getElementById('new-proj-alert').value.trim();
 
@@ -10384,6 +10657,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 name: name,
                 category: category,
                 urgency: urgency,
+                year: projYear,
                 status: "In Progress",
                 progress: 10,
                 deadline: deadlineStr,
@@ -10398,7 +10672,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                         author: "Admin SMTI",
                         role: "Inisiator",
                         time: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ", " + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB",
-                        text: `Proyek "${name}" resmi didaftarkan ke sistem pemantauan SMTI Pupuk Kujang.`
+                        text: `Proyek "${name}" resmi didaftarkan ke sistem pemantauan SMTI Pupuk Kujang (Tahun Anggaran ${projYear}).`
                     }
                 ],
                 flow: flow
@@ -10422,6 +10696,12 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             projectDataSMTI.unshift(newProject);
             saveProjectsData();
 
+            if (projYear !== currentFiscalYear) {
+                currentFiscalYear = projYear;
+                try { localStorage.setItem('smti_selected_fiscal_year', currentFiscalYear.toString()); } catch(e){}
+                updateFiscalYearUI();
+            }
+
             closeAddProjectModal();
             renderProjectsList();
             renderMonitorBoard();
@@ -10429,7 +10709,11 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             // Otomatis buka modal flow untuk proyek baru agar user bisa langsung tambah checklist
             openFlowModal(newProject.id);
 
-            alert(`Sukses! Proyek "${name}" berhasil dibuat dan siap dipantau.`);
+            setTimeout(() => {
+                if (confirm(`Sukses! Proyek "${name}" berhasil dibuat dan siap dipantau.\n\nApakah Anda ingin langsung menambahkan target deadline (${deadlineStr}) ke Google Calendar sebagai pengingat?`)) {
+                    openGoogleCalendarForProject(newProject.id);
+                }
+            }, 350);
         }
 
         async function deleteProject(projectId) {
@@ -10450,7 +10734,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 renderProjectsList();
                 renderMonitorBoard();
                 await syncToCloud();
-                alert("Proyek berhasil dihapus secara permanen dari sistem dan Vercel Cloud.");
+                alert("Proyek berhasil dihapus.");
             }
         }
 
@@ -10644,7 +10928,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 if (isSuperAdmin) {
                     badge = `<span style="font-size: 10px; background: rgba(6,182,212,0.15); color: #0891b2; padding: 1px 6px; border-radius: 8px; font-weight: 700; border: 1px solid #67e8f9;"><i class="fas fa-shield-alt"></i> Super Admin</span>`;
                 } else if (isManager) {
-                    badge = `<span style="font-size: 10px; background: rgba(139,92,246,0.15); color: #7c3aed; padding: 1px 6px; border-radius: 8px; font-weight: 700; border: 1px solid #c4b5fd;"><i class="fas fa-crown"></i> Manager Dept SMTI</span>`;
+                    badge = `<span style="font-size: 10px; background: rgba(139,92,246,0.15); color: #7c3aed; padding: 1px 6px; border-radius: 8px; font-weight: 700; border: 1px solid #c4b5fd;"><i class="fas fa-crown"></i> VP SMTI</span>`;
                 }
                 const empPin = emp.pin || '1234';
                 const pinDisplay = showAdminPins ? empPin : '••••';
@@ -10704,7 +10988,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 renderAdminPinsList();
             }
             await syncEmployeesToCloud();
-            alert(`Sukses! PIN keamanan untuk "${emp.name}" berhasil diubah menjadi: ${cleanPin} dan tersimpan di Vercel Cloud.`);
+            alert(`Sukses! PIN keamanan untuk "${emp.name}" berhasil diubah menjadi: ${cleanPin}.`);
         }
 
         async function quickResetPin(id) {
@@ -10721,7 +11005,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 renderAdminPinsList();
             }
             await syncEmployeesToCloud();
-            alert(`PIN untuk "${emp.name}" telah di-reset ke default: 1234 dan tersimpan di Vercel Cloud.`);
+            alert(`PIN untuk "${emp.name}" telah di-reset ke default: 1234.`);
         }
 
         async function resetAllPinsToDefault() {
@@ -10739,7 +11023,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 saveEmployeesData(false);
                 renderAdminPinsList();
                 await syncEmployeesToCloud();
-                alert("Sukses! Semua akun karyawan & magang telah disetel ke PIN default: 1234 dan tersimpan di Vercel Cloud.");
+                alert("Sukses! Semua akun telah disetel ke PIN default: 1234.");
             }
         }
 
@@ -10757,7 +11041,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 if (emp.isSuperAdmin || emp.name.toLowerCase().includes('septian')) {
                     roleBadgeHtml = `<span style="display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; background: rgba(6, 182, 212, 0.15); color: #0891b2; border: 1px solid #67e8f9; padding: 2px 7px; border-radius: 10px; margin-left: 6px;"><i class="fas fa-shield-alt"></i> Super Admin</span>`;
                 } else if (emp.isManager || emp.name.toLowerCase().includes('henisya')) {
-                    roleBadgeHtml = `<span style="display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; background: rgba(139, 92, 246, 0.15); color: #7c3aed; border: 1px solid #c4b5fd; padding: 2px 7px; border-radius: 10px; margin-left: 6px;"><i class="fas fa-crown"></i> Manager Dept SMTI</span>`;
+                    roleBadgeHtml = `<span style="display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; background: rgba(139, 92, 246, 0.15); color: #7c3aed; border: 1px solid #c4b5fd; padding: 2px 7px; border-radius: 10px; margin-left: 6px;"><i class="fas fa-crown"></i> VP SMTI</span>`;
                 }
 
                 return `
@@ -10815,7 +11099,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             saveEmployeesData(false);
             filterKaryawan();
             await syncEmployeesToCloud();
-            alert(`Status "${emp.name}" berhasil diubah menjadi: ${newStatus} (${newStatus === 'TKO' ? 'Tenaga Kerja Operasional' : 'Tenaga Kerja Non-Operasional'}) dan tersimpan di Vercel Cloud.`);
+            alert(`Status "${emp.name}" berhasil diubah menjadi: ${newStatus} (${newStatus === 'TKO' ? 'Tenaga Kerja Operasional' : 'Tenaga Kerja Non-Operasional'}).`);
         }
 
         async function saveKaryawan(e) {
@@ -10848,7 +11132,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     closeModal();
                     filterKaryawan();
                     await syncEmployeesToCloud();
-                    alert(`Sukses! Data karyawan "${nama}" berhasil diperbarui (Status: ${status}, PIN: ${emp.pin}) dan tersimpan di Vercel Cloud.`);
+                    alert(`Sukses! Data karyawan "${nama}" berhasil diperbarui.`);
                     return;
                 }
             }
@@ -10875,7 +11159,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             closeModal();
             filterKaryawan();
             await syncEmployeesToCloud();
-            alert(`Sukses! Karyawan "${nama}" (${jabatan} - ${status}) berhasil ditambahkan dan tersimpan di Vercel Cloud.`);
+            alert(`Sukses! Data karyawan "${nama}" (${jabatan} - ${status}) berhasil ditambahkan.`);
         }
 
         function editEmployeeById(id) {
@@ -10904,7 +11188,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const emp = SMTI_EMPLOYEES.find(e => (e.id && e.id == id) || e.name === id);
             if (!emp) return;
 
-            if (confirm(`Apakah Anda yakin ingin menghapus karyawan "${emp.name}"? Data akan terhapus secara permanen dari sistem dan Vercel Cloud.`)) {
+            if (confirm(`Apakah Anda yakin ingin menghapus data karyawan "${emp.name}"?`)) {
                 lastEmployeeMutationTime = Date.now();
                 SMTI_EMPLOYEES = SMTI_EMPLOYEES.filter(e => {
                     if (e.id && emp.id) return e.id != emp.id;
@@ -10915,7 +11199,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 filterKaryawan();
                 // Sinkronkan ke cloud secara instan dan tunggu selesai
                 await syncEmployeesToCloud();
-                alert(`Data karyawan "${emp.name}" telah berhasil dihapus secara permanen dari sistem dan Vercel Cloud.`);
+                alert(`Data karyawan "${emp.name}" berhasil dihapus.`);
             }
         }
 
@@ -10982,7 +11266,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             if (!select) return;
 
             const superAdmin = SMTI_EMPLOYEES.find(e => e.isSuperAdmin || e.name.toLowerCase().includes('septian')) || { name: 'Septian', role: 'Super Admin SMTI', initials: 'SE', color: '#06b6d4', pin: '1234' };
-            const manager = SMTI_EMPLOYEES.find(e => e.isManager || e.name.toLowerCase().includes('henisya')) || { name: 'Henisya Permata Sari', role: 'Manager Dept SMTI', initials: 'HP', color: '#8b5cf6', pin: '1234' };
+            const manager = SMTI_EMPLOYEES.find(e => e.isManager || e.name.toLowerCase().includes('henisya')) || { name: 'Henisya Permata Sari', role: 'VP SMTI', initials: 'HP', color: '#8b5cf6', pin: '1234' };
 
             let html = '';
 
@@ -10991,10 +11275,10 @@ HTML_CONTENT = r'''<!DOCTYPE html>
             const leaders = SMTI_EMPLOYEES.filter(e => e.isManager || e.name.toLowerCase().includes('henisya') || (e.role && (e.role.toLowerCase().includes('manager') || e.role.toLowerCase().includes('vp'))));
             if (leaders.length > 0) {
                 leaders.forEach(m => {
-                    html += `<option value="${m.name}">👑 ${m.name} — ${m.role || 'Manager Dept SMTI'}</option>`;
+                    html += `<option value="${m.name}">👑 ${m.name} — ${m.role || 'VP SMTI'}</option>`;
                 });
             } else {
-                html += `<option value="${manager.name}">👑 ${manager.name} — Manager Dept SMTI</option>`;
+                html += `<option value="${manager.name}">👑 ${manager.name} — VP SMTI</option>`;
             }
             html += `</optgroup>`;
 
@@ -11068,7 +11352,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     badgeEl.style.color = "#0891b2";
                     badgeEl.style.border = "1px solid #67e8f9";
                 } else if (user.isManager || user.name.toLowerCase().includes('henisya')) {
-                    badgeEl.innerText = "👑 Manager Dept SMTI";
+                    badgeEl.innerText = "👑 VP SMTI";
                     badgeEl.style.background = "rgba(139, 92, 246, 0.15)";
                     badgeEl.style.color = "#7c3aed";
                     badgeEl.style.border = "1px solid #c4b5fd";
@@ -11205,7 +11489,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     topRole.innerHTML = `<i class="fas fa-shield-alt" style="color: #0891b2;"></i> Super Admin`;
                     topRole.style.color = "#0891b2";
                 } else if (user.isManager || user.name.toLowerCase().includes('henisya')) {
-                    topRole.innerHTML = `<i class="fas fa-crown" style="color: #7c3aed;"></i> Manager Dept SMTI`;
+                    topRole.innerHTML = `<i class="fas fa-crown" style="color: #7c3aed;"></i> VP SMTI`;
                     topRole.style.color = "#7c3aed";
                 } else {
                     topRole.innerText = user.role || "Officer SMTI";
@@ -11226,7 +11510,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                     dropBadge.style.color = "#0891b2";
                     dropBadge.style.border = "1px solid #67e8f9";
                 } else if (user.isManager || user.name.toLowerCase().includes('henisya')) {
-                    dropBadge.innerText = "Manager Dept SMTI";
+                    dropBadge.innerText = "VP SMTI";
                     dropBadge.style.background = "rgba(139, 92, 246, 0.15)";
                     dropBadge.style.color = "#7c3aed";
                     dropBadge.style.border = "1px solid #c4b5fd";
@@ -11251,7 +11535,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
                 if (user.isSuperAdmin || user.name.toLowerCase().includes('septian')) {
                     sideRole.innerHTML = `<span style="color: #38bdf8; font-weight: 700;"><i class="fas fa-shield-alt"></i> Super Admin</span>`;
                 } else if (user.isManager || user.name.toLowerCase().includes('henisya')) {
-                    sideRole.innerHTML = `<span style="color: #c084fc; font-weight: 700;"><i class="fas fa-crown"></i> Manager Dept SMTI</span>`;
+                    sideRole.innerHTML = `<span style="color: #c084fc; font-weight: 700;"><i class="fas fa-crown"></i> VP SMTI</span>`;
                 } else {
                     sideRole.innerText = user.role;
                 }
@@ -11262,6 +11546,7 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 
             // 5. Update batasan hak akses (Sembunyikan menu Karyawan, Magang, Pengaturan, Bantuan jika bukan Super Admin)
             updateUIPermissions(user);
+            populatePicSuggestions();
             renderNotifications();
 
             // 6. Jika modal alur proyek sedang terbuka, langsung segarkan izin hak akses sesuai user baru
@@ -11434,7 +11719,9 @@ HTML_CONTENT = r'''<!DOCTYPE html>
 </html>
 '''
 
-with open(r'd:\Kerjaan\index.html', 'w', encoding='utf-8') as f:
-    f.write(HTML_CONTENT)
+final_html = HTML_CONTENT.replace('__LOGO_KUJANG_EMBLEM__', LOGO_KUJANG_EMBLEM_B64).replace('__LOGO_KUJANG_FULL__', LOGO_KUJANG_FULL_B64)
 
-print("Dashboard Dept SMTI updated with manual checklist & comments successfully!")
+with open(r'd:\Kerjaan\index.html', 'w', encoding='utf-8') as f:
+    f.write(final_html)
+
+print("Dashboard Dept SMTI updated with Pupuk Kujang logos successfully!")
